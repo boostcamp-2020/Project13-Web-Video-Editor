@@ -1,0 +1,32 @@
+# [prefix]: [type] #issue 제목
+##### Subject 50 characters ################# -> |
+
+# Body Message
+######## Body 72 characters ####################################### -> |
+
+# Issue Tracker Number or URL
+#     close #issue_id
+
+# --- COMMIT END ---
+# Type can be
+#   FEAT    : new feature
+#   FIX     : bug fix
+#   REFACTOR: refactoring production code
+#   STYLE   : formatting, missing semi colons, etc; no code change
+#   DOCS    : changes to documentation
+#   CHORE   : updating grunt tasks etc
+#             no production code change
+#   TEST    : test code
+# ------------------
+# for YBG
+#     제목은 전체 내용을 간결하게 요약할 것.
+#     함수 기반의 커밋을 진행하며, 함수 작성 이유를 담을 것.
+#     함수가 사용된 기능 및 관련 기능을 밝힐 것.
+# Remember me 
+#     제목과 내용은 한글로 작성한다.
+#     제목줄은 마침표로 끝내지 않는다.
+#     본문과 제목에는 빈줄을 넣어서 구분한다.
+#     본문에는 "어떻게" 보다는 "왜"와 "무엇을" 설명한다.
+#     본문에 목록을 나타낼때는 "-"로 시작한다.
+#     Issue 링크는 필요한 경우에만 작성한다.
+# ------------------
