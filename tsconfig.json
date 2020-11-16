@@ -13,8 +13,9 @@
     "sourceMap": true,
     "baseUrl": "./",
     "paths": {
-      "@main/*": [
-        "src/main/*"
+      "@/*": [
+        "server/src/*",
+        "client/src/*",
       ],
     },
   },
