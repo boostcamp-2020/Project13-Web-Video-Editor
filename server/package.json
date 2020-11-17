@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch dist --delay 1 --exec 'ts-node' dist/bundle.js",
+    "start": "nodemon --watch dist --delay 1 --exec 'node' dist/bundle.js",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
