@@ -2,6 +2,8 @@
 ## 13. Web-Video-Editor
 ## 🌊 WAVE
 ### Web Application for Video Editing  
+![logo](https://user-images.githubusercontent.com/49153756/99418260-2d521f80-293e-11eb-806e-fa4ec9d03038.png)
+
 > 동영상 편집, 이제 브라우저만 여세요!  
 <br/> 
 
