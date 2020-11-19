@@ -1,4 +1,6 @@
-import * as express from 'express';
+import express from 'express';
+import cors from 'cors';
+import indexRouter from '@/main/routes';
 
 class App {
   public app: express.Application;
@@ -15,6 +17,13 @@ class App {
 
   constructor() {
     this.app = express();
+    this.app.use(
+      cors({
+        origin: true,
+        credentials: true,
+      })
+    );
+    this.app.use('/', indexRouter);
     this.app.get(
       '/',
       (
