@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch dist --delay 1 --exec 'ts-node' dist/bundle.js",
+    "start": "nodemon --watch dist --delay 1 --exec node dist/bundle.js",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
@@ -21,7 +21,14 @@
     "webpack-cli": "^4.1.0"
   },
   "dependencies": {
+    "@types/multer": "^1.4.4",
+    "aws-sdk": "^2.789.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "source-map-support": "^0.5.19"
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
+    "source-map-support": "^0.5.19",
+    "uuid": "^8.3.1"
   }
 }
