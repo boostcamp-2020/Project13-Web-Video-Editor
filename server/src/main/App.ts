@@ -1,40 +1,12 @@
 import express from 'express';
-import cors from 'cors';
-import indexRouter from '@/main/routes';
+import loader from '@/main/loaders';
 
-class App {
-  public app: express.Application;
+const app: express.Application = express();
 
-  /**
-   * @ class App
-   * @ method bootstrap
-   * @ static
-   *
-   */
-  public static bootstrap(): App {
-    return new App();
-  }
+const startServer = () => {
+  loader.init(app);
+};
 
-  constructor() {
-    this.app = express();
-    this.app.use(
-      cors({
-        origin: true,
-        credentials: true,
-      })
-    );
-    this.app.use('/', indexRouter);
-    this.app.get(
-      '/',
-      (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-      ) => {
-        res.send('Hello world');
-      }
-    );
-  }
-}
+startServer();
 
-export default App;
+export default app;
