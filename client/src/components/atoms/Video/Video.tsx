@@ -2,41 +2,41 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from '@/store/reducer';
-import WebglControler from '@/webgl/webglControler';
+import WebglController from '@/webgl/webglController';
 
 interface Props {
   videoBuffer: ArrayBuffer;
 }
 
 const Video: React.FC<Props> = ({ videoBuffer }) => {
-  let webglControler;
+  let webglController;
   if (videoBuffer) {
-    webglControler = new WebglControler(URL.createObjectURL(new Blob([videoBuffer], { type: 'video/mp4' })));
-    webglControler.main();
+    webglController = new WebglController(URL.createObjectURL(new Blob([videoBuffer], { type: 'video/mp4' })));
+    webglController.main();
   }
 
   const rotateLeft90Degree = () => {
-    webglControler.rotateLeft90Degree();
+    webglController.rotateLeft90Degree();
   };
 
   const rotateRight90Degree = () => {
-    webglControler.rotateRight90Degree();
+    webglController.rotateRight90Degree();
   };
 
   const reverseUpsideDown = () => {
-    webglControler.reverseUpsideDown();
+    webglController.reverseUpsideDown();
   };
 
   const reverseSideToSide = () => {
-    webglControler.reverseSideToSide();
+    webglController.reverseSideToSide();
   };
 
   const enlarge = () => {
-    webglControler.enlarge();
+    webglController.enlarge();
   };
 
   const reduce = () => {
-    webglControler.reduce();
+    webglController.reduce();
   };
 
   return (
