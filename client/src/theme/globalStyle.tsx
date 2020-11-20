@@ -1,5 +1,6 @@
-import color from '@/theme/colors';
 import { createGlobalStyle } from 'styled-components';
+
+import color from '@/theme/colors';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Yeon+Sung&display=swap');  

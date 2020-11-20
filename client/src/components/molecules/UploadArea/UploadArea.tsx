@@ -1,12 +1,13 @@
 import React, { useState, createRef } from 'react';
 import { connect } from 'react-redux';
+
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { FileInfo, startUpload, load } from '@/store/originalVideo/actions';
 
 interface Props {
   startUpload: Function;
-  load: Function;
+  load: Function; // FIXME
 }
 
 const initialFile = { name: undefined };
