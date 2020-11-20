@@ -15,29 +15,17 @@ const Video: React.FC<Props> = ({ videoBuffer }) => {
     webglController.main();
   }
 
-  const rotateLeft90Degree = () => {
-    webglController.rotateLeft90Degree();
-  };
+  const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
 
-  const rotateRight90Degree = () => {
-    webglController.rotateRight90Degree();
-  };
+  const rotateRight90Degree = () => webglController.rotateRight90Degree();
 
-  const reverseUpsideDown = () => {
-    webglController.reverseUpsideDown();
-  };
+  const reverseUpsideDown = () => webglController.reverseUpsideDown();
 
-  const reverseSideToSide = () => {
-    webglController.reverseSideToSide();
-  };
+  const reverseSideToSide = () => webglController.reverseSideToSide();
 
-  const enlarge = () => {
-    webglController.enlarge();
-  };
+  const enlarge = () => webglController.enlarge();
 
-  const reduce = () => {
-    webglController.reduce();
-  };
+  const reduce = () => webglController.reduce();
 
   return (
     <>
@@ -47,7 +35,6 @@ const Video: React.FC<Props> = ({ videoBuffer }) => {
           videoBuffer &&
           URL.createObjectURL(new Blob([videoBuffer], { type: 'video/mp4' }))
         }
-        style={{ display: "none" }}
       />
       <button onClick={rotateLeft90Degree}>Left 90'</button>
       <button onClick={rotateRight90Degree}>Right 90'</button>
