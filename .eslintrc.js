@@ -36,7 +36,8 @@ module.exports = {
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    'react/prop-types': 0,
   },
   settings: {
     jest: {

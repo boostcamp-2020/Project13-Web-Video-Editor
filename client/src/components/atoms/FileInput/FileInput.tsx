@@ -1,11 +1,24 @@
-import React, { ChangeEvent, FunctionComponent } from 'react';
+import React from 'react';
 
 interface Props {
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChange: () => void;
 }
 
-const UploadButton: FunctionComponent<Props> = ({ onChange }) => (
-  <input type="file" onChange={onChange} />
+const FileInput = React.forwardRef<HTMLInputElement, Props>(
+  ({ handleChange }, forwardedRef) => {
+    return (
+      <>
+        <label htmlFor="local">내 컴퓨터</label>
+        <input
+          type="file"
+          id="local"
+          ref={forwardedRef}
+          onChange={handleChange}
+          style={{ display: 'none' }}
+        />
+      </>
+    );
+  }
 );
 
-export default UploadButton;
+export default FileInput;

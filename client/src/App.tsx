@@ -1,5 +1,13 @@
 import React, { useRef, useState } from 'react';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+
+import store from '@/store';
+import Button from '@/components/atoms/Button';
+import Video from '@/components/atoms/Video';
+import UploadArea from '@/components/molecules/UploadArea';
+import GlobalStyle from '@/theme/globalStyle';
+import Header from '@/components/organisms/Header';
 
 const App: React.FC = () => {
   const inputRef = useRef(null);
@@ -24,13 +32,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
-      <input type="file" ref={inputRef} id="fileInput" onChange={handleClick} />
-      <button type="button" onClick={handleSubmit}>
-        submit
-      </button>
-      <h1> React here! </h1>
-    </div>
+    <Provider store={store}>
+      <GlobalStyle />
+      <Header />
+      <Video />
+      <UploadArea />
+      <Button message="Submit" onClick={handleSubmit} type="default" />
+    </Provider>
   );
 };
 

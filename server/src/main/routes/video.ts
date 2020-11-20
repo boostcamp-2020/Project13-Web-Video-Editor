@@ -1,4 +1,5 @@
 import { Router } from 'express';
+
 import { uploadVideo } from '@/main/controllers/video';
 import setMulter from '@/main/middlewares/multer';
 
