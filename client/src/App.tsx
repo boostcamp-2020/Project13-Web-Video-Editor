@@ -35,6 +35,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <GlobalStyle />
       <Header />
+      <canvas id="glcanvas"></canvas>
       <Video />
       <UploadArea />
       <Button message="Submit" onClick={handleSubmit} type="default" />
