@@ -15,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100vh;
     background-color: ${color.DARK_GRAY};
     font-family: 'Yeon Sung';
+    color: ${color.WHITE};
   }
   * {
     box-sizing: border-box;
