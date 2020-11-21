@@ -1,9 +1,20 @@
 import React, { useState, createRef } from 'react';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { FileInfo, startUpload, load } from '@/store/originalVideo/actions';
+
+const StyledDiv = styled.div`
+  display: flex;
+  position: relative;
+`;
+
+const StyledP = styled.p`
+  font-size: 14px;
+  margin-right: 5px;
+`;
 
 interface Props {
   startUpload: Function;
@@ -47,15 +58,15 @@ const UploadArea: React.FC<Props> = ({ startUpload, load }) => {
   };
 
   return (
-    <>
-      <p>{file.name}</p>
+    <StyledDiv>
+      <StyledP>{file.name}</StyledP>
       <Button
         message="불러오기"
         onClick={() => setVisible(!visible)}
         type="default"
       />
       {visible && <FileInput ref={ref} handleChange={handleChange} />}
-    </>
+    </StyledDiv>
   );
 };
 

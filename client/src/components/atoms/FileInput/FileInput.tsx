@@ -1,4 +1,28 @@
 import React from 'react';
+import styled from 'styled-components';
+
+import color from '@/theme/colors';
+
+const StyledDiv = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  border-radius: 5px;
+  padding: 5px;
+  top: 50px;
+  background-color: ${color.GRAY};
+  box-shadow: 1px 1px 2px 1px ${color.WHITE};
+  width: 100%;
+`;
+const StyledLabel = styled.label`
+  color: ${color.WHITE};
+  font-size: 12px;
+  cursor: pointer;
+`;
+
+const StyledInput = styled.input`
+  display: none;
+`;
 
 interface Props {
   handleChange: () => void;
@@ -7,16 +31,15 @@ interface Props {
 const FileInput = React.forwardRef<HTMLInputElement, Props>(
   ({ handleChange }, forwardedRef) => {
     return (
-      <>
-        <label htmlFor="local">내 컴퓨터</label>
-        <input
+      <StyledDiv>
+        <StyledLabel htmlFor="local">내 컴퓨터</StyledLabel>
+        <StyledInput
           type="file"
           id="local"
           ref={forwardedRef}
           onChange={handleChange}
-          style={{ display: 'none' }}
         />
-      </>
+      </StyledDiv>
     );
   }
 );

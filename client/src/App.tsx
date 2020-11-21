@@ -4,10 +4,11 @@ import { Provider } from 'react-redux';
 
 import store from '@/store';
 import Button from '@/components/atoms/Button';
-import Video from '@/components/atoms/Video';
-import UploadArea from '@/components/molecules/UploadArea';
+import Thumbnail from '@/components/atoms/Thumbnail';
 import GlobalStyle from '@/theme/globalStyle';
 import Header from '@/components/organisms/Header';
+import Tools from '@/components/organisms/Tools';
+import VideoContainer from '@/components/organisms/VideoContainer';
 
 const App: React.FC = () => {
   const inputRef = useRef(null);
@@ -35,10 +36,10 @@ const App: React.FC = () => {
     <Provider store={store}>
       <GlobalStyle />
       <Header />
-      <canvas id="glcanvas"></canvas>
-      <Video />
-      <UploadArea />
+      <VideoContainer />
+      <Tools />
       <Button message="Submit" onClick={handleSubmit} type="default" />
+      <Thumbnail />
     </Provider>
   );
 };
