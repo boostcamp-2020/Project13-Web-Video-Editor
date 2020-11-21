@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { RootState } from '@/store/reducer';
 
+const THUMNAIL_COUNT = 30;
+
 const StyledDiv = styled.div`
   display: flex;
   width: 90%;
@@ -11,6 +13,7 @@ const StyledDiv = styled.div`
 
 const StyledImg = styled.img`
   width: 3.3%;
+  height: 50px;
 `;
 
 interface Props {
@@ -24,6 +27,7 @@ interface ImageData {
 }
 
 const $video = document.createElement('video');
+const canvas = document.createElement('canvas');
 
 const getImageAt = (
   secs: number,
@@ -39,10 +43,6 @@ const getImageAt = (
     };
 
     video.onseeked = () => {
-      const canvas = document.createElement('canvas');
-      canvas.height = 50;
-      canvas.width = 50;
-
       const context = canvas.getContext('2d');
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -56,10 +56,9 @@ const getImages = async (
   path: string,
   duration: number
 ) => {
-  const THUMNAIL_COUNT = 30;
   const images = [];
 
-  const gap = Math.round(duration / THUMNAIL_COUNT);
+  const gap = duration / THUMNAIL_COUNT;
 
   for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
     const image = await getImageAt(secs, video, path);
