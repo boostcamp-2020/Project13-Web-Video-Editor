@@ -3,6 +3,25 @@ import { mat4 } from 'gl-matrix';
 import vertexShaderSource from './vertexShaderSource';
 import fragmentShaderSource from './fragmentShaderSource';
 
+interface Buffers {
+  position: WebGLBuffer,
+  textureCoord: WebGLBuffer,
+  indices: WebGLBuffer,
+}
+
+interface ProgramInfo {
+  program: WebGLProgram,
+  attribLocations: {
+    vertexPosition: number,
+    textureCoord: number
+  },
+  uniformLocations: {
+    projectionMatrix: WebGLUniformLocation,
+    modelViewMatrix: WebGLUniformLocation,
+    uSampler: WebGLUniformLocation
+  },
+}
+
 class webglControler {
   copyVideo: Boolean;
 
