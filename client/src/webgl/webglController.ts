@@ -29,11 +29,13 @@ class webglControler {
 
   videoURL: string;
 
-  buffers;
+  buffers: Buffers;
 
-  gl;
+  gl: WebGLRenderingContext;
 
-  constructor(videoURL) {
+  pause: Boolean = false;
+
+  constructor(videoURL: string) {
     this.copyVideo = false;
     this.positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0];
     this.videoURL = videoURL;
@@ -42,13 +44,13 @@ class webglControler {
   rotateLeft90Degree = () => {
     this.positions.push(this.positions.shift());
     this.positions.push(this.positions.shift());
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
   rotateRight90Degree = () => {
     this.positions.unshift(this.positions.pop());
     this.positions.unshift(this.positions.pop());
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
   reverseUpsideDown = () => {
@@ -69,7 +71,7 @@ class webglControler {
     this.positions.push(x1);
     this.positions.push(y1);
 
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
   reverseSideToSide = () => {
@@ -91,7 +93,7 @@ class webglControler {
     this.positions.unshift(y2);
     this.positions.unshift(x2);
 
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
   enlarge = () => {
@@ -107,7 +109,7 @@ class webglControler {
 
     this.positions = temp;
 
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
   reduce = () => {
@@ -123,157 +125,97 @@ class webglControler {
 
     this.positions = temp;
 
-    this.buffers = this.initBuffers(this.gl);
+    this.buffers = this.initBuffers();
   };
 
-  initCanvas = () => {
-    const canvas = document.querySelector('#glcanvas');
-    const gl =
-      canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  playPause = () => {
+    this.pause = !this.pause;
+  }
+
+  initCanvas = (videoWidth: string, videoHeight: string) => {
+    const canvas = document.getElementById('glcanvas');
+    canvas.setAttribute('width', videoWidth);
+    canvas.setAttribute('height', videoHeight);
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
     return gl;
   };
 
-  initBuffers = gl => {
-    const positionBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array(this.positions),
-      gl.STATIC_DRAW
-    );
-
-    const normalBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-
-    const vertexNormals = [
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      1.0,
-    ];
-
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array(vertexNormals),
-      gl.STATIC_DRAW
-    );
-
-    const textureCoordBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+  initBuffers = () => {
+    const positionBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.positions), this.gl.STATIC_DRAW);
 
     const textureCoordinates = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
-
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array(textureCoordinates),
-      gl.STATIC_DRAW
-    );
-
-    const indexBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    const textureCoordBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), this.gl.STATIC_DRAW);
 
     const indices = [0, 1, 2, 0, 2, 3];
-
-    gl.bufferData(
-      gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(indices),
-      gl.STATIC_DRAW
-    );
+    const indexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
 
     return {
       position: positionBuffer,
-      normal: normalBuffer,
       textureCoord: textureCoordBuffer,
       indices: indexBuffer,
     };
   };
 
-  setupVideo = () => {
-    const video = document.createElement('video');
+  loadShader = (type: number, source: string) => {
+    const shader = this.gl.createShader(type);
 
-    video.muted = true;
+    this.gl.shaderSource(shader, source);
 
-    video.src = this.videoURL;
-    video.addEventListener('timeupdate', () => {
-      this.copyVideo = true;
-    });
+    this.gl.compileShader(shader);
 
-    video.addEventListener('loadeddata', () => {
-      video.play();
-    });
-
-    return video;
-  };
-
-  loadShader = (gl, type, source) => {
-    const shader = gl.createShader(type);
-
-    gl.shaderSource(shader, source);
-
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      gl.deleteShader(shader);
+    if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+      this.gl.deleteShader(shader);
       return null;
     }
 
     return shader;
   };
 
-  initShaderProgram = gl => {
+  initShaderProgram = () => {
     const vertexShader = this.loadShader(
-      gl,
-      gl.VERTEX_SHADER,
+      this.gl.VERTEX_SHADER,
       vertexShaderSource
     );
     const fragmentShader = this.loadShader(
-      gl,
-      gl.FRAGMENT_SHADER,
+      this.gl.FRAGMENT_SHADER,
       fragmentShaderSource
     );
 
-    const shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
+    const shaderProgram = this.gl.createProgram();
+    this.gl.attachShader(shaderProgram, vertexShader);
+    this.gl.attachShader(shaderProgram, fragmentShader);
+    this.gl.linkProgram(shaderProgram);
 
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+    if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
       return null;
     }
 
     return shaderProgram;
   };
 
-  initTexture = gl => {
-    const texture = gl.createTexture();
+  initTexture = () => {
+    const texture = this.gl.createTexture();
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
 
     const level = 0;
-    const internalFormat = gl.RGBA;
+    const internalFormat = this.gl.RGBA;
     const width = 1;
     const height = 1;
     const border = 0;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
+    const srcFormat = this.gl.RGBA;
+    const srcType = this.gl.UNSIGNED_BYTE;
     const pixel = new Uint8Array([0, 0, 0, 255]);
 
-    gl.texImage2D(
-      gl.TEXTURE_2D,
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
       level,
       internalFormat,
       width,
@@ -284,21 +226,21 @@ class webglControler {
       pixel
     );
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
 
     return texture;
   };
 
-  updateTexture = (gl, texture, video) => {
+  updateTexture = (texture: WebGLTexture, video: HTMLVideoElement) => {
     const level = 0;
-    const internalFormat = gl.RGBA;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
+    const internalFormat = this.gl.RGBA;
+    const srcFormat = this.gl.RGBA;
+    const srcType = this.gl.UNSIGNED_BYTE;
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
       level,
       internalFormat,
       srcFormat,
@@ -307,37 +249,32 @@ class webglControler {
     );
   };
 
-  drawScene = (gl, programInfo, texture) => {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clearDepth(1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
+  drawScene = (programInfo: ProgramInfo, texture: WebGLTexture) => {
+    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    this.gl.clearDepth(1.0);
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
 
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    const fieldOfView = (45 * Math.PI) / 180;
-    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
     const projectionMatrix = mat4.create();
 
-    mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
+    mat4.ortho(projectionMatrix, -1.0, 1.0, -1.0, 1.0, zNear, zFar);
+
     const modelViewMatrix = mat4.create();
 
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
-
-    const normalMatrix = mat4.create();
-    mat4.invert(normalMatrix, modelViewMatrix);
-    mat4.transpose(normalMatrix, normalMatrix);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -1.0]);
 
     {
       const numComponents = 2;
-      const type = gl.FLOAT;
+      const type = this.gl.FLOAT;
       const normalize = false;
       const stride = 0;
       const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.position);
-      gl.vertexAttribPointer(
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+      this.gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
         numComponents,
         type,
@@ -345,17 +282,17 @@ class webglControler {
         stride,
         offset
       );
-      gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+      this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
     }
 
     {
       const numComponents = 2;
-      const type = gl.FLOAT;
+      const type = this.gl.FLOAT;
       const normalize = false;
       const stride = 0;
       const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.textureCoord);
-      gl.vertexAttribPointer(
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.textureCoord);
+      this.gl.vertexAttribPointer(
         programInfo.attribLocations.textureCoord,
         numComponents,
         type,
@@ -363,106 +300,89 @@ class webglControler {
         stride,
         offset
       );
-      gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
+      this.gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
     }
 
-    {
-      const numComponents = 3;
-      const type = gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers.normal);
-      gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexNormal,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset
-      );
-      gl.enableVertexAttribArray(programInfo.attribLocations.vertexNormal);
-    }
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+    this.gl.useProgram(programInfo.program);
 
-    gl.useProgram(programInfo.program);
-
-    gl.uniformMatrix4fv(
+    this.gl.uniformMatrix4fv(
       programInfo.uniformLocations.projectionMatrix,
       false,
       projectionMatrix
     );
-    gl.uniformMatrix4fv(
+    this.gl.uniformMatrix4fv(
       programInfo.uniformLocations.modelViewMatrix,
       false,
       modelViewMatrix
     );
-    gl.uniformMatrix4fv(
-      programInfo.uniformLocations.normalMatrix,
-      false,
-      normalMatrix
-    );
 
-    gl.activeTexture(gl.TEXTURE0);
+    this.gl.activeTexture(this.gl.TEXTURE0);
 
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
 
-    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+    this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
     {
       const vertexCount = 6;
-      const type = gl.UNSIGNED_SHORT;
+      const type = this.gl.UNSIGNED_SHORT;
       const offset = 0;
-      gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
     }
   };
 
-  main = () => {
-    this.gl = this.initCanvas();
-    this.buffers = this.initBuffers(this.gl);
-
-    const video = this.setupVideo();
-    const shaderProgram = this.initShaderProgram(this.gl);
+  glInit = (video: HTMLVideoElement) => {
+    this.gl = this.initCanvas(video.videoWidth.toString(), video.videoHeight.toString());
+    this.buffers = this.initBuffers();
+    const shaderProgram = this.initShaderProgram();
 
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
-        vertexPosition: this.gl.getAttribLocation(
-          shaderProgram,
-          'aVertexPosition'
-        ),
-        vertexNormal: this.gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
+        vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
         textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
       },
       uniformLocations: {
-        projectionMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          'uProjectionMatrix'
-        ),
-        modelViewMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          'uModelViewMatrix'
-        ),
-        normalMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          'uNormalMatrix'
-        ),
+        projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+        modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
         uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
       },
     };
-    const texture = this.initTexture(this.gl);
+
+    const texture = this.initTexture();
 
     const render = () => {
       if (this.copyVideo) {
-        this.updateTexture(this.gl, texture, video);
+        this.updateTexture(texture, video);
       }
 
-      this.drawScene(this.gl, programInfo, texture);
+      if (!this.pause) {
+        video.play();
+        this.drawScene(programInfo, texture);
+      } else {
+        video.pause();
+      }
 
       requestAnimationFrame(render);
     };
     requestAnimationFrame(render);
+  }
+
+  main = () => {
+    const video = document.createElement('video');
+
+    video.muted = true;
+
+    video.src = this.videoURL;
+    video.addEventListener('timeupdate', () => {
+      this.copyVideo = true;
+    });
+
+    video.addEventListener('loadeddata', () => {
+      this.glInit(video);
+      video.play();
+    });
   };
 }
 
