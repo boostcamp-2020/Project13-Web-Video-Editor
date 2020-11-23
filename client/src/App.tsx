@@ -37,7 +37,7 @@ const App: React.FC = () => {
       <GlobalStyle />
       <Header />
       <VideoContainer />
-      <Tools />
+      <Tools handleClick={handleClick} />
       <Button message="Submit" onClick={handleSubmit} type="default" />
       <Thumbnail />
     </Provider>

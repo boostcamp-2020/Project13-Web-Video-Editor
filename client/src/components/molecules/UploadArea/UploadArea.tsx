@@ -19,13 +19,14 @@ const StyledP = styled.p`
 interface Props {
   startUpload: Function;
   load: Function; // FIXME
+  handleClick: Function;
 }
 
 const initialFile = { name: undefined };
 
 const $video = document.createElement('video');
 
-const UploadArea: React.FC<Props> = ({ startUpload, load }) => {
+const UploadArea: React.FC<Props> = ({ startUpload, load, handleClick }) => {
   const [visible, setVisible] = useState(false);
   const [file, setFile] = useState(initialFile);
   const ref: React.RefObject<HTMLInputElement> = createRef();
@@ -35,6 +36,7 @@ const UploadArea: React.FC<Props> = ({ startUpload, load }) => {
     if (localFile) {
       setFile(localFile);
       startUpload();
+      handleClick({ target: ref.current });
 
       const fileInfo: FileInfo = {
         name: localFile.name,

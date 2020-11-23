@@ -23,6 +23,7 @@ interface button {
 
 interface Props {
   videoBuffer: ArrayBuffer;
+  handleClick: Function;
 }
 
 const getEditToolsData = (
@@ -33,38 +34,38 @@ const getEditToolsData = (
   enlarge: () => void,
   reduce: () => void
 ): button[] => [
-    {
-      onClick: rotateLeft90Degree,
-      message: "Left 90'",
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: rotateRight90Degree,
-      message: "Right 90'",
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: reverseUpsideDown,
-      message: 'Up to Down',
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: reverseSideToSide,
-      message: 'Side to Side',
-      type: 'transparent',
-      children: null,
-    },
-    { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
-    { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
-  ];
+  {
+    onClick: rotateLeft90Degree,
+    message: "Left 90'",
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: rotateRight90Degree,
+    message: "Right 90'",
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: reverseUpsideDown,
+    message: 'Up to Down',
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: reverseSideToSide,
+    message: 'Side to Side',
+    type: 'transparent',
+    children: null,
+  },
+  { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
+  { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
+];
 
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC<Props> = ({ videoBuffer }) => {
+const Tools: React.FC<Props> = ({ videoBuffer, handleClick }) => {
   let webglController;
   if (videoBuffer) {
     webglController = new WebglController(
@@ -93,7 +94,7 @@ const Tools: React.FC<Props> = ({ videoBuffer }) => {
           reduce
         )}
       />
-      <UploadArea />
+      <UploadArea handleClick={handleClick} />
     </StyledDiv>
   );
 };
