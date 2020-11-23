@@ -2,7 +2,7 @@
 name: API
 about: Describe this issue template's purpose here.
 title: "[API]"
-labels: "\U0001F6E2 BE, \U0001F32A API"
+labels: "\U0001F32A API, \U0001F6E2 BE"
 assignees: ''
 
 ---

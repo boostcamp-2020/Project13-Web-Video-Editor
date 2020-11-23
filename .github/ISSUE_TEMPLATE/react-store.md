@@ -2,7 +2,7 @@
 name: React Store
 about: Describe this issue template's purpose here.
 title: "[Store]"
-labels: "\U0001F308  FE, ⚛️  REACT"
+labels: "⚛️  REACT, \U0001F308  FE"
 assignees: ''
 
 ---
