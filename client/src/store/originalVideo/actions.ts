@@ -18,7 +18,10 @@ export const load = (video: ArrayBuffer, file: FileInfo) => ({
 
 export const unload = () => ({ type: FETCH_ERROR });
 
-export type OriginalVideoAction =
-  | ReturnType<typeof load>
-  | ReturnType<typeof startUpload>
-  | ReturnType<typeof unload>;
+export type OriginalVideoAction = {
+  type: string;
+  payload?: {
+    video: ArrayBuffer;
+    file: FileInfo;
+  };
+};

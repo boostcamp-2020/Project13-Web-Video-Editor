@@ -108,7 +108,7 @@ class webglControler {
   };
 
   initCanvas = () => {
-    const canvas = document.querySelector('#glcanvas');
+    const canvas = document.querySelector('#glcanvas') as HTMLCanvasElement;
     const gl =
       canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
