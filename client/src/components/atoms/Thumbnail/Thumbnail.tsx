@@ -29,18 +29,9 @@ interface ImageData {
 const $video = document.createElement('video');
 const canvas = document.createElement('canvas');
 
-const getImageAt = (
-  secs: number,
-  videoElement: HTMLVideoElement,
-  path: string
-) => {
+const getImageAt = (secs: number, videoElement: HTMLVideoElement) => {
   return new Promise(resolve => {
     const video = videoElement;
-    video.src = path;
-
-    video.onloadedmetadata = () => {
-      video.currentTime = secs;
-    };
 
     video.onseeked = () => {
       const context = canvas.getContext('2d');
@@ -52,20 +43,31 @@ const getImageAt = (
 };
 
 const getImages = async (
-  video: HTMLVideoElement,
+  videoElement: HTMLVideoElement,
   path: string,
   duration: number
 ) => {
-  const images = [];
+  const video = videoElement;
 
   const gap = duration / THUMNAIL_COUNT;
 
-  for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
-    const image = await getImageAt(secs, video, path);
-    images.push(image);
-  }
+  video.src = path;
 
-  return images;
+  const thumbnail = await new Promise<any[]>(resolve => {
+    video.onloadedmetadata = async () => {
+      const images = [];
+
+      for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
+        video.currentTime = secs;
+        const image = await getImageAt(secs, video);
+        images.push(image);
+      }
+
+      resolve(images);
+    };
+  });
+
+  return thumbnail;
 };
 
 const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
@@ -77,6 +79,7 @@ const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
     );
 
     const data = await getImages($video, videoSrc, duration);
+
     setImages(data);
   };
 
