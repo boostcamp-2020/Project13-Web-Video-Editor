@@ -22,7 +22,7 @@ interface button {
 }
 
 interface Props {
-  videoBuffer: ArrayBuffer;
+  URL: string;
   handleClick: Function;
 }
 
@@ -65,12 +65,10 @@ const getEditToolsData = (
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC<Props> = ({ videoBuffer, handleClick }) => {
+const Tools: React.FC<Props> = ({ URL, handleClick }) => {
   let webglController;
-  if (videoBuffer) {
-    webglController = new WebglController(
-      URL.createObjectURL(new Blob([videoBuffer], { type: 'video/mp4' }))
-    );
+  if (URL) {
+    webglController = new WebglController(URL);
     webglController.main();
   }
 
@@ -100,5 +98,5 @@ const Tools: React.FC<Props> = ({ videoBuffer, handleClick }) => {
 };
 
 export default connect((state: RootState) => ({
-  videoBuffer: state.originalVideo.video,
+  URL: state.originalVideo.URL,
 }))(Tools);

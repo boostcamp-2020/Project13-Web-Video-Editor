@@ -1,27 +1,31 @@
-import { FETCH_START, FETCH_SUCCESS, FETCH_ERROR } from './actionTypes';
+import {
+  // FETCH_START,
+  SET_VIDEO,
+  LOAD_METADATA,
+  // LOAD_SUCCESS,
+  // LOAD_ERROR,
+} from './actionTypes';
 
-export interface FileInfo {
-  name: string;
-  extension: string;
-  length: number;
-}
+// TODO: export const startUpload = () => ({ type: FETCH_START });
 
-export const startUpload = () => ({ type: FETCH_START });
-
-export const load = (video: ArrayBuffer, file: FileInfo) => ({
-  type: FETCH_SUCCESS,
+export const setVideo = (video: File) => ({
+  type: SET_VIDEO,
   payload: {
     video,
-    file,
+    URL: URL.createObjectURL(video),
+    name: video.name,
   },
 });
 
-export const unload = () => ({ type: FETCH_ERROR });
+export const loadMetadata = length => ({ type: LOAD_METADATA, length });
+
+// export const loadSuccess = () => ({ type: LOAD_SUCCESS });
 
 export type OriginalVideoAction = {
   type: string;
   payload?: {
-    video: ArrayBuffer;
-    file: FileInfo;
+    video: File;
+    name: string;
+    URL: string;
   };
 };
