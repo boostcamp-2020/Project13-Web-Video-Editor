@@ -25,7 +25,12 @@ interface Props {
 const ButtonGroup: React.FC<Props> = ({ buttonData, StyledProps }) => (
   <StyledDiv StyledProps={StyledProps}>
     {buttonData.map(data => (
-      <Button onClick={data.onClick} message={data.message} type={data.type}>
+      <Button
+        key={data.message}
+        onClick={data.onClick}
+        message={data.message}
+        type={data.type}
+      >
         {data.children}
       </Button>
     ))}

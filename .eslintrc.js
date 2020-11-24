@@ -29,6 +29,7 @@ module.exports = {
     "no-await-in-loop": "off",
     "no-underscore-dangle": "off",
     "no-bitwise":"off",
+    "react/no-unused-prop-types": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "import/extensions": [
       "error",

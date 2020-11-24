@@ -40,12 +40,20 @@ class Video {
     this._video.pause();
   };
 
-  addEventListener = (event: string, callback: () => void) => {
-    this._video.addEventListener(event, callback);
+  addEventListener = (
+    event: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => {
+    this._video.addEventListener(event, callback, options);
   };
 
-  removeEventListener = (event: string, callback: () => void) => {
-    this._video.removeEventListener(event, callback);
+  removeEventListener = (
+    event: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions
+  ) => {
+    this._video.removeEventListener(event, callback, options);
   };
 }
 

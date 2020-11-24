@@ -19,6 +19,11 @@ interface button {
   children: React.ReactChild;
 }
 
+interface Props {
+  URL: string;
+  handleClick: Function;
+}
+
 const getEditToolsData = (
   rotateLeft90Degree: () => void,
   rotateRight90Degree: () => void,
@@ -58,7 +63,7 @@ const getEditToolsData = (
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC = () => {
+const Tools: React.FC<Props> = ({ handleClick }) => {
   const webglController = new WebglController();
   webglController.main();
 
@@ -82,7 +87,7 @@ const Tools: React.FC = () => {
           reduce
         )}
       />
-      <UploadArea />
+      <UploadArea handleClick={handleClick} />
     </StyledDiv>
   );
 };

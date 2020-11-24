@@ -23,7 +23,7 @@ interface ProgramInfo {
   };
 }
 
-class webglControler {
+class webglController {
   copyVideo: Boolean;
 
   positions: Array<number>;
@@ -134,9 +134,8 @@ class webglControler {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     canvas.setAttribute('width', videoWidth);
     canvas.setAttribute('height', videoHeight);
-    const gl =
-      canvas.getContext('webgl') ||
-      (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
+    const gl = (canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl')) as WebGLRenderingContext;
 
     return gl;
   };
@@ -412,4 +411,4 @@ class webglControler {
   };
 }
 
-export default webglControler;
+export default webglController;
