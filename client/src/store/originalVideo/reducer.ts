@@ -1,6 +1,7 @@
 import {
   FETCH_START,
   SET_VIDEO,
+  LOAD_METADATA,
   LOAD_SUCCESS,
   LOAD_ERROR,
 } from './actionTypes';
@@ -42,6 +43,11 @@ export default (
         length: state.length,
         loading: true,
         downloading: false,
+      };
+    case LOAD_METADATA:
+      return {
+        ...state,
+        length: action.payload.length,
       };
     case LOAD_SUCCESS:
       return {
