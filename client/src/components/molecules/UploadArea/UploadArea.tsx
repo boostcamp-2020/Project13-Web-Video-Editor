@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { FileInfo, startUpload, load } from '@/store/originalVideo/actions';
+import video from '@/video';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -23,8 +24,6 @@ interface Props {
 
 const initialFile = { name: undefined };
 
-const $video = document.createElement('video');
-
 const UploadArea: React.FC<Props> = ({ startUpload, load }) => {
   const [visible, setVisible] = useState(false);
   const [file, setFile] = useState(initialFile);
@@ -42,17 +41,19 @@ const UploadArea: React.FC<Props> = ({ startUpload, load }) => {
         length: 0,
       };
 
-      $video.ondurationchange = () => {
-        URL.revokeObjectURL($video.src);
-        fileInfo.length = $video.duration;
+      video.addEventListener('durationchange', () => {
+        fileInfo.length = video.getDuration();
 
         const reader = new FileReader();
+
         reader.addEventListener('load', () => {
           load(reader.result, fileInfo);
         });
+
         reader.readAsArrayBuffer(localFile);
-      };
-      $video.src = URL.createObjectURL(localFile);
+      });
+
+      video.setSrc(URL.createObjectURL(localFile));
     } else setFile(initialFile);
     if (visible) setVisible(false);
   };
