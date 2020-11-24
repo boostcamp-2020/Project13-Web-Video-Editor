@@ -13,6 +13,10 @@ class Video {
     this._video.currentTime = time;
   };
 
+  getDuration = () => {
+    return this._video.duration;
+  };
+
   play = () => {
     this._video.play();
   };
@@ -21,11 +25,11 @@ class Video {
     this._video.pause();
   };
 
-  addEventListener = (event, callback) => {
+  addEventListener = (event: string, callback: () => void) => {
     this._video.addEventListener(event, callback);
   };
 
-  removeEventListener = (event, callback) => {
+  removeEventListener = (event: string, callback: () => void) => {
     this._video.removeEventListener(event, callback);
   };
 }
