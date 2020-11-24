@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
-import { RootState } from '@/store/reducer';
+import { getURL } from '@/store/selectors';
 import WebglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
@@ -19,11 +19,6 @@ interface button {
   message: string;
   type: 'default' | 'transparent';
   children: React.ReactChild;
-}
-
-interface Props {
-  URL: string;
-  handleClick: Function;
 }
 
 const getEditToolsData = (
@@ -65,10 +60,10 @@ const getEditToolsData = (
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC<Props> = ({ handleClick }) => {
+const Tools: React.FC = () => {
   let webglController;
 
-  const URL = useSelector((state: RootState) => state.originalVideo.URL);
+  const URL = useSelector(getURL);
 
   if (URL) {
     webglController = new WebglController(URL);
@@ -95,7 +90,7 @@ const Tools: React.FC<Props> = ({ handleClick }) => {
           reduce
         )}
       />
-      <UploadArea handleClick={handleClick} />
+      <UploadArea />
     </StyledDiv>
   );
 };

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
-import { RootState } from '@/store/reducer';
+import { getName } from '@/store/selectors';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -18,16 +18,12 @@ const StyledP = styled.p`
   margin: 0 5px 0 0;
 `;
 
-interface Props {
-  handleClick: Function;
-}
-
 const $video = document.createElement('video');
 
-const UploadArea: React.FC<Props> = ({ handleClick }) => {
+const UploadArea: React.FC = () => {
   const [visible, setVisible] = useState(false);
 
-  const name = useSelector((state: RootState) => state.originalVideo.name);
+  const name = useSelector(getName);
   const dispatch = useDispatch();
 
   const ref: React.RefObject<HTMLInputElement> = createRef();
@@ -46,8 +42,6 @@ const UploadArea: React.FC<Props> = ({ handleClick }) => {
         },
         { once: true }
       );
-
-      handleClick({ target: ref.current });
     }
 
     setVisible(false);
