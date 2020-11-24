@@ -1,20 +1,27 @@
-import { FETCH_START, FETCH_SUCCESS, FETCH_ERROR } from './actionTypes';
-import { FileInfo, OriginalVideoAction } from './actions';
+import {
+  FETCH_START,
+  SET_VIDEO,
+  LOAD_SUCCESS,
+  LOAD_ERROR,
+} from './actionTypes';
+import { OriginalVideoAction } from './actions';
 
 export interface OriginalVideoState {
-  video: ArrayBuffer;
-  file: FileInfo;
-  uploading: boolean;
+  video: File;
+  URL: string;
+  name: string;
+  length: number;
+  loading: boolean;
+  downloading: boolean;
 }
 
 const initialState: OriginalVideoState = {
   video: null,
-  file: {
-    name: '',
-    extension: '',
-    length: 0,
-  },
-  uploading: false,
+  URL: null,
+  name: '',
+  length: 0,
+  loading: false,
+  downloading: false,
 };
 
 export default (
@@ -25,14 +32,23 @@ export default (
     case FETCH_START:
       return {
         ...state,
-        uploading: true,
+        downloading: true,
       };
-    case FETCH_SUCCESS:
+    case SET_VIDEO:
       return {
-        ...action.payload,
-        uploading: false,
+        video: action.payload.video,
+        URL: action.payload.URL,
+        name: action.payload.name,
+        length: state.length,
+        loading: true,
+        downloading: false,
       };
-    case FETCH_ERROR:
+    case LOAD_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case LOAD_ERROR:
       return initialState;
     default:
       return state;

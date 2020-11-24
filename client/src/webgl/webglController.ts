@@ -4,25 +4,25 @@ import vertexShaderSource from './vertexShaderSource';
 import fragmentShaderSource from './fragmentShaderSource';
 
 interface Buffers {
-  position: WebGLBuffer,
-  textureCoord: WebGLBuffer,
-  indices: WebGLBuffer,
+  position: WebGLBuffer;
+  textureCoord: WebGLBuffer;
+  indices: WebGLBuffer;
 }
 
 interface ProgramInfo {
-  program: WebGLProgram,
+  program: WebGLProgram;
   attribLocations: {
-    vertexPosition: number,
-    textureCoord: number
-  },
+    vertexPosition: number;
+    textureCoord: number;
+  };
   uniformLocations: {
-    projectionMatrix: WebGLUniformLocation,
-    modelViewMatrix: WebGLUniformLocation,
-    uSampler: WebGLUniformLocation
-  },
+    projectionMatrix: WebGLUniformLocation;
+    modelViewMatrix: WebGLUniformLocation;
+    uSampler: WebGLUniformLocation;
+  };
 }
 
-class webglControler {
+class webglController {
   copyVideo: Boolean;
 
   positions: Array<number>;
@@ -130,13 +130,14 @@ class webglControler {
 
   playPause = () => {
     this.pause = !this.pause;
-  }
+  };
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
-    const canvas = document.getElementById('glcanvas');
+    const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     canvas.setAttribute('width', videoWidth);
     canvas.setAttribute('height', videoHeight);
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const gl = (canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl')) as WebGLRenderingContext;
 
     return gl;
   };
@@ -144,17 +145,29 @@ class webglControler {
   initBuffers = () => {
     const positionBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.positions), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(this.positions),
+      this.gl.STATIC_DRAW
+    );
 
     const textureCoordinates = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
     const textureCoordBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(textureCoordinates),
+      this.gl.STATIC_DRAW
+    );
 
     const indices = [0, 1, 2, 0, 2, 3];
     const indexBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices),
+      this.gl.STATIC_DRAW
+    );
 
     return {
       position: positionBuffer,
@@ -226,9 +239,21 @@ class webglControler {
       pixel
     );
 
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
 
     return texture;
   };
@@ -282,7 +307,9 @@ class webglControler {
         stride,
         offset
       );
-      this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+      this.gl.enableVertexAttribArray(
+        programInfo.attribLocations.vertexPosition
+      );
     }
 
     {
@@ -333,19 +360,31 @@ class webglControler {
   };
 
   glInit = (video: HTMLVideoElement) => {
-    this.gl = this.initCanvas(video.videoWidth.toString(), video.videoHeight.toString());
+    this.gl = this.initCanvas(
+      video.videoWidth.toString(),
+      video.videoHeight.toString()
+    );
     this.buffers = this.initBuffers();
     const shaderProgram = this.initShaderProgram();
 
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
-        vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        vertexPosition: this.gl.getAttribLocation(
+          shaderProgram,
+          'aVertexPosition'
+        ),
         textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
       },
       uniformLocations: {
-        projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        projectionMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          'uProjectionMatrix'
+        ),
+        modelViewMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          'uModelViewMatrix'
+        ),
         uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
       },
     };
@@ -367,7 +406,7 @@ class webglControler {
       requestAnimationFrame(render);
     };
     requestAnimationFrame(render);
-  }
+  };
 
   main = () => {
     const video = document.createElement('video');
@@ -386,4 +425,4 @@ class webglControler {
   };
 }
 
-export default webglControler;
+export default webglController;
