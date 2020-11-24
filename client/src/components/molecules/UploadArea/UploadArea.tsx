@@ -1,67 +1,61 @@
 import React, { useState, createRef } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
-import { FileInfo, startUpload, load } from '@/store/originalVideo/actions';
+import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
+import { RootState } from '@/store/reducer';
 
 const StyledDiv = styled.div`
   display: flex;
+  align-items: center;
   position: relative;
 `;
 
 const StyledP = styled.p`
   font-size: 14px;
-  margin-right: 5px;
+  margin: 0 5px 0 0;
 `;
 
 interface Props {
-  startUpload: Function;
-  load: Function; // FIXME
   handleClick: Function;
 }
 
-const initialFile = { name: undefined };
-
 const $video = document.createElement('video');
 
-const UploadArea: React.FC<Props> = ({ startUpload, load, handleClick }) => {
+const UploadArea: React.FC<Props> = ({ handleClick }) => {
   const [visible, setVisible] = useState(false);
-  const [file, setFile] = useState(initialFile);
+
+  const name = useSelector((state: RootState) => state.originalVideo.name);
+  const dispatch = useDispatch();
+
   const ref: React.RefObject<HTMLInputElement> = createRef();
 
   const handleChange = () => {
     const localFile: File = ref.current?.files[0];
     if (localFile) {
-      setFile(localFile);
-      startUpload();
+      const objectURL = URL.createObjectURL(localFile);
+      dispatch(setVideo(localFile, objectURL));
+
+      $video.src = objectURL; // FIXME: move this to saga
+      $video.addEventListener(
+        'loadedmetadata',
+        ({ target }: Event) => {
+          dispatch(loadMetadata((target as HTMLVideoElement).duration));
+        },
+        { once: true }
+      );
+
       handleClick({ target: ref.current });
+    }
 
-      const fileInfo: FileInfo = {
-        name: localFile.name,
-        extension: localFile.type.split('/')[1],
-        length: 0,
-      };
-
-      $video.ondurationchange = () => {
-        URL.revokeObjectURL($video.src);
-        fileInfo.length = $video.duration;
-
-        const reader = new FileReader();
-        reader.addEventListener('load', () => {
-          load(reader.result, fileInfo);
-        });
-        reader.readAsArrayBuffer(localFile);
-      };
-      $video.src = URL.createObjectURL(localFile);
-    } else setFile(initialFile);
-    if (visible) setVisible(false);
+    setVisible(false);
   };
 
   return (
     <StyledDiv>
-      <StyledP>{file.name}</StyledP>
+      <StyledP>{name}</StyledP>
       <Button
         message="불러오기"
         onClick={() => setVisible(!visible)}
@@ -72,4 +66,4 @@ const UploadArea: React.FC<Props> = ({ startUpload, load, handleClick }) => {
   );
 };
 
-export default connect(null, { startUpload, load })(UploadArea);
+export default UploadArea;

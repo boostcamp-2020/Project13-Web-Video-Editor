@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { connect } from 'react-redux';
-
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { loadSuccess } from '@/store/originalVideo/actions';
 import { RootState } from '@/store/reducer';
 
 const THUMNAIL_COUNT = 30;
@@ -17,7 +17,7 @@ const StyledImg = styled.img`
 `;
 
 interface Props {
-  videoBuffer: ArrayBuffer;
+  URL: string;
   duration: number;
 }
 
@@ -70,22 +70,30 @@ const getImages = async (
   return thumbnail;
 };
 
-const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
+const Thumbnail: React.FC<Props> = () => {
   const [images, setImages] = useState([]);
 
-  const getData = async (): Promise<void> => {
-    const videoSrc = URL.createObjectURL(
-      new Blob([videoBuffer], { type: 'video/mp4' })
-    );
+  const originalVideo = useSelector((state: RootState) => {
+    const { URL, length } = state.originalVideo;
+    return { URL, length };
+  }, shallowEqual);
 
-    const data = await getImages($video, videoSrc, duration);
+  const dispatch = useDispatch();
+
+  const getData = async (): Promise<void> => {
+    const data = await getImages(
+      $video,
+      originalVideo.URL,
+      originalVideo.length
+    );
+    dispatch(loadSuccess());
 
     setImages(data);
   };
 
   useEffect(() => {
-    if (videoBuffer) getData();
-  }, [videoBuffer]);
+    getData();
+  });
 
   return (
     <StyledDiv>
@@ -96,7 +104,4 @@ const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
   );
 };
 
-export default connect((state: RootState) => ({
-  videoBuffer: state.originalVideo.video,
-  duration: state.originalVideo.file.length,
-}))(Thumbnail);
+export default Thumbnail;

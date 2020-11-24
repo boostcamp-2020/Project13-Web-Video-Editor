@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { RootState } from '@/store/reducer';
 import WebglController from '@/webgl/webglController';
@@ -34,39 +34,42 @@ const getEditToolsData = (
   enlarge: () => void,
   reduce: () => void
 ): button[] => [
-  {
-    onClick: rotateLeft90Degree,
-    message: "Left 90'",
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: rotateRight90Degree,
-    message: "Right 90'",
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: reverseUpsideDown,
-    message: 'Up to Down',
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: reverseSideToSide,
-    message: 'Side to Side',
-    type: 'transparent',
-    children: null,
-  },
-  { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
-  { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
-];
+    {
+      onClick: rotateLeft90Degree,
+      message: "Left 90'",
+      type: 'transparent',
+      children: null,
+    },
+    {
+      onClick: rotateRight90Degree,
+      message: "Right 90'",
+      type: 'transparent',
+      children: null,
+    },
+    {
+      onClick: reverseUpsideDown,
+      message: 'Up to Down',
+      type: 'transparent',
+      children: null,
+    },
+    {
+      onClick: reverseSideToSide,
+      message: 'Side to Side',
+      type: 'transparent',
+      children: null,
+    },
+    { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
+    { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
+  ];
 
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC<Props> = ({ URL, handleClick }) => {
+const Tools: React.FC<Props> = ({ handleClick }) => {
   let webglController;
+
+  const URL = useSelector((state: RootState) => state.originalVideo.URL);
+
   if (URL) {
     webglController = new WebglController(URL);
     webglController.main();
@@ -97,6 +100,4 @@ const Tools: React.FC<Props> = ({ URL, handleClick }) => {
   );
 };
 
-export default connect((state: RootState) => ({
-  URL: state.originalVideo.URL,
-}))(Tools);
+export default Tools;
