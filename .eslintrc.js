@@ -28,6 +28,7 @@ module.exports = {
     "no-use-before-define": "off",
     "no-await-in-loop": "off",
     "no-underscore-dangle": "off",
+    "no-bitwise":"off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "import/extensions": [
       "error",

@@ -1,25 +1,26 @@
 import { mat4 } from 'gl-matrix';
 
+import video from '@/video';
 import vertexShaderSource from './vertexShaderSource';
 import fragmentShaderSource from './fragmentShaderSource';
 
 interface Buffers {
-  position: WebGLBuffer,
-  textureCoord: WebGLBuffer,
-  indices: WebGLBuffer,
+  position: WebGLBuffer;
+  textureCoord: WebGLBuffer;
+  indices: WebGLBuffer;
 }
 
 interface ProgramInfo {
-  program: WebGLProgram,
+  program: WebGLProgram;
   attribLocations: {
-    vertexPosition: number,
-    textureCoord: number
-  },
+    vertexPosition: number;
+    textureCoord: number;
+  };
   uniformLocations: {
-    projectionMatrix: WebGLUniformLocation,
-    modelViewMatrix: WebGLUniformLocation,
-    uSampler: WebGLUniformLocation
-  },
+    projectionMatrix: WebGLUniformLocation;
+    modelViewMatrix: WebGLUniformLocation;
+    uSampler: WebGLUniformLocation;
+  };
 }
 
 class webglControler {
@@ -27,18 +28,15 @@ class webglControler {
 
   positions: Array<number>;
 
-  videoURL: string;
-
   buffers: Buffers;
 
   gl: WebGLRenderingContext;
 
   pause: Boolean = false;
 
-  constructor(videoURL: string) {
+  constructor() {
     this.copyVideo = false;
     this.positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0];
-    this.videoURL = videoURL;
   }
 
   rotateLeft90Degree = () => {
@@ -130,13 +128,15 @@ class webglControler {
 
   playPause = () => {
     this.pause = !this.pause;
-  }
+  };
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
-    const canvas = document.getElementById('glcanvas');
+    const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     canvas.setAttribute('width', videoWidth);
     canvas.setAttribute('height', videoHeight);
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const gl =
+      canvas.getContext('webgl') ||
+      (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
 
     return gl;
   };
@@ -144,17 +144,29 @@ class webglControler {
   initBuffers = () => {
     const positionBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.positions), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(this.positions),
+      this.gl.STATIC_DRAW
+    );
 
     const textureCoordinates = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
     const textureCoordBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(textureCoordinates),
+      this.gl.STATIC_DRAW
+    );
 
     const indices = [0, 1, 2, 0, 2, 3];
     const indexBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices),
+      this.gl.STATIC_DRAW
+    );
 
     return {
       position: positionBuffer,
@@ -226,14 +238,26 @@ class webglControler {
       pixel
     );
 
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
 
     return texture;
   };
 
-  updateTexture = (texture: WebGLTexture, video: HTMLVideoElement) => {
+  updateTexture = (texture: WebGLTexture) => {
     const level = 0;
     const internalFormat = this.gl.RGBA;
     const srcFormat = this.gl.RGBA;
@@ -245,7 +269,7 @@ class webglControler {
       internalFormat,
       srcFormat,
       srcType,
-      video
+      video.getVideo()
     );
   };
 
@@ -282,7 +306,9 @@ class webglControler {
         stride,
         offset
       );
-      this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+      this.gl.enableVertexAttribArray(
+        programInfo.attribLocations.vertexPosition
+      );
     }
 
     {
@@ -332,20 +358,32 @@ class webglControler {
     }
   };
 
-  glInit = (video: HTMLVideoElement) => {
-    this.gl = this.initCanvas(video.videoWidth.toString(), video.videoHeight.toString());
+  glInit = () => {
+    this.gl = this.initCanvas(
+      video.getVideoWidth().toString(),
+      video.getVideoHeight().toString()
+    );
     this.buffers = this.initBuffers();
     const shaderProgram = this.initShaderProgram();
 
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
-        vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        vertexPosition: this.gl.getAttribLocation(
+          shaderProgram,
+          'aVertexPosition'
+        ),
         textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
       },
       uniformLocations: {
-        projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        projectionMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          'uProjectionMatrix'
+        ),
+        modelViewMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          'uModelViewMatrix'
+        ),
         uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
       },
     };
@@ -353,9 +391,7 @@ class webglControler {
     const texture = this.initTexture();
 
     const render = () => {
-      if (this.copyVideo) {
-        this.updateTexture(texture, video);
-      }
+      this.updateTexture(texture);
 
       if (!this.pause) {
         video.play();
@@ -367,21 +403,11 @@ class webglControler {
       requestAnimationFrame(render);
     };
     requestAnimationFrame(render);
-  }
+  };
 
   main = () => {
-    const video = document.createElement('video');
-
-    video.muted = true;
-
-    video.src = this.videoURL;
-    video.addEventListener('timeupdate', () => {
-      this.copyVideo = true;
-    });
-
     video.addEventListener('loadeddata', () => {
-      this.glInit(video);
-      video.play();
+      this.glInit();
     });
   };
 }
