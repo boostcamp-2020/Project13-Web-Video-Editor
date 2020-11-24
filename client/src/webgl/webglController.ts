@@ -393,7 +393,7 @@ class webglController {
       this.updateTexture(texture);
 
       if (!this.pause) {
-        video.play();
+        // video.play();
         this.drawScene(programInfo, texture);
       } else {
         video.pause();
