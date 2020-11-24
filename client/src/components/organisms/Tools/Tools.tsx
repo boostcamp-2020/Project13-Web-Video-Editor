@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { RootState } from '@/store/reducer';
 import WebglController from '@/webgl/webglController';
@@ -22,7 +22,8 @@ interface button {
 }
 
 interface Props {
-  videoBuffer: ArrayBuffer;
+  URL: string;
+  handleClick: Function;
 }
 
 const getEditToolsData = (
@@ -64,12 +65,13 @@ const getEditToolsData = (
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC<Props> = ({ videoBuffer }) => {
+const Tools: React.FC<Props> = ({ handleClick }) => {
   let webglController;
-  if (videoBuffer) {
-    webglController = new WebglController(
-      URL.createObjectURL(new Blob([videoBuffer], { type: 'video/mp4' }))
-    );
+
+  const URL = useSelector((state: RootState) => state.originalVideo.URL);
+
+  if (URL) {
+    webglController = new WebglController(URL);
     webglController.main();
   }
 
@@ -93,11 +95,9 @@ const Tools: React.FC<Props> = ({ videoBuffer }) => {
           reduce
         )}
       />
-      <UploadArea />
+      <UploadArea handleClick={handleClick} />
     </StyledDiv>
   );
 };
 
-export default connect((state: RootState) => ({
-  videoBuffer: state.originalVideo.video,
-}))(Tools);
+export default Tools;

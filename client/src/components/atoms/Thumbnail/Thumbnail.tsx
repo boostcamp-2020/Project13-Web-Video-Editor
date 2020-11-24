@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { connect } from 'react-redux';
-
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { loadSuccess } from '@/store/originalVideo/actions';
 import { RootState } from '@/store/reducer';
 
 const THUMNAIL_COUNT = 30;
@@ -17,7 +17,7 @@ const StyledImg = styled.img`
 `;
 
 interface Props {
-  videoBuffer: ArrayBuffer;
+  URL: string;
   duration: number;
 }
 
@@ -29,18 +29,9 @@ interface ImageData {
 const $video = document.createElement('video');
 const canvas = document.createElement('canvas');
 
-const getImageAt = (
-  secs: number,
-  videoElement: HTMLVideoElement,
-  path: string
-) => {
+const getImageAt = (secs: number, videoElement: HTMLVideoElement) => {
   return new Promise(resolve => {
     const video = videoElement;
-    video.src = path;
-
-    video.onloadedmetadata = () => {
-      video.currentTime = secs;
-    };
 
     video.onseeked = () => {
       const context = canvas.getContext('2d');
@@ -52,37 +43,57 @@ const getImageAt = (
 };
 
 const getImages = async (
-  video: HTMLVideoElement,
+  videoElement: HTMLVideoElement,
   path: string,
   duration: number
 ) => {
-  const images = [];
+  const video = videoElement;
 
   const gap = duration / THUMNAIL_COUNT;
 
-  for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
-    const image = await getImageAt(secs, video, path);
-    images.push(image);
-  }
+  video.src = path;
 
-  return images;
+  const thumbnail = await new Promise<any[]>(resolve => {
+    video.onloadedmetadata = async () => {
+      const images = [];
+
+      for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
+        video.currentTime = secs;
+        const image = await getImageAt(secs, video);
+        images.push(image);
+      }
+
+      resolve(images);
+    };
+  });
+
+  return thumbnail;
 };
 
-const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
+const Thumbnail: React.FC<Props> = () => {
   const [images, setImages] = useState([]);
 
-  const getData = async (): Promise<void> => {
-    const videoSrc = URL.createObjectURL(
-      new Blob([videoBuffer], { type: 'video/mp4' })
-    );
+  const originalVideo = useSelector((state: RootState) => {
+    const { URL, length } = state.originalVideo;
+    return { URL, length };
+  }, shallowEqual);
 
-    const data = await getImages($video, videoSrc, duration);
+  const dispatch = useDispatch();
+
+  const getData = async (): Promise<void> => {
+    const data = await getImages(
+      $video,
+      originalVideo.URL,
+      originalVideo.length
+    );
+    dispatch(loadSuccess());
+
     setImages(data);
   };
 
   useEffect(() => {
-    if (videoBuffer) getData();
-  }, [videoBuffer]);
+    getData();
+  });
 
   return (
     <StyledDiv>
@@ -93,7 +104,4 @@ const Thumbnail: React.FC<Props> = ({ videoBuffer, duration }) => {
   );
 };
 
-export default connect((state: RootState) => ({
-  videoBuffer: state.originalVideo.video,
-  duration: state.originalVideo.file.length,
-}))(Thumbnail);
+export default Thumbnail;

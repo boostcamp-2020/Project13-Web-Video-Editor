@@ -1,24 +1,60 @@
-import { FETCH_START, FETCH_SUCCESS, FETCH_ERROR } from './actionTypes';
+import {
+  FETCH_START,
+  SET_VIDEO,
+  LOAD_METADATA,
+  LOAD_SUCCESS,
+  LOAD_ERROR,
+} from './actionTypes';
 
-export interface FileInfo {
-  name: string;
-  extension: string;
-  length: number;
-}
+// TODO: export const fetchStart = () => ({ type: FETCH_START });
 
-export const startUpload = () => ({ type: FETCH_START });
-
-export const load = (video: ArrayBuffer, file: FileInfo) => ({
-  type: FETCH_SUCCESS,
+export const setVideo = (video: File, URL: string) => ({
+  type: SET_VIDEO,
   payload: {
     video,
-    file,
+    URL,
+    name: video.name,
   },
 });
 
-export const unload = () => ({ type: FETCH_ERROR });
+export const loadMetadata = length => ({
+  type: LOAD_METADATA,
+  payload: { length },
+});
+
+export const loadSuccess = () => ({ type: LOAD_SUCCESS });
+
+type FetchStartAction = {
+  type: typeof FETCH_START;
+};
+
+type SetVideoAction = {
+  type: typeof SET_VIDEO;
+  payload: {
+    video: File;
+    name: string;
+    URL: string;
+  };
+};
+
+type LoadMetadataAction = {
+  type: typeof LOAD_METADATA;
+  payload: {
+    length: number;
+  };
+};
+
+type LoadSuccessAction = {
+  type: typeof LOAD_SUCCESS;
+};
+
+type LoadErrorAction = {
+  type: typeof LOAD_ERROR;
+};
 
 export type OriginalVideoAction =
-  | ReturnType<typeof load>
-  | ReturnType<typeof startUpload>
-  | ReturnType<typeof unload>;
+  | FetchStartAction
+  | SetVideoAction
+  | LoadMetadataAction
+  | LoadSuccessAction
+  | LoadErrorAction;

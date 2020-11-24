@@ -10,6 +10,8 @@ const expressLoader = app => {
     })
   );
   app.use('/', indexRouter);
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 };
 
 export default expressLoader;
