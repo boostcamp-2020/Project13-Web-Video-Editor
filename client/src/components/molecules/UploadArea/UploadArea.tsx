@@ -6,6 +6,7 @@ import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
+import video from '@/video';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -17,8 +18,6 @@ const StyledP = styled.p`
   font-size: 14px;
   margin: 0 5px 0 0;
 `;
-
-const $video = document.createElement('video');
 
 const UploadArea: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -34,8 +33,8 @@ const UploadArea: React.FC = () => {
       const objectURL = URL.createObjectURL(localFile);
       dispatch(setVideo(localFile, objectURL));
 
-      $video.src = objectURL; // FIXME: move this to saga
-      $video.addEventListener(
+      video.setSrc(objectURL); // FIXME: move this to saga
+      video.addEventListener(
         'loadedmetadata',
         ({ target }: Event) => {
           dispatch(loadMetadata((target as HTMLVideoElement).duration));

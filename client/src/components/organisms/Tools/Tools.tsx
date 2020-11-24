@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 
-import { getURL } from '@/store/selectors';
 import WebglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
@@ -61,14 +59,8 @@ const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
 const Tools: React.FC = () => {
-  let webglController;
-
-  const URL = useSelector(getURL);
-
-  if (URL) {
-    webglController = new WebglController(URL);
-    webglController.main();
-  }
+  const webglController = new WebglController();
+  webglController.main();
 
   const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
   const rotateRight90Degree = () => webglController.rotateRight90Degree();

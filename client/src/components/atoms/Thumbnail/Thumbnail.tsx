@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
 import { loadSuccess } from '@/store/originalVideo/actions';
-import { getInfo } from '@/store/selectors';
+import video from '@/video';
 
 const THUMNAIL_COUNT = 30;
 
@@ -21,45 +22,34 @@ interface ImageData {
   src: string;
 }
 
-const $video = document.createElement('video');
 const canvas = document.createElement('canvas');
 
-const getImageAt = (secs: number, videoElement: HTMLVideoElement) => {
+const getImageAt = (secs: number) => {
   return new Promise(resolve => {
-    const video = videoElement;
-
-    video.onseeked = () => {
+    video.addEventListener('seeked', () => {
       const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+      context.drawImage(video.getVideo(), 0, 0, canvas.width, canvas.height);
       resolve({ key: secs, src: canvas.toDataURL() });
-    };
+    });
   });
 };
 
-const getImages = async (
-  videoElement: HTMLVideoElement,
-  path: string,
-  duration: number
-) => {
-  const video = videoElement;
-
-  const gap = duration / THUMNAIL_COUNT;
-
-  video.src = path;
-
+const getImages = async () => {
   const thumbnail = await new Promise<any[]>(resolve => {
-    video.onloadedmetadata = async () => {
+    video.addEventListener('loadedmetadata', async () => {
+      const duration = video.getDuration();
+      const gap = duration / THUMNAIL_COUNT;
+
       const images = [];
 
       for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
-        video.currentTime = secs;
-        const image = await getImageAt(secs, video);
+        video.setCurrentTime(secs);
+        const image = await getImageAt(secs);
         images.push(image);
       }
 
       resolve(images);
-    };
+    });
   });
 
   return thumbnail;
@@ -68,12 +58,10 @@ const getImages = async (
 const Thumbnail: React.FC = () => {
   const [images, setImages] = useState([]);
 
-  const videoInfo = useSelector(getInfo, shallowEqual);
-
   const dispatch = useDispatch();
 
   const getData = async (): Promise<void> => {
-    const data = await getImages($video, videoInfo.URL, videoInfo.length);
+    const data = await getImages();
     dispatch(loadSuccess());
 
     setImages(data);
