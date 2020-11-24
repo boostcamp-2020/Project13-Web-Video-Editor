@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { loadSuccess } from '@/store/originalVideo/actions';
-import { RootState } from '@/store/reducer';
+import { getInfo } from '@/store/selectors';
 
 const THUMNAIL_COUNT = 30;
 
@@ -15,11 +15,6 @@ const StyledImg = styled.img`
   width: 3.3%;
   height: 50px;
 `;
-
-interface Props {
-  URL: string;
-  duration: number;
-}
 
 interface ImageData {
   key: number;
@@ -70,22 +65,15 @@ const getImages = async (
   return thumbnail;
 };
 
-const Thumbnail: React.FC<Props> = () => {
+const Thumbnail: React.FC = () => {
   const [images, setImages] = useState([]);
 
-  const originalVideo = useSelector((state: RootState) => {
-    const { URL, length } = state.originalVideo;
-    return { URL, length };
-  }, shallowEqual);
+  const videoInfo = useSelector(getInfo, shallowEqual);
 
   const dispatch = useDispatch();
 
   const getData = async (): Promise<void> => {
-    const data = await getImages(
-      $video,
-      originalVideo.URL,
-      originalVideo.length
-    );
+    const data = await getImages($video, videoInfo.URL, videoInfo.length);
     dispatch(loadSuccess());
 
     setImages(data);
