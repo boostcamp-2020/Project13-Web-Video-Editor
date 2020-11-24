@@ -1,31 +1,60 @@
 import {
-  // FETCH_START,
+  FETCH_START,
   SET_VIDEO,
   LOAD_METADATA,
-  // LOAD_SUCCESS,
-  // LOAD_ERROR,
+  LOAD_SUCCESS,
+  LOAD_ERROR,
 } from './actionTypes';
 
-// TODO: export const startUpload = () => ({ type: FETCH_START });
+// TODO: export const fetchStart = () => ({ type: FETCH_START });
 
-export const setVideo = (video: File) => ({
+export const setVideo = (video: File, URL: string) => ({
   type: SET_VIDEO,
   payload: {
     video,
-    URL: URL.createObjectURL(video),
+    URL,
     name: video.name,
   },
 });
 
-export const loadMetadata = length => ({ type: LOAD_METADATA, length });
+export const loadMetadata = length => ({
+  type: LOAD_METADATA,
+  payload: { length },
+});
 
-// export const loadSuccess = () => ({ type: LOAD_SUCCESS });
+export const loadSuccess = () => ({ type: LOAD_SUCCESS });
 
-export type OriginalVideoAction = {
-  type: string;
-  payload?: {
+type FetchStartAction = {
+  type: typeof FETCH_START;
+};
+
+type SetVideoAction = {
+  type: typeof SET_VIDEO;
+  payload: {
     video: File;
     name: string;
     URL: string;
   };
 };
+
+type LoadMetadataAction = {
+  type: typeof LOAD_METADATA;
+  payload: {
+    length: number;
+  };
+};
+
+type LoadSuccessAction = {
+  type: typeof LOAD_SUCCESS;
+};
+
+type LoadErrorAction = {
+  type: typeof LOAD_ERROR;
+};
+
+export type OriginalVideoAction =
+  | FetchStartAction
+  | SetVideoAction
+  | LoadMetadataAction
+  | LoadSuccessAction
+  | LoadErrorAction;
