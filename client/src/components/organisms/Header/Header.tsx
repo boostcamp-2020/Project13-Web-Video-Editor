@@ -5,10 +5,13 @@ import {
   BsArrowCounterclockwise,
   BsArrowRepeat,
 } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
+import { getFile } from '@/store/selectors';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
+import videoAPI from '@/api/video';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -78,11 +81,21 @@ const CancelConfirmStyle = `
 `;
 
 const Header = () => {
+  const videoFile = useSelector(getFile);
+
   const handlePrevious = () => {};
   const handleNext = () => {};
   const handleReset = () => {};
   const handleCancel = () => {};
-  const handleConfirm = () => {};
+
+  const handleConfirm = async () => {
+    const formData = new FormData();
+    formData.append('video', videoFile);
+
+    const {
+      data: { url },
+    } = await videoAPI.upload(formData);
+  };
 
   return (
     <StyledHeader>

@@ -31,6 +31,9 @@ module.exports = {
     "no-bitwise":"off",
     "react/no-unused-prop-types": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+    "no-unused-vars": "off",
     "import/extensions": [
       "error",
       "ignorePackages",

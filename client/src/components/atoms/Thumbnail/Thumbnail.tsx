@@ -17,11 +17,6 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
-interface Props {
-  URL: string;
-  duration: number;
-}
-
 interface ImageData {
   key: number;
   src: string;
@@ -34,12 +29,14 @@ const getImageAt = (secs: number) => {
     video.addEventListener('seeked', () => {
       const context = canvas.getContext('2d');
       context.drawImage(video.getVideo(), 0, 0, canvas.width, canvas.height);
+
       resolve({ key: secs, src: canvas.toDataURL() });
     });
   });
 };
 
-const getImages = async () => {
+export const getImages = async () => {
+  // FIXME: refactor this later
   const thumbnail = await new Promise<any[]>(resolve => {
     video.addEventListener('loadedmetadata', async () => {
       const duration = video.getDuration();
@@ -50,8 +47,10 @@ const getImages = async () => {
       for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
         video.setCurrentTime(secs);
         const image = await getImageAt(secs);
+
         images.push(image);
       }
+      video.setCurrentTime(0);
 
       resolve(images);
     });
@@ -60,7 +59,7 @@ const getImages = async () => {
   return thumbnail;
 };
 
-const Thumbnail: React.FC<Props> = () => {
+const Thumbnail: React.FC = () => {
   const [images, setImages] = useState([]);
 
   const dispatch = useDispatch();

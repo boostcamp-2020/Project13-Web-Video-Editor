@@ -3,7 +3,8 @@ import {
   SET_VIDEO,
   LOAD_METADATA,
   LOAD_SUCCESS,
-  LOAD_ERROR,
+  RESET,
+  ERROR,
 } from './actionTypes';
 
 // TODO: export const fetchStart = () => ({ type: FETCH_START });
@@ -23,6 +24,8 @@ export const loadMetadata = length => ({
 });
 
 export const loadSuccess = () => ({ type: LOAD_SUCCESS });
+export const error = () => ({ type: ERROR });
+export const reset = () => ({ type: RESET });
 
 type FetchStartAction = {
   type: typeof FETCH_START;
@@ -48,8 +51,12 @@ type LoadSuccessAction = {
   type: typeof LOAD_SUCCESS;
 };
 
-type LoadErrorAction = {
-  type: typeof LOAD_ERROR;
+type ErrorAction = {
+  type: typeof ERROR;
+};
+
+type ResetAction = {
+  type: typeof RESET;
 };
 
 export type OriginalVideoAction =
@@ -57,4 +64,5 @@ export type OriginalVideoAction =
   | SetVideoAction
   | LoadMetadataAction
   | LoadSuccessAction
-  | LoadErrorAction;
+  | ErrorAction
+  | ResetAction;

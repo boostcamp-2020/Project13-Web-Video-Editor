@@ -3,17 +3,26 @@ import {
   SET_VIDEO,
   LOAD_METADATA,
   LOAD_SUCCESS,
-  LOAD_ERROR,
+  RESET,
+  ERROR,
 } from './actionTypes';
 import { OriginalVideoAction } from './actions';
+
+enum Message {
+  OK = '',
+  DOWNLOADING = '서버에서 동영상을 다운로드하는 중...',
+  LOADING = '동영상을 로드하는 중...',
+  PROCESSING = '편집한 동영상을 저장하는 중...',
+  UPLOADING = '서버에 동영상을 업로드하는 중...',
+  FAIL = '작업에 실패하였습니다.',
+}
 
 export interface OriginalVideoState {
   video: File;
   URL: string;
   name: string;
   length: number;
-  loading: boolean;
-  downloading: boolean;
+  message: Message;
 }
 
 const initialState: OriginalVideoState = {
@@ -21,8 +30,7 @@ const initialState: OriginalVideoState = {
   URL: null,
   name: '',
   length: 0,
-  loading: false,
-  downloading: false,
+  message: Message.OK,
 };
 
 export default (
@@ -33,16 +41,13 @@ export default (
     case FETCH_START:
       return {
         ...state,
-        downloading: true,
+        message: Message.DOWNLOADING,
       };
     case SET_VIDEO:
       return {
-        video: action.payload.video,
-        URL: action.payload.URL,
-        name: action.payload.name,
+        ...action.payload,
         length: state.length,
-        loading: true,
-        downloading: false,
+        message: Message.LOADING,
       };
     case LOAD_METADATA:
       return {
@@ -52,9 +57,14 @@ export default (
     case LOAD_SUCCESS:
       return {
         ...state,
-        loading: false,
+        message: Message.OK,
       };
-    case LOAD_ERROR:
+    case ERROR:
+      return {
+        ...initialState,
+        message: Message.FAIL,
+      };
+    case RESET:
       return initialState;
     default:
       return state;

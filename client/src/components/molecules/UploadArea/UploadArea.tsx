@@ -4,9 +4,8 @@ import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
-import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
-import { RootState } from '@/store/reducer';
-import video from '@/video';
+import { setVideo, reset } from '@/store/originalVideo/actions';
+import { getName } from '@/store/selectors';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -19,35 +18,21 @@ const StyledP = styled.p`
   margin: 0 5px 0 0;
 `;
 
-interface Props {
-  handleClick: Function;
-}
-
-const UploadArea: React.FC<Props> = ({ handleClick }) => {
+const UploadArea: React.FC = () => {
   const [visible, setVisible] = useState(false);
 
-  const name = useSelector((state: RootState) => state.originalVideo.name);
+  const name = useSelector(getName);
   const dispatch = useDispatch();
 
   const ref: React.RefObject<HTMLInputElement> = createRef();
 
   const handleChange = () => {
     const localFile: File = ref.current?.files[0];
+
     if (localFile) {
       const objectURL = URL.createObjectURL(localFile);
       dispatch(setVideo(localFile, objectURL));
-
-      video.setSrc(objectURL); // FIXME: move this to saga
-      video.addEventListener(
-        'loadedmetadata',
-        ({ target }: Event) => {
-          dispatch(loadMetadata((target as HTMLVideoElement).duration));
-        },
-        { once: true }
-      );
-
-      handleClick({ target: ref.current });
-    }
+    } else dispatch(reset());
 
     setVisible(false);
   };
