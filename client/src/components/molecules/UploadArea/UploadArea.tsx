@@ -4,9 +4,8 @@ import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
-import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
+import { setVideo, reset } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
-import video from '@/video';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -29,19 +28,11 @@ const UploadArea: React.FC = () => {
 
   const handleChange = () => {
     const localFile: File = ref.current?.files[0];
+
     if (localFile) {
       const objectURL = URL.createObjectURL(localFile);
       dispatch(setVideo(localFile, objectURL));
-
-      video.setSrc(objectURL); // FIXME: move this to saga
-      video.addEventListener(
-        'loadedmetadata',
-        ({ target }: Event) => {
-          dispatch(loadMetadata((target as HTMLVideoElement).duration));
-        },
-        { once: true }
-      );
-    }
+    } else dispatch(reset());
 
     setVisible(false);
   };

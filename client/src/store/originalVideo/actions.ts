@@ -24,6 +24,8 @@ export const loadMetadata = length => ({
 });
 
 export const loadSuccess = () => ({ type: LOAD_SUCCESS });
+export const error = () => ({ type: ERROR });
+export const reset = () => ({ type: RESET });
 
 type FetchStartAction = {
   type: typeof FETCH_START;
