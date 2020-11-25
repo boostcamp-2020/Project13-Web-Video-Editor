@@ -23,6 +23,10 @@ class Video {
     return this._video.videoHeight;
   };
 
+  getCurrentTime = () => {
+    return this._video.currentTime;
+  }
+
   // setter
   setSrc = (src: string) => {
     this._video.src = src;
