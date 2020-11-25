@@ -45,9 +45,7 @@ export default (
       };
     case SET_VIDEO:
       return {
-        video: action.payload.video,
-        URL: action.payload.URL,
-        name: action.payload.name,
+        ...action.payload,
         length: state.length,
         message: Message.LOADING,
       };
