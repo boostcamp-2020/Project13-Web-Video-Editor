@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { loadSuccess } from '@/store/originalVideo/actions';
 import video from '@/video';
+import customFilter from './webgl';
 
 const THUMNAIL_COUNT = 30;
 
@@ -67,6 +68,28 @@ const Thumbnail: React.FC<Props> = () => {
 
   const getData = async (): Promise<void> => {
     const data = await getImages();
+    const canvas2 = document.createElement('canvas');
+    const filteredImageURL = [];
+
+    const promises = [];
+
+    const startTime = new Date().getTime();
+
+    data.forEach(element => {
+      promises.push(
+        customFilter(canvas2, element.src).then(res => {
+          filteredImageURL.push(res);
+        })
+      );
+    });
+
+    Promise.all(promises).then(() => {
+      const endTime = new Date().getTime();
+      console.log(endTime - startTime);
+      console.log(filteredImageURL);
+      // 필터링 된 이미지 URL이고 여기서 dispath 또는 setImage 하면 됩니다.
+    });
+
     dispatch(loadSuccess());
 
     setImages(data);
