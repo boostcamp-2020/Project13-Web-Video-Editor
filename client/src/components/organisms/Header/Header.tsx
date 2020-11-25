@@ -7,7 +7,6 @@ import {
 } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
 import { getFile } from '@/store/selectors';
-import axios from 'axios';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
@@ -34,43 +33,43 @@ const getHistoryToolData = (
   handleNext: () => void,
   handleReset: () => void
 ): button[] => [
-    {
-      onClick: handlePrevious,
-      message: '이전',
-      type: 'transparent',
-      children: <BsArrowClockwise size={size.ICON_SIZE} />,
-    },
-    {
-      onClick: handleNext,
-      message: '다음',
-      type: 'transparent',
-      children: <BsArrowCounterclockwise size={size.ICON_SIZE} />,
-    },
-    {
-      onClick: handleReset,
-      message: '원본으로',
-      type: 'transparent',
-      children: <BsArrowRepeat size={size.ICON_SIZE} />,
-    },
-  ];
+  {
+    onClick: handlePrevious,
+    message: '이전',
+    type: 'transparent',
+    children: <BsArrowClockwise size={size.ICON_SIZE} />,
+  },
+  {
+    onClick: handleNext,
+    message: '다음',
+    type: 'transparent',
+    children: <BsArrowCounterclockwise size={size.ICON_SIZE} />,
+  },
+  {
+    onClick: handleReset,
+    message: '원본으로',
+    type: 'transparent',
+    children: <BsArrowRepeat size={size.ICON_SIZE} />,
+  },
+];
 
 const getCancelConfirmData = (
   handleCancel: () => void,
   handleConfirm: () => void
 ): button[] => [
-    {
-      onClick: handleCancel,
-      message: '취소',
-      type: 'default',
-      children: null,
-    },
-    {
-      onClick: handleConfirm,
-      message: '완료',
-      type: 'default',
-      children: null,
-    },
-  ];
+  {
+    onClick: handleCancel,
+    message: '취소',
+    type: 'default',
+    children: null,
+  },
+  {
+    onClick: handleConfirm,
+    message: '완료',
+    type: 'default',
+    children: null,
+  },
+];
 
 const HistoryTool = styled(ButtonGroup)``;
 
@@ -84,10 +83,10 @@ const CancelConfirmStyle = `
 const Header = () => {
   const videoFile = useSelector(getFile);
 
-  const handlePrevious = () => { };
-  const handleNext = () => { };
-  const handleReset = () => { };
-  const handleCancel = () => { };
+  const handlePrevious = () => {};
+  const handleNext = () => {};
+  const handleReset = () => {};
+  const handleCancel = () => {};
 
   const handleConfirm = async () => {
     const formData = new FormData();
