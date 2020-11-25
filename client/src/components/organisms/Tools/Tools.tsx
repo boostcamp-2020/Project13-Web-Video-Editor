@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 
-import { RootState } from '@/store/reducer';
 import WebglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
@@ -34,46 +32,40 @@ const getEditToolsData = (
   enlarge: () => void,
   reduce: () => void
 ): button[] => [
-    {
-      onClick: rotateLeft90Degree,
-      message: "Left 90'",
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: rotateRight90Degree,
-      message: "Right 90'",
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: reverseUpsideDown,
-      message: 'Up to Down',
-      type: 'transparent',
-      children: null,
-    },
-    {
-      onClick: reverseSideToSide,
-      message: 'Side to Side',
-      type: 'transparent',
-      children: null,
-    },
-    { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
-    { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
-  ];
+  {
+    onClick: rotateLeft90Degree,
+    message: "Left 90'",
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: rotateRight90Degree,
+    message: "Right 90'",
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: reverseUpsideDown,
+    message: 'Up to Down',
+    type: 'transparent',
+    children: null,
+  },
+  {
+    onClick: reverseSideToSide,
+    message: 'Side to Side',
+    type: 'transparent',
+    children: null,
+  },
+  { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
+  { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
+];
 
 const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
 const Tools: React.FC<Props> = ({ handleClick }) => {
-  let webglController;
-
-  const URL = useSelector((state: RootState) => state.originalVideo.URL);
-
-  if (URL) {
-    webglController = new WebglController(URL);
-    webglController.main();
-  }
+  const webglController = new WebglController();
+  webglController.main();
 
   const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
   const rotateRight90Degree = () => webglController.rotateRight90Degree();

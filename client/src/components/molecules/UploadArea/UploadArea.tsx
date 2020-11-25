@@ -6,6 +6,7 @@ import Button from '@/components/atoms/Button';
 import FileInput from '@/components/atoms/FileInput';
 import { setVideo, loadMetadata } from '@/store/originalVideo/actions';
 import { RootState } from '@/store/reducer';
+import video from '@/video';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -22,8 +23,6 @@ interface Props {
   handleClick: Function;
 }
 
-const $video = document.createElement('video');
-
 const UploadArea: React.FC<Props> = ({ handleClick }) => {
   const [visible, setVisible] = useState(false);
 
@@ -38,8 +37,8 @@ const UploadArea: React.FC<Props> = ({ handleClick }) => {
       const objectURL = URL.createObjectURL(localFile);
       dispatch(setVideo(localFile, objectURL));
 
-      $video.src = objectURL; // FIXME: move this to saga
-      $video.addEventListener(
+      video.setSrc(objectURL); // FIXME: move this to saga
+      video.addEventListener(
         'loadedmetadata',
         ({ target }: Event) => {
           dispatch(loadMetadata((target as HTMLVideoElement).duration));

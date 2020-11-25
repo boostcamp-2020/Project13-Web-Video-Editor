@@ -1,5 +1,6 @@
 import { mat4 } from 'gl-matrix';
 
+import video from '@/video';
 import vertexShaderSource from './vertexShaderSource';
 import fragmentShaderSource from './fragmentShaderSource';
 
@@ -27,18 +28,15 @@ class webglController {
 
   positions: Array<number>;
 
-  videoURL: string;
-
   buffers: Buffers;
 
   gl: WebGLRenderingContext;
 
   pause: Boolean = false;
 
-  constructor(videoURL: string) {
+  constructor() {
     this.copyVideo = false;
     this.positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0];
-    this.videoURL = videoURL;
   }
 
   rotateLeft90Degree = () => {
@@ -258,7 +256,7 @@ class webglController {
     return texture;
   };
 
-  updateTexture = (texture: WebGLTexture, video: HTMLVideoElement) => {
+  updateTexture = (texture: WebGLTexture) => {
     const level = 0;
     const internalFormat = this.gl.RGBA;
     const srcFormat = this.gl.RGBA;
@@ -270,7 +268,7 @@ class webglController {
       internalFormat,
       srcFormat,
       srcType,
-      video
+      video.getVideo()
     );
   };
 
@@ -359,10 +357,10 @@ class webglController {
     }
   };
 
-  glInit = (video: HTMLVideoElement) => {
+  glInit = () => {
     this.gl = this.initCanvas(
-      video.videoWidth.toString(),
-      video.videoHeight.toString()
+      video.getVideoWidth().toString(),
+      video.getVideoHeight().toString()
     );
     this.buffers = this.initBuffers();
     const shaderProgram = this.initShaderProgram();
@@ -392,12 +390,10 @@ class webglController {
     const texture = this.initTexture();
 
     const render = () => {
-      if (this.copyVideo) {
-        this.updateTexture(texture, video);
-      }
+      this.updateTexture(texture);
 
       if (!this.pause) {
-        video.play();
+        // video.play();
         this.drawScene(programInfo, texture);
       } else {
         video.pause();
@@ -409,18 +405,8 @@ class webglController {
   };
 
   main = () => {
-    const video = document.createElement('video');
-
-    video.muted = true;
-
-    video.src = this.videoURL;
-    video.addEventListener('timeupdate', () => {
-      this.copyVideo = true;
-    });
-
     video.addEventListener('loadeddata', () => {
-      this.glInit(video);
-      video.play();
+      this.glInit();
     });
   };
 }
