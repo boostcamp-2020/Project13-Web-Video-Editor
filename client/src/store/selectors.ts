@@ -18,3 +18,13 @@ export const getVisible = (state: RootState) => {
   const { message, URL } = state.originalVideo;
   return URL && !message;
 };
+
+export const getPlaying = (state: RootState) => state.currentVideo.playing;
+
+export const getCurrentTime = (state: RootState) =>
+  state.currentVideo.currentTime;
+
+export const getStartEnd = (state: RootState) => {
+  const { start, end } = state.currentVideo;
+  return { start, end };
+};

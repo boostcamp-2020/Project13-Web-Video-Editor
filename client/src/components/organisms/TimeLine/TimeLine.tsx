@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 
-import Thumbnail from '@/components/atoms/Thumbnail';
+import Thumbnail from '@/components/molecules/Thumbnail';
 import TimeZone from '@/components/molecules/TimeZone';
 import CurrentTime from '@/components/molecules/CurrentTime';
 import { getName } from '@/store/selectors';
