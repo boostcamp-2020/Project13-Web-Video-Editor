@@ -23,6 +23,7 @@ const CropLayerDiv = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
 `;
 
 const Overlay = styled.div<OverlayProps>`
@@ -34,7 +35,7 @@ const Overlay = styled.div<OverlayProps>`
 `;
 
 const Track = styled.div`
-  height: 50px;
+  height: 7rem;
   width: 100%;
   display: flex;
   position: relative;
@@ -42,14 +43,14 @@ const Track = styled.div`
 
 const Thumb = styled.div`
   ${({ propsStyle }) => convertReactStyleToCSS(propsStyle)}
-  height: 50px;
-  width: 4px;
-  border-radius: 1px;
-  background-color: ${color.WHITE};
+  height: 7rem;
+  width: 6px;
+  border-radius: 2px;
+  background-color: ${color.PALE_PURPLE};
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0px 2px 2px ${color.GRAY};
+  box-shadow: 0px 2px 5px ${color.DARK_PURPLE};
 `;
 
 const CropLayer = ({ positions, setPositions, duration }) => {

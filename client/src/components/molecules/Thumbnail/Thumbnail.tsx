@@ -8,6 +8,7 @@ import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
+import CropLayer from '@/components/molecules/CropLayer';
 
 const THUMNAIL_COUNT = 30;
 
@@ -71,6 +72,8 @@ export const getImages = async () => {
 const Thumbnail: React.FC = () => {
   const [images, setImages] = useState([]);
   const [time, setTime] = useState(0);
+  const [position, setPosition] = useState([0, 0]);
+
   const dispatch = useDispatch();
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
@@ -128,6 +131,7 @@ const Thumbnail: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
     >
+      <CropLayer positions={position} setPositions={setPosition} />
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
       {images.map(({ key, src }: ImageData) => {
