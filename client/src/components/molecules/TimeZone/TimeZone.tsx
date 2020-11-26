@@ -29,8 +29,11 @@ const getTimes = (duration: number): number[] => {
   const times: number[] = [];
   const gap = duration / PART_COUNT;
 
-  for (let secs = 0; secs <= duration; secs += gap) {
+  let secs = 0;
+
+  for (let count = 0; count <= PART_COUNT; count += 1) {
     times.push(Math.round(secs));
+    secs += gap;
   }
 
   return times;
