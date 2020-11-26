@@ -23,7 +23,7 @@ interface ProgramInfo {
   };
 }
 
-class webglController {
+class WebglController {
   copyVideo: Boolean;
 
   positions: Array<number>;
@@ -31,8 +31,6 @@ class webglController {
   buffers: Buffers;
 
   gl: WebGLRenderingContext;
-
-  pause: Boolean = false;
 
   constructor() {
     this.copyVideo = false;
@@ -126,14 +124,10 @@ class webglController {
     this.buffers = this.initBuffers();
   };
 
-  playPause = () => {
-    this.pause = !this.pause;
-  };
-
   initCanvas = (videoWidth: string, videoHeight: string) => {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    canvas.setAttribute('width', videoWidth);
-    canvas.setAttribute('height', videoHeight);
+    canvas.setAttribute('width', canvas.clientWidth.toString());
+    canvas.setAttribute('height', canvas.clientHeight.toString());
     const gl = (canvas.getContext('webgl') ||
       canvas.getContext('experimental-webgl')) as WebGLRenderingContext;
 
@@ -390,14 +384,10 @@ class webglController {
     const texture = this.initTexture();
 
     const render = () => {
-      this.updateTexture(texture);
+      if (!video.getSrc()) return;
 
-      if (!this.pause) {
-        video.play();
-        this.drawScene(programInfo, texture);
-      } else {
-        video.pause();
-      }
+      this.updateTexture(texture);
+      this.drawScene(programInfo, texture);
 
       requestAnimationFrame(render);
     };
@@ -405,10 +395,7 @@ class webglController {
   };
 
   main = () => {
-    video.addEventListener('loadeddata', () => {
-      this.glInit();
-    });
+    this.glInit();
   };
 }
-
-export default webglController;
+export default new WebglController();

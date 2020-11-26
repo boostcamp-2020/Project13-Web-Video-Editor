@@ -8,6 +8,7 @@ const colors = {
   BLACK: '#000',
   WHITE: '#FFF',
   BLUE: '#2B67CF',
+  BORDER: '#464646',
 };
 
 export default colors;

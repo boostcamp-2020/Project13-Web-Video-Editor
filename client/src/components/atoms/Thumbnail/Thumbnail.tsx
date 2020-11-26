@@ -2,18 +2,23 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
+import webglController from '@/webgl/webglController';
 import { loadSuccess } from '@/store/originalVideo/actions';
+import Slider from '@/components/atoms/Slider';
 import video from '@/video';
 
 const THUMNAIL_COUNT = 30;
 
 const StyledDiv = styled.div`
+  position: relative;
   display: flex;
-  width: 90%;
+  width: 100%;
+  height: 100%;
+  align-items: center;
 `;
 
 const StyledImg = styled.img`
-  width: 3.3%;
+  width: 3.3333%;
   height: 50px;
 `;
 
@@ -40,14 +45,16 @@ export const getImages = async () => {
   const thumbnail = await new Promise<any[]>(resolve => {
     video.addEventListener('loadedmetadata', async () => {
       const duration = video.getDuration();
-      const gap = duration / THUMNAIL_COUNT;
+      const gap = duration / (THUMNAIL_COUNT - 1);
 
       const images = [];
+      let secs = 0;
 
-      for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
+      for (let count = 0; count < THUMNAIL_COUNT; count += 1) {
         video.setCurrentTime(secs);
         const image = await getImageAt(secs);
 
+        secs += gap;
         images.push(image);
       }
       video.setCurrentTime(0);
@@ -66,8 +73,10 @@ const Thumbnail: React.FC = () => {
 
   const getData = async (): Promise<void> => {
     const data = await getImages();
-    dispatch(loadSuccess());
 
+    webglController.main();
+
+    dispatch(loadSuccess());
     setImages(data);
   };
 
@@ -77,6 +86,7 @@ const Thumbnail: React.FC = () => {
 
   return (
     <StyledDiv>
+      <Slider />
       {images.map(({ key, src }: ImageData) => {
         return <StyledImg key={key} src={src} alt="" />;
       })}

@@ -4,10 +4,10 @@ import {
   BsFillSkipStartFill,
   BsFillSkipEndFill,
   BsFillPlayFill,
-  BsFillPauseFill
+  BsFillPauseFill,
 } from 'react-icons/bs';
 
-import WebglController from '@/webgl/webglController';
+import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import size from '@/theme/sizes';
@@ -17,7 +17,7 @@ const StyledDiv = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
+  padding: 1rem;
 `;
 
 interface button {
@@ -33,25 +33,29 @@ const getVideoToolsData = (
   forwardVideo: () => void,
   play: boolean
 ): button[] => [
-    {
-      onClick: backwardVideo,
-      message: 'Backward Video',
-      type: 'transparent',
-      children: <BsFillSkipStartFill size={size.ICON_SIZE} />,
-    },
-    {
-      onClick: playPauseVideo,
-      message: 'Play Pause Video',
-      type: 'transparent',
-      children: play ? <BsFillPlayFill size={size.ICON_SIZE} /> : <BsFillPauseFill size={size.ICON_SIZE} />,
-    },
-    {
-      onClick: forwardVideo,
-      message: 'Forward Video',
-      type: 'transparent',
-      children: <BsFillSkipEndFill size={size.ICON_SIZE} />,
-    },
-  ];
+  {
+    onClick: backwardVideo,
+    message: 'Backward Video',
+    type: 'transparent',
+    children: <BsFillSkipStartFill size={size.ICON_SIZE} />,
+  },
+  {
+    onClick: playPauseVideo,
+    message: 'Play Pause Video',
+    type: 'transparent',
+    children: play ? (
+      <BsFillPlayFill size={size.ICON_SIZE} />
+    ) : (
+      <BsFillPauseFill size={size.ICON_SIZE} />
+    ),
+  },
+  {
+    onClick: forwardVideo,
+    message: 'Forward Video',
+    type: 'transparent',
+    children: <BsFillSkipEndFill size={size.ICON_SIZE} />,
+  },
+];
 
 const getEditToolsData = (
   rotateLeft90Degree: () => void,
@@ -94,14 +98,17 @@ const VideoTool = styled(ButtonGroup)``;
 
 const Tools: React.FC = () => {
   const [play, setPlay] = useState(true); // Fix 스토어로 등록
+
   const backwardVideo = () => video.setCurrentTime(video.getCurrentTime() - 10);
-  const playPauseVideo = () => {
-    play ? video.play() : video.pause();
-    setPlay(!play);
-  }
   const forwardVideo = () => video.setCurrentTime(video.getCurrentTime() + 10);
 
-  document.onkeydown = (event) => {
+  const playPauseVideo = () => {
+    (play ? video.play : video.pause)();
+
+    setPlay(!play);
+  };
+
+  document.onkeydown = event => {
     switch (event.code) {
       case 'ArrowLeft':
         backwardVideo();
@@ -112,11 +119,10 @@ const Tools: React.FC = () => {
       case 'ArrowRight':
         forwardVideo();
         break;
-    };
+      default:
+        break;
+    }
   };
-
-  const webglController = new WebglController();
-  webglController.main();
 
   const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
   const rotateRight90Degree = () => webglController.rotateRight90Degree();
@@ -127,12 +133,14 @@ const Tools: React.FC = () => {
 
   return (
     <StyledDiv>
-      <VideoTool buttonData={getVideoToolsData(
-        backwardVideo,
-        playPauseVideo,
-        forwardVideo,
-        play
-      )} />
+      <VideoTool
+        buttonData={getVideoToolsData(
+          backwardVideo,
+          playPauseVideo,
+          forwardVideo,
+          play
+        )}
+      />
       <EditTool
         buttonData={getEditToolsData(
           rotateLeft90Degree,

@@ -1,7 +1,7 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import video from '@/video/video';
-import { loadMetadata, error } from './actions';
-import { SET_VIDEO } from './actionTypes';
+import { loadMetadata } from './actions';
+import { SET_VIDEO, error } from '../actionTypes';
 
 const TIMEOUT = 10_000;
 
@@ -9,7 +9,9 @@ function waitMetadataLoading(objectURL) {
   return new Promise<number>((resolve, reject) => {
     const timer = setTimeout(reject, TIMEOUT, 'loading metadata timeout');
 
+    video.revoke();
     video.setSrc(objectURL);
+
     video.addEventListener(
       'loadedmetadata',
       ({ target }: Event) => {

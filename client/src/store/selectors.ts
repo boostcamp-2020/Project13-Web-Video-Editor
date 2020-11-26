@@ -11,3 +11,10 @@ export const getInfo = (state: RootState) => {
 export const getFile = (state: RootState) => state.originalVideo.video;
 
 export const getURL = (state: RootState) => state.originalVideo.URL;
+
+export const getDuration = (state: RootState) => state.originalVideo.length;
+
+export const getVisible = (state: RootState) => {
+  const { message, URL } = state.originalVideo;
+  return URL && !message;
+};

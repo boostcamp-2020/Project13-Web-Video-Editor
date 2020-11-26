@@ -7,6 +7,10 @@ class Video {
   }
 
   // getter
+  isPaused = () => {
+    return this._video.paused;
+  };
+
   getVideo = () => {
     return this._video;
   };
@@ -23,9 +27,13 @@ class Video {
     return this._video.videoHeight;
   };
 
+  getSrc = () => {
+    return this._video.src;
+  };
+
   getCurrentTime = () => {
     return this._video.currentTime;
-  }
+  };
 
   // setter
   setSrc = (src: string) => {
@@ -36,12 +44,24 @@ class Video {
     this._video.currentTime = time;
   };
 
+  revoke = () => {
+    if (this.getSrc()) {
+      URL.revokeObjectURL(this.getSrc());
+      this._video.removeAttribute('src');
+      this.load();
+    }
+  };
+
   play = () => {
     this._video.play();
   };
 
   pause = () => {
     this._video.pause();
+  };
+
+  load = () => {
+    this._video.load();
   };
 
   addEventListener = (
