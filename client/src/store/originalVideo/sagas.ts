@@ -1,7 +1,7 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import video from '@/video/video';
-import { loadMetadata, error } from './actions';
-import { SET_VIDEO } from './actionTypes';
+import { loadMetadata } from './actions';
+import { SET_VIDEO, error } from '../actionTypes';
 
 const TIMEOUT = 10_000;
 

@@ -5,7 +5,7 @@ import {
   LOAD_SUCCESS,
   RESET,
   ERROR,
-} from './actionTypes';
+} from '../actionTypes';
 import { OriginalVideoAction } from './actions';
 
 enum Message {
