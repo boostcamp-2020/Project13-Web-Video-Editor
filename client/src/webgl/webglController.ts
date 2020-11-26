@@ -132,8 +132,8 @@ class webglController {
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    canvas.setAttribute('width', videoWidth);
-    canvas.setAttribute('height', videoHeight);
+    canvas.setAttribute('width', canvas.clientWidth.toString());
+    canvas.setAttribute('height', canvas.clientHeight.toString());
     const gl = (canvas.getContext('webgl') ||
       canvas.getContext('experimental-webgl')) as WebGLRenderingContext;
 
@@ -410,5 +410,4 @@ class webglController {
     });
   };
 }
-
 export default webglController;
