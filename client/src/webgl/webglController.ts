@@ -390,15 +390,15 @@ class webglController {
     const texture = this.initTexture();
 
     const render = () => {
-      this.updateTexture(texture);
+      if (!video.getSrc()) return;
 
+      this.updateTexture(texture);
       if (!this.pause) {
         video.play();
         this.drawScene(programInfo, texture);
       } else {
         video.pause();
       }
-
       requestAnimationFrame(render);
     };
     requestAnimationFrame(render);
