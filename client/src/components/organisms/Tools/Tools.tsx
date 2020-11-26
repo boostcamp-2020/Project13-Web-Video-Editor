@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   BsFillSkipStartFill,
   BsFillSkipEndFill,
@@ -12,6 +13,12 @@ import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import size from '@/theme/sizes';
 import video from '@/video';
+import {
+  play as playAction,
+  pause,
+  moveTo,
+} from '@/store/currentVideo/actions';
+import { getStartEnd } from '@/store/selectors';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -98,17 +105,39 @@ const VideoTool = styled(ButtonGroup)``;
 
 const Tools: React.FC = () => {
   const [play, setPlay] = useState(true); // Fix 스토어로 등록
+  const dispatch = useDispatch();
 
-  const backwardVideo = () => video.setCurrentTime(video.getCurrentTime() - 10);
-  const forwardVideo = () => video.setCurrentTime(video.getCurrentTime() + 10);
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
+
+  const backwardVideo = () => {
+    const dstTime = Math.max(video.getCurrentTime() - 10, start);
+
+    video.setCurrentTime(dstTime);
+    dispatch(moveTo(dstTime));
+  };
+
+  const forwardVideo = () => {
+    const dstTime = Math.min(video.getCurrentTime() + 10, end);
+
+    video.setCurrentTime(dstTime);
+    dispatch(moveTo(dstTime));
+  };
 
   const playPauseVideo = () => {
-    (play ? video.play : video.pause)();
+    if (play) {
+      video.play();
+      dispatch(playAction());
+    } else {
+      video.pause();
+      dispatch(pause());
+    }
 
     setPlay(!play);
   };
 
-  document.onkeydown = event => {
+  document.onkeydown = (event: KeyboardEvent) => {
+    (document.activeElement as HTMLButtonElement).blur();
+
     switch (event.code) {
       case 'ArrowLeft':
         backwardVideo();

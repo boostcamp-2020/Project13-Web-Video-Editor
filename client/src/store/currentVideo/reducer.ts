@@ -3,6 +3,7 @@ import {
   PAUSE,
   MOVE_TO,
   SET_THUMBNAILS,
+  LOAD_METADATA,
   CROP,
   RESET,
   ERROR,
@@ -41,6 +42,15 @@ export default (
         playing: false,
       };
     case MOVE_TO:
+      return {
+        ...state,
+        currentTime: action.payload.time,
+      };
+    case LOAD_METADATA:
+      return {
+        ...state,
+        end: action.payload.length,
+      };
     case SET_THUMBNAILS:
     case CROP:
       return {
