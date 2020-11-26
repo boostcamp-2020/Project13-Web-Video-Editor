@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import WebglController from '@/webgl/webglController';
+import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 
@@ -59,9 +59,6 @@ const EditTool = styled(ButtonGroup)``;
 const VideoTool = styled(ButtonGroup)``;
 
 const Tools: React.FC = () => {
-  const webglController = new WebglController();
-  webglController.main();
-
   const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
   const rotateRight90Degree = () => webglController.rotateRight90Degree();
   const reverseUpsideDown = () => webglController.reverseUpsideDown();

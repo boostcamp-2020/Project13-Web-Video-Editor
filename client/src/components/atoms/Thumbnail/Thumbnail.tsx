@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
+import webglController from '@/webgl/webglController';
 import { loadSuccess } from '@/store/originalVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import video from '@/video';
@@ -72,8 +73,10 @@ const Thumbnail: React.FC = () => {
 
   const getData = async (): Promise<void> => {
     const data = await getImages();
-    dispatch(loadSuccess());
 
+    webglController.main();
+
+    dispatch(loadSuccess());
     setImages(data);
   };
 

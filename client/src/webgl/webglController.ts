@@ -23,7 +23,7 @@ interface ProgramInfo {
   };
 }
 
-class webglController {
+class WebglController {
   copyVideo: Boolean;
 
   positions: Array<number>;
@@ -405,9 +405,7 @@ class webglController {
   };
 
   main = () => {
-    video.addEventListener('loadeddata', () => {
-      this.glInit();
-    });
+    this.glInit();
   };
 }
-export default webglController;
+export default new WebglController();
