@@ -41,6 +41,10 @@ export default (
         playing: false,
       };
     case MOVE_TO:
+      return {
+        ...state,
+        currentTime: action.payload.time,
+      };
     case SET_THUMBNAILS:
     case CROP:
       return {
