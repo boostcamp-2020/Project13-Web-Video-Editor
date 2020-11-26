@@ -44,14 +44,16 @@ export const getImages = async () => {
   const thumbnail = await new Promise<any[]>(resolve => {
     video.addEventListener('loadedmetadata', async () => {
       const duration = video.getDuration();
-      const gap = duration / THUMNAIL_COUNT;
+      const gap = duration / (THUMNAIL_COUNT - 1);
 
       const images = [];
+      let secs = 0;
 
-      for (let secs = 0; secs <= duration; secs += gap) {
+      for (let count = 0; count < THUMNAIL_COUNT; count += 1) {
         video.setCurrentTime(secs);
         const image = await getImageAt(secs);
 
+        secs += gap;
         images.push(image);
       }
       video.setCurrentTime(0);
