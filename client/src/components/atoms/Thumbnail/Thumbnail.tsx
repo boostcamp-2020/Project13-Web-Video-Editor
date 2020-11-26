@@ -48,7 +48,7 @@ export const getImages = async () => {
 
       const images = [];
 
-      for (let secs = 0; secs <= duration; Math.min((secs += gap), duration)) {
+      for (let secs = 0; secs <= duration; secs += gap) {
         video.setCurrentTime(secs);
         const image = await getImageAt(secs);
 
@@ -81,6 +81,7 @@ const Thumbnail: React.FC = () => {
 
   return (
     <StyledDiv>
+      <Slider />
       {images.map(({ key, src }: ImageData) => {
         return <StyledImg key={key} src={src} alt="" />;
       })}
