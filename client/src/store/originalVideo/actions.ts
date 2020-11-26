@@ -38,7 +38,7 @@ type SetVideoAction = {
   };
 };
 
-type LoadMetadataAction = {
+export type LoadMetadataAction = {
   type: typeof LOAD_METADATA;
   payload: {
     length: number;

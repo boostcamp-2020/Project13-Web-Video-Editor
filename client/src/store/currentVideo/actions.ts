@@ -7,6 +7,7 @@ import {
   ResetAction,
   ErrorAction,
 } from '../actionTypes';
+import { LoadMetadataAction } from '../originalVideo/actions';
 
 export const play = () => ({ type: PLAY });
 export const pause = () => ({ type: PAUSE });
@@ -65,4 +66,5 @@ export type CurrentVideoAction =
   | SetThumbnailsAction
   | CropAction
   | ResetAction
-  | ErrorAction;
+  | ErrorAction
+  | LoadMetadataAction;
