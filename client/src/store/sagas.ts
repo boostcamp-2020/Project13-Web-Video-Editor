@@ -3,17 +3,8 @@ import video from '@/video';
 import watchSetVideo from '@/store/originalVideo/sagas';
 import { RESET } from './actionTypes';
 
-function revokeURL() {
-  const src = video.getSrc();
-  if (src) {
-    URL.revokeObjectURL(src);
-    video.getVideo().removeAttribute('src');
-    video.load();
-  }
-}
-
-function* deleteSrc(action) {
-  yield call(revokeURL);
+function* deleteSrc() {
+  yield call(video.revoke);
 }
 
 function* watchReset() {

@@ -9,7 +9,9 @@ function waitMetadataLoading(objectURL) {
   return new Promise<number>((resolve, reject) => {
     const timer = setTimeout(reject, TIMEOUT, 'loading metadata timeout');
 
+    video.revoke();
     video.setSrc(objectURL);
+
     video.addEventListener(
       'loadedmetadata',
       ({ target }: Event) => {

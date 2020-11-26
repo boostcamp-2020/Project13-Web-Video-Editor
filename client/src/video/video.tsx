@@ -40,6 +40,14 @@ class Video {
     this._video.currentTime = time;
   };
 
+  revoke = () => {
+    if (this.getSrc()) {
+      URL.revokeObjectURL(this.getSrc());
+      this._video.removeAttribute('src');
+      this.load();
+    }
+  };
+
   play = () => {
     this._video.play();
   };
