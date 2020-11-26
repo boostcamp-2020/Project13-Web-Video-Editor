@@ -9,6 +9,9 @@ const colors = {
   WHITE: '#FFF',
   BLUE: '#2B67CF',
   BORDER: '#464646',
+  LIGHT_GREEN: '#E5F5F9',
+  GREEN: '#99D8C9',
+  DARK_GREEN: '#2CA25F',
 };
 
 export default colors;

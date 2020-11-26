@@ -7,7 +7,7 @@ import {
   BsFillPlayFill,
   BsFillPauseFill,
 } from 'react-icons/bs';
-
+import { RiScissorsLine } from 'react-icons/ri';
 import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
@@ -70,7 +70,8 @@ const getEditToolsData = (
   reverseUpsideDown: () => void,
   reverseSideToSide: () => void,
   enlarge: () => void,
-  reduce: () => void
+  reduce: () => void,
+  crop: () => void
 ): button[] => [
   {
     onClick: rotateLeft90Degree,
@@ -98,6 +99,12 @@ const getEditToolsData = (
   },
   { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
   { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
+  {
+    onClick: crop,
+    message: 'crop',
+    type: 'transparent',
+    children: <RiScissorsLine size={size.ICON_SIZE} />,
+  },
 ];
 
 const EditTool = styled(ButtonGroup)``;
@@ -159,6 +166,9 @@ const Tools: React.FC = () => {
   const reverseSideToSide = () => webglController.reverseSideToSide();
   const enlarge = () => webglController.enlarge();
   const reduce = () => webglController.reduce();
+  const crop = () => {
+    // crop
+  };
 
   return (
     <StyledDiv>
@@ -177,7 +187,8 @@ const Tools: React.FC = () => {
           reverseUpsideDown,
           reverseSideToSide,
           enlarge,
-          reduce
+          reduce,
+          crop
         )}
       />
       <UploadArea />
