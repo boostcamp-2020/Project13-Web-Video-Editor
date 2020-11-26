@@ -3,17 +3,21 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import { loadSuccess } from '@/store/originalVideo/actions';
+import Slider from '@/components/atoms/Slider';
 import video from '@/video';
 
 const THUMNAIL_COUNT = 30;
 
 const StyledDiv = styled.div`
+  position: relative;
   display: flex;
-  width: 90%;
+  width: 100%;
+  height: 100%;
+  align-items: center;
 `;
 
 const StyledImg = styled.img`
-  width: 3.3%;
+  width: 3.3333%;
   height: 50px;
 `;
 

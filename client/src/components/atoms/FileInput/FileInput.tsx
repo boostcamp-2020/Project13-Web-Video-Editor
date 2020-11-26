@@ -8,12 +8,13 @@ const StyledDiv = styled.div`
   display: flex;
   justify-content: center;
   border-radius: 5px;
-  padding: 5px;
-  top: 50px;
+  padding: 5px 16px;
+  top: 2rem;
+  right: 0;
   background-color: ${color.GRAY};
   box-shadow: 1px 1px 2px 1px ${color.WHITE};
-  width: 100%;
 `;
+
 const StyledLabel = styled.label`
   color: ${color.WHITE};
   font-size: 12px;
