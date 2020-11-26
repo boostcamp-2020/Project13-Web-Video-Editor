@@ -7,6 +7,10 @@ class Video {
   }
 
   // getter
+  isPaused = () => {
+    return this._video.paused;
+  };
+
   getVideo = () => {
     return this._video;
   };

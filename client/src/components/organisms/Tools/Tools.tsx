@@ -103,7 +103,7 @@ const Tools: React.FC = () => {
   const forwardVideo = () => video.setCurrentTime(video.getCurrentTime() + 10);
 
   const playPauseVideo = () => {
-    video[play ? 'play' : 'pause']();
+    (play ? video.play : video.pause)();
 
     setPlay(!play);
   };

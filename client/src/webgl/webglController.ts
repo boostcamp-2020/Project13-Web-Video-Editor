@@ -32,8 +32,6 @@ class WebglController {
 
   gl: WebGLRenderingContext;
 
-  pause: Boolean = false;
-
   constructor() {
     this.copyVideo = false;
     this.positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0];
@@ -124,10 +122,6 @@ class WebglController {
     this.positions = temp;
 
     this.buffers = this.initBuffers();
-  };
-
-  playPause = () => {
-    this.pause = !this.pause;
   };
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
@@ -393,12 +387,8 @@ class WebglController {
       if (!video.getSrc()) return;
 
       this.updateTexture(texture);
-      if (!this.pause) {
-        video.play();
-        this.drawScene(programInfo, texture);
-      } else {
-        video.pause();
-      }
+      this.drawScene(programInfo, texture);
+
       requestAnimationFrame(render);
     };
     requestAnimationFrame(render);
