@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import store from '@/store';
-import Thumbnail from '@/components/atoms/Thumbnail';
+import TimeLine from '@/components/organisms/TimeLine';
 import GlobalStyle from '@/theme/globalStyle';
 import Header from '@/components/organisms/Header';
 import Tools from '@/components/organisms/Tools';
@@ -15,7 +15,7 @@ const App: React.FC = () => {
       <Header />
       <VideoContainer />
       <Tools />
-      <Thumbnail />
+      <TimeLine />
     </Provider>
   );
 };
