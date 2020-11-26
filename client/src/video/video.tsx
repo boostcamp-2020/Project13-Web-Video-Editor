@@ -23,6 +23,14 @@ class Video {
     return this._video.videoHeight;
   };
 
+  getSrc = () => {
+    return this._video.src;
+  };
+
+  getCurrentTime = () => {
+    return this._video.currentTime;
+  };
+
   // setter
   setSrc = (src: string) => {
     this._video.src = src;
@@ -38,6 +46,10 @@ class Video {
 
   pause = () => {
     this._video.pause();
+  };
+
+  load = () => {
+    this._video.load();
   };
 
   addEventListener = (
