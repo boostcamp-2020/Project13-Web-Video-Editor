@@ -23,3 +23,8 @@ export const getPlaying = (state: RootState) => state.currentVideo.playing;
 
 export const getCurrentTime = (state: RootState) =>
   state.currentVideo.currentTime;
+
+export const getStartEnd = (state: RootState) => {
+  const { start, end } = state.currentVideo;
+  return { start, end };
+};

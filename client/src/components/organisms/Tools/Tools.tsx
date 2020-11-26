@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
   BsFillSkipStartFill,
   BsFillSkipEndFill,
@@ -18,6 +18,7 @@ import {
   pause,
   moveTo,
 } from '@/store/currentVideo/actions';
+import { getStartEnd } from '@/store/selectors';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -106,15 +107,17 @@ const Tools: React.FC = () => {
   const [play, setPlay] = useState(true); // Fix 스토어로 등록
   const dispatch = useDispatch();
 
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
+
   const backwardVideo = () => {
-    const dstTime = video.getCurrentTime() - 10;
+    const dstTime = Math.max(video.getCurrentTime() - 10, start);
 
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
   };
 
   const forwardVideo = () => {
-    const dstTime = video.getCurrentTime() + 10;
+    const dstTime = Math.min(video.getCurrentTime() + 10, end);
 
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
