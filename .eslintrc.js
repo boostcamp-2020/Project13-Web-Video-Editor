@@ -26,7 +26,14 @@ module.exports = {
   rules: {
     'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
     "no-use-before-define": "off",
+    "no-await-in-loop": "off",
+    "no-underscore-dangle": "off",
+    "no-bitwise":"off",
+    "react/no-unused-prop-types": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
+    "no-unused-vars": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -36,7 +43,8 @@ module.exports = {
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    'react/prop-types': 0,
   },
   settings: {
     jest: {
