@@ -50,7 +50,13 @@ const Thumb = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0px 2px 5px ${color.DARK_PURPLE};
+  box-shadow: 0px 2px 5px ${color.WHITE};
+  transition: 0.1s;
+  outline: none;
+
+  &:hover {
+    width: 10px;
+  }
 `;
 
 const CropLayer = ({ positions, setPositions, duration }) => {
@@ -93,6 +99,7 @@ const CropLayer = ({ positions, setPositions, duration }) => {
             onKeyDown={props.onKeyDown}
             onKeyUp={props.onKeyUp}
             propsStyle={props.style}
+            ref={props.ref}
           />
         )}
       />

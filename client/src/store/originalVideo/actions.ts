@@ -1,4 +1,8 @@
 import {
+  LoadMetadataAction,
+  SetThumbnailsAction,
+} from '@/store/currentVideo/actions';
+import {
   FETCH_START,
   SET_VIDEO,
   LOAD_METADATA,
@@ -23,8 +27,6 @@ export const loadMetadata = length => ({
   payload: { length },
 });
 
-export const loadSuccess = () => ({ type: LOAD_SUCCESS });
-
 type FetchStartAction = {
   type: typeof FETCH_START;
 };
@@ -38,21 +40,10 @@ type SetVideoAction = {
   };
 };
 
-export type LoadMetadataAction = {
-  type: typeof LOAD_METADATA;
-  payload: {
-    length: number;
-  };
-};
-
-type LoadSuccessAction = {
-  type: typeof LOAD_SUCCESS;
-};
-
 export type OriginalVideoAction =
   | FetchStartAction
   | SetVideoAction
   | LoadMetadataAction
-  | LoadSuccessAction
+  | SetThumbnailsAction
   | ErrorAction
   | ResetAction;

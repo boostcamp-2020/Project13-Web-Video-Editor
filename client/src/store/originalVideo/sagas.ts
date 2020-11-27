@@ -1,9 +1,12 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
+
 import video from '@/video/video';
+import WebglController from '@/webgl/webglController';
 import { loadMetadata } from './actions';
+import { setThumbnails } from '../currentVideo/actions';
 import { SET_VIDEO, error } from '../actionTypes';
 
-const TIMEOUT = 10_000;
+const TIMEOUT = 5_000;
 
 function waitMetadataLoading(objectURL) {
   return new Promise<number>((resolve, reject) => {
@@ -27,8 +30,11 @@ function* load(action) {
   try {
     const duration = yield call(waitMetadataLoading, action.payload.URL);
     yield put(loadMetadata(duration));
-    // TODO: yield getThumbnails
-    // TODO: yield put(loadSuccess())
+
+    const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
+
+    yield call(WebglController.main);
+    yield put(setThumbnails(thumbnails));
   } catch (err) {
     console.log(err);
     yield put(error());

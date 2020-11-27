@@ -2,7 +2,7 @@ import {
   FETCH_START,
   SET_VIDEO,
   LOAD_METADATA,
-  LOAD_SUCCESS,
+  SET_THUMBNAILS,
   RESET,
   ERROR,
 } from '../actionTypes';
@@ -54,7 +54,7 @@ export default (
         ...state,
         length: action.payload.length,
       };
-    case LOAD_SUCCESS:
+    case SET_THUMBNAILS:
       return {
         ...state,
         message: Message.OK,
