@@ -42,25 +42,25 @@ const getVideoToolsData = (
 ): button[] => [
   {
     onClick: backwardVideo,
-    message: 'Backward Video',
+    message: '',
     type: 'transparent',
-    children: <BsFillSkipStartFill size={size.ICON_SIZE} />,
+    children: <BsFillSkipStartFill size={size.BIG_ICON_SIZE} />,
   },
   {
     onClick: playPauseVideo,
-    message: 'Play Pause Video',
+    message: '',
     type: 'transparent',
     children: play ? (
-      <BsFillPlayFill size={size.ICON_SIZE} />
+      <BsFillPlayFill size={size.BIG_ICON_SIZE} />
     ) : (
-      <BsFillPauseFill size={size.ICON_SIZE} />
+      <BsFillPauseFill size={size.BIG_ICON_SIZE} />
     ),
   },
   {
     onClick: forwardVideo,
-    message: 'Forward Video',
+    message: '',
     type: 'transparent',
-    children: <BsFillSkipEndFill size={size.ICON_SIZE} />,
+    children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
   },
 ];
 
