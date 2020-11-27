@@ -3,11 +3,11 @@ import {
   PAUSE,
   MOVE_TO,
   SET_THUMBNAILS,
+  LOAD_METADATA,
   CROP,
   ResetAction,
   ErrorAction,
 } from '../actionTypes';
-import { LoadMetadataAction } from '../originalVideo/actions';
 
 export const play = () => ({ type: PLAY });
 export const pause = () => ({ type: PAUSE });
@@ -19,10 +19,10 @@ export const moveTo = (time: number) => ({
   },
 });
 
-export const setThumbnails = (thumbnail: string[]) => ({
+export const setThumbnails = (thumbnails: string[]) => ({
   type: SET_THUMBNAILS,
   payload: {
-    thumbnail,
+    thumbnails,
   },
 });
 
@@ -44,7 +44,7 @@ type MoveToAction = {
   };
 };
 
-type SetThumbnailsAction = {
+export type SetThumbnailsAction = {
   type: typeof SET_THUMBNAILS;
   payload: {
     thumbnails: string[];
@@ -59,12 +59,19 @@ type CropAction = {
   };
 };
 
+export type LoadMetadataAction = {
+  type: typeof LOAD_METADATA;
+  payload: {
+    length: number;
+  };
+};
+
 export type CurrentVideoAction =
   | PlayAction
   | PauseAction
   | MoveToAction
   | SetThumbnailsAction
   | CropAction
+  | LoadMetadataAction
   | ResetAction
-  | ErrorAction
-  | LoadMetadataAction;
+  | ErrorAction;
