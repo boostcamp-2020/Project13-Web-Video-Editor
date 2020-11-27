@@ -1,16 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import webglController from '@/webgl/webglController';
-import { loadSuccess } from '@/store/originalVideo/actions';
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
+import { getThumbnails } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
-
-const THUMNAIL_COUNT = 30;
 
 const StyledDiv = styled.div`
   position: relative;
@@ -25,52 +22,8 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
-interface ImageData {
-  key: number;
-  src: string;
-}
-
-const canvas = document.createElement('canvas');
-
-const getImageAt = (secs: number) => {
-  return new Promise(resolve => {
-    video.addEventListener('seeked', () => {
-      const context = canvas.getContext('2d');
-      context.drawImage(video.getVideo(), 0, 0, canvas.width, canvas.height);
-
-      resolve({ key: secs, src: canvas.toDataURL() });
-    });
-  });
-};
-
-export const getImages = async () => {
-  // FIXME: refactor this later
-  const thumbnail = await new Promise<any[]>(resolve => {
-    video.addEventListener('loadedmetadata', async () => {
-      const duration = video.getDuration();
-      const gap = duration / (THUMNAIL_COUNT - 1);
-
-      const images = [];
-      let secs = 0;
-
-      for (let count = 0; count < THUMNAIL_COUNT; count += 1) {
-        video.setCurrentTime(secs);
-        const image = await getImageAt(secs);
-
-        secs += gap;
-        images.push(image);
-      }
-      video.setCurrentTime(0);
-
-      resolve(images);
-    });
-  });
-
-  return thumbnail;
-};
-
 const Thumbnail: React.FC = () => {
-  const [images, setImages] = useState([]);
+  const thumbnails = useSelector(getThumbnails);
   const [time, setTime] = useState(0);
   const [position, setPosition] = useState([0, 0]);
 
@@ -78,15 +31,6 @@ const Thumbnail: React.FC = () => {
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
   const hoverSliderRef = useRef<HTMLDivElement>(null);
-
-  const getData = async (): Promise<void> => {
-    const data = await getImages();
-
-    webglController.main();
-
-    dispatch(loadSuccess());
-    setImages(data);
-  };
 
   const handleClick = () => {
     video.setCurrentTime(time);
@@ -119,10 +63,6 @@ const Thumbnail: React.FC = () => {
     hoverSliderRef.current.style.display = 'block';
   };
 
-  useEffect(() => {
-    getData();
-  });
-
   return (
     <StyledDiv
       ref={thumbnailRef}
@@ -134,8 +74,8 @@ const Thumbnail: React.FC = () => {
       <CropLayer positions={position} setPositions={setPosition} />
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
-      {images.map(({ key, src }: ImageData) => {
-        return <StyledImg key={key} src={src} alt="" />;
+      {thumbnails.map(image => {
+        return <StyledImg key={image} src={image} alt="" />;
       })}
     </StyledDiv>
   );
