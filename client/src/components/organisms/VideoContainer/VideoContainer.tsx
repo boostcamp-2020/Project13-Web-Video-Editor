@@ -8,7 +8,7 @@ const StyledDiv = styled.div`
 `;
 
 const StyledCanvas = styled.canvas`
-  height: 35rem;
+  height: 30rem;
 `;
 
 const VideoContainer: React.FC = () => {

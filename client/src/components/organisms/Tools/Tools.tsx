@@ -30,9 +30,24 @@ import { getStartEnd } from '@/store/selectors';
 const StyledDiv = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   padding: 1rem;
+  height: 10rem;
 `;
+
+const StyledEditToolDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const EditTool = styled(ButtonGroup)`
+  width: 20rem;
+`;
+const SubEditTool = styled(ButtonGroup)`
+  width: 25rem;
+`;
+const VideoTool = styled(ButtonGroup)``;
 
 interface button {
   onClick: () => void;
