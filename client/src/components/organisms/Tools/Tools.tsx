@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import styled from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import {
@@ -7,14 +7,10 @@ import {
   BsFillPlayFill,
   BsFillPauseFill,
   BsAspectRatio,
-  BsTerminal,
-  BsCheck,
-  BsX,
 } from 'react-icons/bs';
 import { RiScissorsLine } from 'react-icons/ri';
-import { AiOutlineRotateLeft,AiOutlineFullscreenExit,AiOutlineFullscreen} from 'react-icons/ai'
-import { MdRotateLeft, MdRotateRight } from 'react-icons/md';
-import { CgMergeHorizontal, CgMergeVertical} from 'react-icons/cg';
+import { MdScreenRotation } from 'react-icons/md';
+
 import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
@@ -26,6 +22,9 @@ import {
   moveTo,
 } from '@/store/currentVideo/actions';
 import { getStartEnd } from '@/store/selectors';
+import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
+
+import reducer, { initialData, ButtonData, ButtonDataAction } from './reducer';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -54,13 +53,6 @@ interface button {
   message: string;
   type: 'default' | 'transparent';
   children: React.ReactChild;
-}
-
-interface ButtonData {
-  onClicks: (() => void)[];
-  messages: string[];
-  type: string;
-  childrens: any[]
 }
 
 const getVideoToolsData = (
@@ -96,13 +88,13 @@ const getVideoToolsData = (
 const getEditToolData = (
   rotateReverse: () => void,
   ratio: () => void,
-  crop: () => void,
+  crop: () => void
 ): button[] => [
   {
     onClick: rotateReverse,
     message: '회전 / 반전',
     type: 'transparent',
-    children: <AiOutlineRotateLeft size={size.ICON_SIZE} />,
+    children: <MdScreenRotation size={size.ICON_SIZE} />,
   },
   {
     onClick: ratio,
@@ -118,35 +110,19 @@ const getEditToolData = (
   },
 ];
 
-const getSubEditToolsData = (buttonData: ButtonData): button[] => {
-  const buttons = [];
-
-  if (!buttonData.onClicks) {
-    return [];
-  }
-
-  for (let i = 0; i < buttonData.onClicks.length; i += 1) {
-    buttons.push({
-      onClick: buttonData.onClicks[i],
-      message: buttonData.messages[i],
-      type: buttonData.type,
-      children: buttonData.childrens[i],
-    })
-  }
-
-  return buttons;
-};
+const getSubEditToolsData = (buttonData: ButtonData): button[] =>
+  [...Array(buttonData.onClicks?.length)].map((_, idx) => ({
+    onClick: buttonData.onClicks[idx],
+    message: buttonData.messages[idx],
+    type: buttonData.type,
+    children: buttonData.childrens[idx],
+  }));
 
 const Tools: React.FC = () => {
   const [play, setPlay] = useState(true); // Fix 스토어로 등록
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
-  const [buttonData, setButtonData] = useState({
-    onClicks: null,
-    messages: null,
-    type: null,
-    childrens: null,
-  });
+  const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
 
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
@@ -194,96 +170,67 @@ const Tools: React.FC = () => {
     }
   };
 
-  const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
-  const rotateRight90Degree = () => webglController.rotateRight90Degree();
-  const reverseUpsideDown = () => webglController.reverseUpsideDown();
-  const reverseSideToSide = () => webglController.reverseSideToSide();
-  const rotateReverseMethods = [rotateLeft90Degree, rotateRight90Degree, reverseUpsideDown, reverseSideToSide];
-  const rotateReverseMessages= ['왼쪽', '오른쪽', '상하 반전', '좌우 반전'];
-  const rorateReverseChildrens = [
-    <MdRotateLeft size={size.ICON_SIZE} />,
-    <MdRotateRight size={size.ICON_SIZE} />,
-    <CgMergeHorizontal size={size.ICON_SIZE} />,
-    <CgMergeVertical size={size.ICON_SIZE} />
-  ]
-  
-  const rotateReverse = () => {
+  const handleRotateLeft90Degree = () => webglController.rotateLeft90Degree();
+  const handleRotateRight90Degree = () => webglController.rotateRight90Degree();
+  const handleReverseUpsideDown = () => webglController.reverseUpsideDown();
+  const handleReverseSideToSide = () => webglController.reverseSideToSide();
+  const rotateReverseMethods = [
+    handleRotateLeft90Degree,
+    handleRotateRight90Degree,
+    handleReverseUpsideDown,
+    handleReverseSideToSide,
+  ];
+
+  const handleRotateReverse = () => {
     if (toolType === 'videoEffect') {
       setToolType(null);
-      setButtonData({
-        onClicks: null,
-        messages: null,
-        type: null,
-        childrens: null,
-      });
+      dispatchButtonData({ type: null });
     } else {
       setToolType('videoEffect');
-      setButtonData({
-        onClicks: rotateReverseMethods,
-        messages: rotateReverseMessages,
-        type: 'transparent',
-        childrens : rorateReverseChildrens,
-      })
+      dispatchButtonData({
+        type: 'videoEffect',
+        payload: rotateReverseMethods,
+      });
     }
-  }
-  
-  const ratioEnlarge = () => webglController.enlarge();
-  const ratioReduce = () => webglController.reduce();
-  const ratioMethods = [ratioEnlarge, ratioReduce];
-  const ratioMessages= ['확대', '축소'];
-  const ratioChildrens = [
-    <AiOutlineFullscreen size={size.ICON_SIZE} />,
-    <AiOutlineFullscreenExit size={size.ICON_SIZE} />,
-  ]
+  };
 
-  const ratio = () => {
+  const handleRatioEnlarge = () => webglController.enlarge();
+  const handleRatioReduce = () => webglController.reduce();
+  const ratioMethods = [handleRatioEnlarge, handleRatioReduce];
+
+  const handleRatio = () => {
     if (toolType === 'ratio') {
       setToolType(null);
-      setButtonData({
-        onClicks: null,
-        messages: null,
-        type: null,
-        childrens: null,
-      });
+      dispatchButtonData({ type: null });
     } else {
       setToolType('ratio');
-      setButtonData({
-        onClicks: ratioMethods,
-        messages: ratioMessages,
-        type: 'transparent',
-        childrens : ratioChildrens,
-      })
+      dispatchButtonData({ type: 'ratio', payload: ratioMethods });
     }
-  }
-  
-  const cropInsert = () => webglController.enlarge();
-  const cropConfirm = () => webglController.reduce();
-  const cropCancle = () => webglController.reduce();
-  const cropMethods = [cropInsert, cropConfirm, cropCancle];
-  const cropMessages= ['직접입력', '확인', '취소'];
-  const cropChildrens = [
-    <BsTerminal size={size.ICON_SIZE} />,
-    <BsCheck size={size.ICON_SIZE} />,
-    <BsX size={size.ICON_SIZE} />,
-  ]
+  };
 
-  const crop = () => {
+  const handleCropInsert = () => webglController.enlarge();
+  const handleCropConfirm = () => {
+    dispatch(cropConfirm());
+    setToolType(null);
+    dispatchButtonData({ type: null });
+    dispatch(cropCancel());
+  };
+  const handleCropCancel = () => {
+    setToolType(null);
+    dispatchButtonData({ type: null });
+    dispatch(cropCancel());
+  };
+  const cropMethods = [handleCropInsert, handleCropConfirm, handleCropCancel];
+
+  const handleCrop = () => {
     if (toolType === 'crop') {
+      dispatch(cropCancel());
       setToolType(null);
-      setButtonData({
-        onClicks: null,
-        messages: null,
-        type: null,
-        childrens: null,
-      });
+      dispatchButtonData({ type: null });
     } else {
+      dispatch(cropStart());
       setToolType('crop');
-      setButtonData({
-        onClicks: cropMethods,
-        messages: cropMessages,
-        type: 'transparent',
-        childrens : cropChildrens,
-      })
+      dispatchButtonData({ type: 'crop', payload: cropMethods });
     }
   };
 
@@ -298,12 +245,14 @@ const Tools: React.FC = () => {
         )}
       />
       <StyledEditToolDiv>
-        <SubEditTool buttonData={getSubEditToolsData(buttonData)}/>
-        <EditTool buttonData={getEditToolData(
-          rotateReverse,
-          ratio,
-          crop
-        )}/>
+        <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
+        <EditTool
+          buttonData={getEditToolData(
+            handleRotateReverse,
+            handleRatio,
+            handleCrop
+          )}
+        />
       </StyledEditToolDiv>
       <UploadArea />
     </StyledDiv>
