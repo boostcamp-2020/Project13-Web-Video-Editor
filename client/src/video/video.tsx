@@ -36,26 +36,6 @@ class Video {
     return this.video;
   };
 
-  getDuration = () => {
-    return this.video.duration;
-  };
-
-  getVideoWidth = () => {
-    return this.video.videoWidth;
-  };
-
-  getVideoHeight = () => {
-    return this.video.videoHeight;
-  };
-
-  getSrc = () => {
-    return this.video.src;
-  };
-
-  getCurrentTime = () => {
-    return this.video.currentTime;
-  };
-
   getThumbnails = () => {
     return [...this.thumbnails];
   };
@@ -116,8 +96,9 @@ class Video {
   };
 
   revoke = () => {
-    if (this.getSrc()) {
-      URL.revokeObjectURL(this.getSrc());
+    const src = this.get('src');
+    if (src) {
+      URL.revokeObjectURL(src);
       this.video.removeAttribute('src');
       this.load();
     }

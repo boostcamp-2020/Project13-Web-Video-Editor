@@ -47,7 +47,7 @@ const Thumbnail: React.FC = () => {
     const distance = mouseLocation - offset;
 
     const width = thumbnailRef.current.clientWidth;
-    const duration = video.getDuration();
+    const duration = video.get('duration');
 
     const hoverTime = (distance / width) * duration;
 
