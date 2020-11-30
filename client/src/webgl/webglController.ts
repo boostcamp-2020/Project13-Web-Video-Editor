@@ -43,7 +43,7 @@ class WebglController {
   };
 
   constructor() {
-    this.positions = this.init.positions;
+    this.positions = this.init.positions.map(pair => [...pair]);
   }
 
   rotateLeft90Degree = () => {
@@ -357,8 +357,10 @@ class WebglController {
     this.glInit();
   };
 
-  clear = () => {
+  reset = () => {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.positions = this.init.positions.map(pair => [...pair]);
+    this.initBuffers();
   };
 }
 export default new WebglController();

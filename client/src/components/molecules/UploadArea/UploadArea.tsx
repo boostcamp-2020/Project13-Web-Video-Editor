@@ -8,6 +8,8 @@ import { setVideo } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
 import { reset } from '@/store/actionTypes';
 
+import webglController from '@/webgl/webglController';
+
 const StyledDiv = styled.div`
   display: flex;
   align-items: center;
@@ -29,11 +31,8 @@ const UploadArea: React.FC = () => {
 
   const handleChange = () => {
     const localFile: File = ref.current?.files[0];
-
-    if (localFile) {
-      const objectURL = URL.createObjectURL(localFile);
-      dispatch(setVideo(localFile, objectURL));
-    } else dispatch(reset());
+    const objectURL = URL.createObjectURL(localFile);
+    dispatch(setVideo(localFile, objectURL));
 
     setVisible(false);
   };
