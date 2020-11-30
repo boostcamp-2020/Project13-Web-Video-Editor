@@ -23,104 +23,63 @@ interface ProgramInfo {
   };
 }
 
-class WebglController {
-  copyVideo: Boolean;
+const RATIO = 1.25;
+const INVERSE = 1 / RATIO;
 
-  positions: Array<number>;
+class WebglController {
+  positions: number[][];
 
   buffers: Buffers;
 
   gl: WebGLRenderingContext;
 
+  init = {
+    positions: [
+      [-1.0, -1.0],
+      [1.0, -1.0],
+      [1.0, 1.0],
+      [-1.0, 1.0],
+    ],
+  };
+
   constructor() {
-    this.copyVideo = false;
-    this.positions = [-1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0];
+    this.positions = this.init.positions.map(pair => [...pair]);
   }
 
   rotateLeft90Degree = () => {
-    this.positions.push(this.positions.shift());
+    // 0123 => 1230
     this.positions.push(this.positions.shift());
     this.buffers = this.initBuffers();
   };
 
   rotateRight90Degree = () => {
-    this.positions.unshift(this.positions.pop());
+    // 0123 => 3012
     this.positions.unshift(this.positions.pop());
     this.buffers = this.initBuffers();
   };
 
   reverseUpsideDown = () => {
-    const x1 = this.positions.shift();
-    const y1 = this.positions.shift();
-
-    const x2 = this.positions.shift();
-    const y2 = this.positions.shift();
-
-    const x3 = this.positions.shift();
-    const y3 = this.positions.shift();
-    this.positions.push(x3);
-    this.positions.push(y3);
-
-    this.positions.push(x2);
-    this.positions.push(y2);
-
-    this.positions.push(x1);
-    this.positions.push(y1);
-
+    // 0123 => 3210
+    this.positions.reverse();
     this.buffers = this.initBuffers();
   };
 
   reverseSideToSide = () => {
-    const x1 = this.positions.shift();
-    const y1 = this.positions.shift();
-
-    const x2 = this.positions.shift();
-    const y2 = this.positions.shift();
-
-    const x3 = this.positions.shift();
-    const y3 = this.positions.shift();
-
-    this.positions.push(x3);
-    this.positions.push(y3);
-
-    this.positions.unshift(y1);
-    this.positions.unshift(x1);
-
-    this.positions.unshift(y2);
-    this.positions.unshift(x2);
-
+    // 0123 => 1032
+    this.positions = [
+      ...this.positions.slice(0, 2).reverse(),
+      ...this.positions.slice(-2).reverse(),
+    ];
     this.buffers = this.initBuffers();
   };
 
   enlarge = () => {
-    const temp = [];
-
-    this.positions.forEach(element => {
-      if (element < 0) {
-        temp.push(element - 1);
-      } else {
-        temp.push(element + 1);
-      }
-    });
-
-    this.positions = temp;
-
+    this.positions = this.positions.map(pair => pair.map(val => val * RATIO));
     this.buffers = this.initBuffers();
   };
 
   reduce = () => {
-    const temp = [];
-
-    this.positions.forEach(element => {
-      if (element < 0) {
-        temp.push(element + 1);
-      } else {
-        temp.push(element - 1);
-      }
-    });
-
-    this.positions = temp;
-
+    this.positions = this.positions.map(pair => pair.map(val => val * INVERSE));
     this.buffers = this.initBuffers();
   };
 
@@ -139,7 +98,7 @@ class WebglController {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
-      new Float32Array(this.positions),
+      new Float32Array(this.positions.flat()),
       this.gl.STATIC_DRAW
     );
 
@@ -353,8 +312,8 @@ class WebglController {
 
   glInit = () => {
     this.gl = this.initCanvas(
-      video.getVideoWidth().toString(),
-      video.getVideoHeight().toString()
+      video.get('videoWidth').toString(),
+      video.get('videoHeight').toString()
     );
     this.buffers = this.initBuffers();
     const shaderProgram = this.initShaderProgram();
@@ -384,7 +343,7 @@ class WebglController {
     const texture = this.initTexture();
 
     const render = () => {
-      if (!video.getSrc()) return;
+      if (!video.get('src')) return;
 
       this.updateTexture(texture);
       this.drawScene(programInfo, texture);
@@ -396,6 +355,12 @@ class WebglController {
 
   main = () => {
     this.glInit();
+  };
+
+  reset = () => {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.positions = this.init.positions.map(pair => [...pair]);
+    this.initBuffers();
   };
 }
 export default new WebglController();

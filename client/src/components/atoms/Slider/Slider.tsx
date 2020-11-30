@@ -40,10 +40,10 @@ const Slider: React.FC<Props> = ({ thumbnailRef }) => {
   const time = useSelector(getCurrentTime);
 
   useEffect(() => {
-    const currentTime = video.getCurrentTime();
+    const currentTime = video.get('currentTime');
 
     const width = thumbnailRef.current.clientWidth;
-    const totalDuration = video.getDuration();
+    const totalDuration = video.get('duration');
 
     const movedLocation = totalDuration
       ? (currentTime / totalDuration) * width
