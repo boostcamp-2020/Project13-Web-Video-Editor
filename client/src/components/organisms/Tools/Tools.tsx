@@ -127,14 +127,14 @@ const Tools: React.FC = () => {
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const backwardVideo = () => {
-    const dstTime = Math.max(video.getCurrentTime() - 10, start);
+    const dstTime = Math.max(video.get('currentTime') - 10, start);
 
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
   };
 
   const forwardVideo = () => {
-    const dstTime = Math.min(video.getCurrentTime() + 10, end);
+    const dstTime = Math.min(video.get('currentTime') + 10, end);
 
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));

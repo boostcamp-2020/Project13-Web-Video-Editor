@@ -1,12 +1,18 @@
-import { put, call, takeLatest } from 'redux-saga/effects';
+import { put, call, takeLatest, select } from 'redux-saga/effects';
 
 import video from '@/video/video';
-import WebglController from '@/webgl/webglController';
+import webglController from '@/webgl/webglController';
 import { loadMetadata } from './actions';
 import { setThumbnails } from '../currentVideo/actions';
 import { SET_VIDEO, error } from '../actionTypes';
+import { getDuration } from '../selectors';
 
 const TIMEOUT = 5_000;
+
+export function* deleteSrc() {
+  yield call(webglController.reset);
+  yield call(video.revoke);
+}
 
 function waitMetadataLoading(objectURL) {
   return new Promise<number>((resolve, reject) => {
@@ -33,7 +39,7 @@ function* load(action) {
 
     const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
 
-    yield call(WebglController.main);
+    yield call(webglController.main);
     yield put(setThumbnails(thumbnails));
   } catch (err) {
     console.log(err);
@@ -41,6 +47,6 @@ function* load(action) {
   }
 }
 
-export default function* watchSetVideo() {
+export function* watchSetVideo() {
   yield takeLatest(SET_VIDEO, load);
 }

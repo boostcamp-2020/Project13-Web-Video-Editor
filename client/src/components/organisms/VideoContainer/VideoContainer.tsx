@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import color from '@/theme/colors';
+
 const StyledDiv = styled.div`
   display: flex;
   justify-content: center;
@@ -9,6 +11,7 @@ const StyledDiv = styled.div`
 
 const StyledCanvas = styled.canvas`
   height: 30rem;
+  background-color: ${color.BLACK};
 `;
 
 const VideoContainer: React.FC = () => {
