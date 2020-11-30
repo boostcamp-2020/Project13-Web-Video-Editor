@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import { Range } from 'react-range';
 import styled from 'styled-components';
+
 import color from '@/theme/colors';
 import convertReactStyleToCSS from '@/utils/convert';
+import video from '@/video';
 
-const STEP = 0.1;
 const MIN = 0;
-const MAX = 100;
 
 interface OverlayProps {
   width: number;
@@ -59,7 +58,9 @@ const Thumb = styled.div`
   }
 `;
 
-const CropLayer = ({ positions, setPositions, duration }) => {
+const CropLayer = ({ positions, setPositions }) => {
+  const MAX = video.getDuration();
+  const STEP = (MAX - MIN) / 1024;
   return (
     <CropLayerDiv>
       <Range
@@ -75,8 +76,8 @@ const CropLayer = ({ positions, setPositions, duration }) => {
             onMouseDown={props.onMouseDown}
             onTouchStart={props.onTouchStart}
           >
-            <Overlay width={positions[0]} direction="left" />
-            <Overlay width={MAX - positions[1]} direction="right" />
+            <Overlay width={(positions[0] / MAX) * 100} direction="left" />
+            <Overlay width={(1 - positions[1] / MAX) * 100} direction="right" />
             <div
               ref={props.ref}
               style={{
