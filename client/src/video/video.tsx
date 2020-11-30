@@ -1,11 +1,20 @@
 class Video {
   private video: HTMLVideoElement;
 
-  private THUMNAIL_COUNT: number = 30;
-
   private canvas: HTMLCanvasElement;
 
+  private THUMBNAIL_COUNT: number = 30;
+
   private thumbnails: string[];
+
+  private getAllowedFields: Set<string> = new Set([
+    'paused',
+    'duration',
+    'videoWidth',
+    'videoHeight',
+    'src',
+    'currentTime',
+  ]);
 
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -16,6 +25,11 @@ class Video {
   // getter
   isPaused = () => {
     return this.video.paused;
+  };
+
+  get = field => {
+    if (this.getAllowedFields.has(field)) return this.video[field];
+    return undefined;
   };
 
   getVideo = () => {
@@ -59,19 +73,18 @@ class Video {
     return new Promise<string[]>((resolve, reject) => {
       try {
         (async () => {
-          const gap = (end - start) / (this.THUMNAIL_COUNT - 1);
-          let secs = start;
+          const gap = (end - start) / (this.THUMBNAIL_COUNT - 1);
+          let secs = end;
 
-          const images: string[] = [];
+          const images: string[] = new Array(this.THUMBNAIL_COUNT);
 
-          for (let count = 0; count < this.THUMNAIL_COUNT; count += 1) {
+          for (let count = this.THUMBNAIL_COUNT - 1; count >= 0; count -= 1) {
             this.setCurrentTime(secs);
             const image: string = await this.getImageAt();
 
-            secs += gap;
-            images.push(image);
+            secs -= gap;
+            images[count] = image;
           }
-          this.setCurrentTime(0);
           this.thumbnails = images;
           resolve(images);
         })();
