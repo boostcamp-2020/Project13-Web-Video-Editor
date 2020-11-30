@@ -1,12 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
-import { moveTo } from '@/store/currentVideo/actions';
+import { moveTo, crop } from '@/store/currentVideo/actions';
+import { cropEnd } from '@/store/actionTypes';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
-import { getThumbnails } from '@/store/selectors';
+import {
+  getThumbnails,
+  getIsCrop,
+  getIsCropConfirm,
+  getStartEnd,
+} from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
 
 const StyledDiv = styled.div`
@@ -24,10 +30,26 @@ const StyledImg = styled.img`
 
 const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
+  const isCrop = useSelector(getIsCrop);
+  const isCropConfirm = useSelector(getIsCropConfirm);
+  // const { thumbnails,isCrop, isCropConfirm } = useSelector(getThumbnailsEffect, shallowEqual);
+
   const [time, setTime] = useState(0);
   const [position, setPosition] = useState([0, 0]);
+  const { start, end } = useSelector(getStartEnd);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isCrop) {
+      setPosition([start, end]);
+    }
+  }, [isCrop]);
+
+  useEffect(() => {
+    dispatch(crop(position[0], position[1]));
+    dispatch(cropEnd());
+  }, [isCropConfirm]);
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
   const hoverSliderRef = useRef<HTMLDivElement>(null);
@@ -71,7 +93,7 @@ const Thumbnail: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
     >
-      <CropLayer positions={position} setPositions={setPosition} />
+      {isCrop && <CropLayer positions={position} setPositions={setPosition} />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
       {thumbnails.map(image => {
