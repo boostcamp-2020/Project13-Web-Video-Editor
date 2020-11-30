@@ -397,5 +397,9 @@ class WebglController {
   main = () => {
     this.glInit();
   };
+
+  clear = () => {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+  };
 }
 export default new WebglController();
