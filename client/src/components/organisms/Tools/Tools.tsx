@@ -71,7 +71,7 @@ interface props {
 }
 
 const Tools: React.FC<props> = ({ setEdit }) => {
-  const [play, setPlay] = useState(true); // Fix 스토어로 등록
+  const play = useSelector(getPlaying);
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
@@ -93,14 +93,13 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   };
 
   const playPauseVideo = () => {
-    if (play) {
+    if (!play) {
       video.play();
       dispatch(playAction());
     } else {
       video.pause();
       dispatch(pause());
     }
-    setPlay(!play);
   };
 
   document.onkeydown = (event: KeyboardEvent) => {

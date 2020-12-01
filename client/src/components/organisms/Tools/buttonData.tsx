@@ -38,9 +38,9 @@ export const getVideoToolsData = (
     message: '',
     type: 'transparent',
     children: play ? (
-      <BsFillPlayFill size={size.BIG_ICON_SIZE} />
-    ) : (
       <BsFillPauseFill size={size.BIG_ICON_SIZE} />
+    ) : (
+      <BsFillPlayFill size={size.BIG_ICON_SIZE} />
     ),
   },
   {
