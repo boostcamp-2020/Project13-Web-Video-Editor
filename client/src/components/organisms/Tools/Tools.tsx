@@ -151,11 +151,10 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   const handleRatioReduce = () => webglController.reduce();
   const ratioMethods = [handleRatioEnlarge, handleRatioReduce];
 
-  const handleCropInsert = () => null;
+  const handleCropInsert = () => {}; // TODO:
   const handleCropConfirm = () => {
     dispatch(cropConfirm());
     closeSubtool();
-    dispatch(cropCancel());
   };
   const handleCropCancel = () => {
     closeSubtool();

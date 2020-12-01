@@ -26,8 +26,6 @@ export const cropCancel = () => ({ type: CROP_CANCEL });
 export const CROP_CONFIRM = 'crop/CROP_CONFIRM';
 export const cropConfirm = () => ({ type: CROP_CONFIRM });
 
-export const CROP_END = 'crop/CROP_END';
-export const cropEnd = () => ({ type: CROP_END });
 // history
 
 // global

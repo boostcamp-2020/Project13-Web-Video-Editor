@@ -1,9 +1,4 @@
-import {
-  CROP_START,
-  CROP_CANCEL,
-  CROP_CONFIRM,
-  CROP_END,
-} from '../actionTypes';
+import { CROP_START, CROP_CANCEL, CROP_CONFIRM, CROP } from '../actionTypes';
 
 export const cropStart = () => ({
   type: typeof CROP_START,
@@ -15,10 +10,6 @@ export const cropCancel = () => ({
 
 export const cropConfirm = () => ({
   type: typeof CROP_CONFIRM,
-});
-
-export const cropEnd = () => ({
-  type: typeof CROP_END,
 });
 
 export type CropStartAction = {
@@ -33,12 +24,12 @@ export type CropConfirmAction = {
   type: typeof CROP_CONFIRM;
 };
 
-export type CropEnd = {
-  type: typeof CROP_END;
+export type Crop = {
+  type: typeof CROP;
 };
 
 export type CropAction =
   | CropStartAction
   | CropCancelAction
   | CropConfirmAction
-  | CropEnd;
+  | Crop;
