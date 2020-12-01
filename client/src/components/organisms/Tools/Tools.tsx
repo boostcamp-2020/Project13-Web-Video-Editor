@@ -1,118 +1,79 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useReducer, useCallback, useMemo } from 'react';
+import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import {
-  BsFillSkipStartFill,
-  BsFillSkipEndFill,
-  BsFillPlayFill,
-  BsFillPauseFill,
-} from 'react-icons/bs';
-import { RiScissorsLine } from 'react-icons/ri';
+
 import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
-import size from '@/theme/sizes';
 import video from '@/video';
 import {
   play as playAction,
   pause,
   moveTo,
 } from '@/store/currentVideo/actions';
-import { getStartEnd } from '@/store/selectors';
+import { getStartEnd, getPlaying } from '@/store/selectors';
+import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
+import reducer, { initialData, ButtonTypes } from './reducer';
+import {
+  getEditToolData,
+  getSubEditToolsData,
+  getVideoToolsData,
+} from './buttonData';
+
+const UP = 'up';
+const DOWN = 'down';
 
 const StyledDiv = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   padding: 1rem;
 `;
 
-interface button {
-  onClick: () => void;
-  message: string;
-  type: 'default' | 'transparent';
-  children: React.ReactChild;
-}
+const slide = keyframes`
+  from {
+    transform: translate(0, 50px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+`;
 
-const getVideoToolsData = (
-  backwardVideo: () => void,
-  playPauseVideo: () => void,
-  forwardVideo: () => void,
-  play: boolean
-): button[] => [
-  {
-    onClick: backwardVideo,
-    message: '',
-    type: 'transparent',
-    children: <BsFillSkipStartFill size={size.BIG_ICON_SIZE} />,
-  },
-  {
-    onClick: playPauseVideo,
-    message: '',
-    type: 'transparent',
-    children: play ? (
-      <BsFillPlayFill size={size.BIG_ICON_SIZE} />
-    ) : (
-      <BsFillPauseFill size={size.BIG_ICON_SIZE} />
-    ),
-  },
-  {
-    onClick: forwardVideo,
-    message: '',
-    type: 'transparent',
-    children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
-  },
-];
+const StyledEditToolDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-const getEditToolsData = (
-  rotateLeft90Degree: () => void,
-  rotateRight90Degree: () => void,
-  reverseUpsideDown: () => void,
-  reverseSideToSide: () => void,
-  enlarge: () => void,
-  reduce: () => void,
-  crop: () => void
-): button[] => [
-  {
-    onClick: rotateLeft90Degree,
-    message: "Left 90'",
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: rotateRight90Degree,
-    message: "Right 90'",
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: reverseUpsideDown,
-    message: 'Up to Down',
-    type: 'transparent',
-    children: null,
-  },
-  {
-    onClick: reverseSideToSide,
-    message: 'Side to Side',
-    type: 'transparent',
-    children: null,
-  },
-  { onClick: enlarge, message: 'enlarge', type: 'transparent', children: null },
-  { onClick: reduce, message: 'reduce', type: 'transparent', children: null },
-  {
-    onClick: crop,
-    message: 'crop',
-    type: 'transparent',
-    children: <RiScissorsLine size={size.ICON_SIZE} />,
-  },
-];
+const EditTool = styled(ButtonGroup)`
+  width: 20rem;
+`;
 
-const EditTool = styled(ButtonGroup)``;
+const WrapperDiv = styled.div`
+  width: 25rem;
+  display: flex;
+  justify-content: center;
+  animation: ${slide} 0.5s -0.1s ease-out;
+`;
+
+const SubEditTool = styled(ButtonGroup)`
+  width: 100%;
+`;
+
 const VideoTool = styled(ButtonGroup)``;
 
-const Tools: React.FC = () => {
-  const [play, setPlay] = useState(true); // Fix 스토어로 등록
+interface props {
+  setEdit: Function;
+}
+
+const Tools: React.FC<props> = ({ setEdit }) => {
+  const play = useSelector(getPlaying);
   const dispatch = useDispatch();
+  const [toolType, setToolType] = useState(null);
+  const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
 
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
@@ -131,15 +92,13 @@ const Tools: React.FC = () => {
   };
 
   const playPauseVideo = () => {
-    if (play) {
+    if (!play) {
       video.play();
       dispatch(playAction());
     } else {
       video.pause();
       dispatch(pause());
     }
-
-    setPlay(!play);
   };
 
   document.onkeydown = (event: KeyboardEvent) => {
@@ -160,14 +119,61 @@ const Tools: React.FC = () => {
     }
   };
 
-  const rotateLeft90Degree = () => webglController.rotateLeft90Degree();
-  const rotateRight90Degree = () => webglController.rotateRight90Degree();
-  const reverseUpsideDown = () => webglController.reverseUpsideDown();
-  const reverseSideToSide = () => webglController.reverseSideToSide();
-  const enlarge = () => webglController.enlarge();
-  const reduce = () => webglController.reduce();
-  const crop = () => {
-    // crop
+  const closeSubtool = () => {
+    setEdit(DOWN);
+    setToolType(null);
+    dispatchButtonData({ type: null });
+  };
+
+  const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
+    if (type !== ButtonTypes.crop) dispatch(cropCancel());
+    setEdit(UP);
+    setToolType(type);
+    dispatchButtonData({ type, payload });
+  };
+
+  const handleCropManually = useCallback(() => {}, []); // TODO:
+  const handleCropConfirm = useCallback(() => {
+    dispatch(cropConfirm());
+    closeSubtool();
+  }, [dispatch]);
+  const handleCropCancel = useCallback(() => {
+    dispatch(cropCancel());
+    closeSubtool();
+  }, [dispatch]);
+
+  const methods = useMemo(
+    () => ({
+      rotateReverse: [
+        webglController.rotateLeft90Degree,
+        webglController.rotateRight90Degree,
+        webglController.reverseUpsideDown,
+        webglController.reverseSideToSide,
+      ],
+      ratio: [webglController.enlarge, webglController.reduce],
+      crop: [handleCropManually, handleCropConfirm, handleCropCancel],
+    }),
+    []
+  );
+
+  const handleRotateReverse = () =>
+    toolType === ButtonTypes.videoEffect
+      ? closeSubtool()
+      : openSubtool(ButtonTypes.videoEffect, methods.rotateReverse);
+
+  const handleRatio = () =>
+    toolType === ButtonTypes.ratio
+      ? closeSubtool()
+      : openSubtool(ButtonTypes.ratio, methods.ratio);
+
+  const handleCrop = () => {
+    if (toolType === ButtonTypes.crop) {
+      dispatch(cropCancel());
+      closeSubtool();
+    } else {
+      openSubtool(ButtonTypes.crop, methods.crop);
+      dispatch(cropStart());
+    }
   };
 
   return (
@@ -180,17 +186,20 @@ const Tools: React.FC = () => {
           play
         )}
       />
-      <EditTool
-        buttonData={getEditToolsData(
-          rotateLeft90Degree,
-          rotateRight90Degree,
-          reverseUpsideDown,
-          reverseSideToSide,
-          enlarge,
-          reduce,
-          crop
+      <StyledEditToolDiv>
+        {toolType && (
+          <WrapperDiv>
+            <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
+          </WrapperDiv>
         )}
-      />
+        <EditTool
+          buttonData={getEditToolData(
+            handleRotateReverse,
+            handleRatio,
+            handleCrop
+          )}
+        />
+      </StyledEditToolDiv>
       <UploadArea />
     </StyledDiv>
   );
