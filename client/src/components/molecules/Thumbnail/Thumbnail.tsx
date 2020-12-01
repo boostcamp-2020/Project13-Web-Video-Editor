@@ -35,13 +35,11 @@ const Thumbnail: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isCrop) {
-      setPosition([start, end]);
-    }
+    if (isCrop) setPosition([start, end]);
   }, [isCrop]);
 
   useEffect(() => {
-    dispatch(crop(position[0], position[1]));
+    if (isCropConfirm) dispatch(crop(position[0], position[1]));
   }, [isCropConfirm]);
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
