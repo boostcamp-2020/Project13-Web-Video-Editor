@@ -2,6 +2,7 @@ import {
   LoadMetadataAction,
   SetThumbnailsAction,
 } from '@/store/currentVideo/actions';
+import { CropConfirmAction } from '@/store/crop/actions';
 import {
   FETCH_START,
   SET_VIDEO,
@@ -45,5 +46,6 @@ export type OriginalVideoAction =
   | SetVideoAction
   | LoadMetadataAction
   | SetThumbnailsAction
+  | CropConfirmAction
   | ErrorAction
   | ResetAction;

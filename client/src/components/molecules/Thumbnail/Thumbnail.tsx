@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
-import { getThumbnails, getIsCrop } from '@/store/selectors';
+import { getThumbnails, getIsCrop, getStartEnd } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
 
 const StyledDiv = styled.div`
@@ -25,6 +25,7 @@ const StyledImg = styled.img`
 const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
   const isCrop = useSelector(getIsCrop);
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const [time, setTime] = useState(0);
 
@@ -34,9 +35,9 @@ const Thumbnail: React.FC = () => {
   const hoverSliderRef = useRef<HTMLDivElement>(null);
 
   const handleClick = () => {
-    video.setCurrentTime(time);
+    video.setCurrentTime(start + time);
 
-    dispatch(moveTo(time));
+    dispatch(moveTo(start + time));
   };
 
   const handleMouseMove = (event: MouseEvent) => {
@@ -48,7 +49,7 @@ const Thumbnail: React.FC = () => {
     const distance = mouseLocation - offset;
 
     const width = thumbnailRef.current.clientWidth;
-    const duration = video.get('duration');
+    const duration = end - start;
 
     const hoverTime = (distance / width) * duration;
 
