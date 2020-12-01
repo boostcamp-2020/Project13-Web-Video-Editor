@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { moveTo, crop } from '@/store/currentVideo/actions';
+import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
-import { getThumbnailsEffect, getStartEnd } from '@/store/selectors';
+import { getThumbnails, getIsCrop } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
 
 const StyledDiv = styled.div`
@@ -23,24 +23,12 @@ const StyledImg = styled.img`
 `;
 
 const Thumbnail: React.FC = () => {
-  const { thumbnails, isCrop, isCropConfirm } = useSelector(
-    getThumbnailsEffect,
-    shallowEqual
-  );
-  const { start, end } = useSelector(getStartEnd);
+  const thumbnails = useSelector(getThumbnails);
+  const isCrop = useSelector(getIsCrop);
 
   const [time, setTime] = useState(0);
-  const [position, setPosition] = useState([0, 0]);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (isCrop) setPosition([start, end]);
-  }, [isCrop]);
-
-  useEffect(() => {
-    if (isCropConfirm) dispatch(crop(position[0], position[1]));
-  }, [isCropConfirm]);
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
   const hoverSliderRef = useRef<HTMLDivElement>(null);
@@ -84,7 +72,7 @@ const Thumbnail: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
     >
-      {isCrop && <CropLayer positions={position} setPositions={setPosition} />}
+      {isCrop && <CropLayer />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
       {thumbnails.map(image => {

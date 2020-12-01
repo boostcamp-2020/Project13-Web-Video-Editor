@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { Range } from 'react-range';
 import styled from 'styled-components';
 
 import color from '@/theme/colors';
 import convertReactStyleToCSS from '@/utils/convert';
 import video from '@/video';
+import { crop } from '@/store/currentVideo/actions';
+import { getStartEnd, getCropState } from '@/store/selectors';
 
 const MIN = 0;
 
@@ -58,9 +61,25 @@ const Thumb = styled.div`
   }
 `;
 
-const CropLayer = ({ positions, setPositions }) => {
+const CropLayer = () => {
   const MAX = video.get('duration');
   const STEP = (MAX - MIN) / 1024;
+
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
+  const { isCrop, isCropConfirm } = useSelector(getCropState, shallowEqual);
+
+  const [positions, setPositions] = useState([0, 0]);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isCrop) setPositions([start, end]);
+  }, [isCrop]);
+
+  useEffect(() => {
+    if (isCropConfirm) dispatch(crop(positions[0], positions[1]));
+  }, [isCropConfirm]);
+
   return (
     <CropLayerDiv>
       <Range

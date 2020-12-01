@@ -31,12 +31,11 @@ export const getIsCrop = (state: RootState) => state.crop.isCrop;
 
 export const getIsCropConfirm = (state: RootState) => state.crop.isCropConfirm;
 
-export const getThumbnailsEffect = (state: RootState) => {
-  const { thumbnails } = state.currentVideo;
-  const { isCrop, isCropConfirm } = state.crop;
+export const getCropState = (state: RootState) => {
+  const { isCrop } = state.crop;
+  const { isCropConfirm } = state.crop;
 
   return {
-    thumbnails,
     isCrop,
     isCropConfirm,
   };
