@@ -1,5 +1,6 @@
 import { all, call, takeEvery } from 'redux-saga/effects';
 import { watchSetVideo, deleteSrc } from '@/store/originalVideo/sagas';
+import CropThumbnail from '@/store/crop/sagas';
 import { RESET } from './actionTypes';
 
 function* watchReset() {
@@ -7,5 +8,5 @@ function* watchReset() {
 }
 
 export default function* rootSaga() {
-  yield all([watchSetVideo(), watchReset()]);
+  yield all([watchSetVideo(), watchReset(), CropThumbnail()]);
 }

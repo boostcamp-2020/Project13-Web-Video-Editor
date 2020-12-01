@@ -65,7 +65,8 @@ class Video {
             secs -= gap;
             images[count] = image;
           }
-          this.thumbnails = images;
+          if (start === 0 && end === this.video.duration)
+            this.thumbnails = images;
           resolve(images);
         })();
       } catch (err) {

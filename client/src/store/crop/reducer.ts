@@ -1,5 +1,5 @@
 import { CROP_START, CROP_CANCEL, CROP_CONFIRM, CROP } from '../actionTypes';
-import { CropAction } from './actions';
+import { CropStoreAction } from './actions';
 
 export interface CropState {
   isCrop: boolean;
@@ -13,7 +13,7 @@ const initialState: CropState = {
 
 export default (
   state: CropState = initialState,
-  action: CropAction
+  action: CropStoreAction
 ): CropState => {
   switch (action.type) {
     case CROP_START:
