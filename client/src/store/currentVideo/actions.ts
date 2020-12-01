@@ -51,7 +51,7 @@ export type SetThumbnailsAction = {
   };
 };
 
-type CropAction = {
+export type CropAction = {
   type: typeof CROP;
   payload: {
     start: number;

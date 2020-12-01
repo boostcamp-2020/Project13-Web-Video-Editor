@@ -17,7 +17,7 @@ const StyledDiv = styled.div`
 `;
 
 const CurrentTime: React.FC = () => {
-  const currentTime = () => Math.round(video.getCurrentTime());
+  const currentTime = () => Math.round(video.get('currentTime'));
 
   const [time, setTime] = useState(currentTime());
   const visible = useSelector(getVisible);
