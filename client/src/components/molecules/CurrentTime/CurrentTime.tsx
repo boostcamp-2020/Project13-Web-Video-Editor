@@ -24,7 +24,7 @@ const StyledDiv = styled.div`
 const CurrentTime: React.FC = () => {
   const currentTime = () => video.get('currentTime');
   const { start, end } = useSelector(getStartEnd, shallowEqual);
-  const cropState = useSelector(getIsCropAndDuration);
+  const cropState = useSelector(getIsCropAndDuration, shallowEqual);
   const [time, setTime] = useState(Math.floor(currentTime() - start));
   const visible = useSelector(getVisible);
 

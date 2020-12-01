@@ -1,6 +1,6 @@
 import React, { MutableRefObject, useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 
 import { getPlaying, getCurrentTime, getStartEnd } from '@/store/selectors';
 import color from '@/theme/colors';
@@ -35,7 +35,7 @@ const StyledDiv = styled.div`
 const Slider: React.FC<Props> = ({ thumbnailRef }) => {
   const [location, setLocation] = useState(0);
   const [duration, setDuration] = useState(0);
-  const { start, end } = useSelector(getStartEnd);
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const isPlaying = useSelector(getPlaying);
   const time = useSelector(getCurrentTime);

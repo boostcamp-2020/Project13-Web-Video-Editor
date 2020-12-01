@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
@@ -25,7 +25,7 @@ const StyledImg = styled.img`
 const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
   const isCrop = useSelector(getIsCrop);
-  const { start, end } = useSelector(getStartEnd);
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const [time, setTime] = useState(0);
 
