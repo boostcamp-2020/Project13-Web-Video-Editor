@@ -131,6 +131,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
     type: 'videoEffect' | 'ratio' | 'crop',
     payload: (() => void)[]
   ) => {
+    if (type !== 'crop') dispatch(cropCancel());
     setEdit(UP);
     setToolType(type);
     dispatchButtonData({ type, payload });
