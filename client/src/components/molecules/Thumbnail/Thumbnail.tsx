@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { moveTo, crop } from '@/store/currentVideo/actions';
-import { cropEnd } from '@/store/actionTypes';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
@@ -43,7 +42,6 @@ const Thumbnail: React.FC = () => {
 
   useEffect(() => {
     dispatch(crop(position[0], position[1]));
-    dispatch(cropEnd());
   }, [isCropConfirm]);
 
   const thumbnailRef = useRef<HTMLDivElement>(null);
