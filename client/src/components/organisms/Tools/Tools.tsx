@@ -6,11 +6,7 @@ import webglController from '@/webgl/webglController';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
-import {
-  play as playAction,
-  pause,
-  moveTo,
-} from '@/store/currentVideo/actions';
+import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import { getStartEnd, getPlaying } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
 import reducer, { initialData, ButtonTypes } from './reducer';
@@ -70,7 +66,7 @@ interface props {
 }
 
 const Tools: React.FC<props> = ({ setEdit }) => {
-  const play = useSelector(getPlaying);
+  const playing = useSelector(getPlaying);
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
@@ -78,25 +74,36 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const backwardVideo = () => {
-    const dstTime = Math.max(video.get('currentTime') - 10, start);
-
+    let dstTime = video.get('currentTime') - 10;
+    if (dstTime < start) {
+      dstTime = start;
+      if (playing) {
+        dispatch(pause());
+        dispatch(play());
+      }
+    }
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
   };
 
   const forwardVideo = () => {
-    const dstTime = Math.min(video.get('currentTime') + 10, end);
-
+    let dstTime = video.get('currentTime') + 10;
+    if (dstTime > end) {
+      dstTime = end;
+      video.pause();
+      dispatch(pause());
+    }
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
   };
 
   const playPauseVideo = () => {
-    if (!play) {
+    if (!playing) {
       video.play();
-      dispatch(playAction());
+      dispatch(play());
     } else {
       video.pause();
+      dispatch(moveTo(video.get('currentTime')));
       dispatch(pause());
     }
   };
@@ -183,7 +190,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
           backwardVideo,
           playPauseVideo,
           forwardVideo,
-          play
+          playing
         )}
       />
       <StyledEditToolDiv>
