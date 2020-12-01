@@ -1,4 +1,5 @@
 import { CROP_START, CROP_CANCEL, CROP_CONFIRM, CROP } from '../actionTypes';
+import { CropAction } from '../currentVideo/actions';
 
 export const cropStart = () => ({
   type: typeof CROP_START,
@@ -24,12 +25,8 @@ export type CropConfirmAction = {
   type: typeof CROP_CONFIRM;
 };
 
-export type Crop = {
-  type: typeof CROP;
-};
-
-export type CropAction =
+export type CropStoreAction =
   | CropStartAction
   | CropCancelAction
   | CropConfirmAction
-  | Crop;
+  | CropAction;
