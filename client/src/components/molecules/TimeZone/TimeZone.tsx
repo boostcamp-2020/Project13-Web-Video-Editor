@@ -1,8 +1,13 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { getDuration } from '@/store/selectors';
+import {
+  getDuration,
+  getStartEnd,
+  getIsCrop,
+  getIsCropAndDuration,
+} from '@/store/selectors';
 import TimeText from '@/components/atoms/TimeText';
 import color from '@/theme/colors';
 
@@ -23,7 +28,8 @@ const InnerDiv = styled.div`
 
 const PART_COUNT = 6;
 
-const getTimes = (duration: number): number[] => {
+const getTimes = ({ start, end }): number[] => {
+  const duration: number = end - start;
   if (!duration) return [];
 
   const times: number[] = [];
@@ -40,8 +46,11 @@ const getTimes = (duration: number): number[] => {
 };
 
 const TimeZone: React.FC = () => {
-  const duration: number = Math.round(useSelector(getDuration));
-  const times: number[] = getTimes(duration);
+  const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
+  const { start, end } = useSelector(getStartEnd);
+
+  const parameter = isCrop ? { start: 0, end: duration } : { start, end };
+  const times: number[] = getTimes(parameter);
 
   return (
     <StyledDiv>

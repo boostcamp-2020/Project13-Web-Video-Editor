@@ -40,3 +40,12 @@ export const getCropState = (state: RootState) => {
     isCropConfirm,
   };
 };
+export const getIsCropAndDuration = (state: RootState) => {
+  const { isCrop } = state.crop;
+  const { length } = state.originalVideo;
+
+  return {
+    isCrop,
+    duration: length,
+  };
+};
