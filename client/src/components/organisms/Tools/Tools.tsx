@@ -213,7 +213,6 @@ const Tools: React.FC = () => {
     dispatch(cropConfirm());
     setToolType(null);
     dispatchButtonData({ type: null });
-    dispatch(cropCancel());
   };
   const handleCropCancel = () => {
     setToolType(null);

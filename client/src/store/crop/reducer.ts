@@ -29,6 +29,7 @@ export default (
     case CROP_CONFIRM:
       return {
         ...state,
+        isCrop: false,
         isCropConfirm: true,
       };
     case CROP:
