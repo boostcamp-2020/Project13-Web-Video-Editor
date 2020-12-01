@@ -99,6 +99,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
 
   const playPauseVideo = () => {
     if (!playing) {
+      // NOTE: playing을 바꿔서 slider의 useEffect를 통해 다시 렌더링하기 위함
       video.play();
       dispatch(play());
     } else {

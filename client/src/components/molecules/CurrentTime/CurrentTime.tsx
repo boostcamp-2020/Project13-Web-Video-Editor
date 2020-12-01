@@ -38,7 +38,7 @@ const CurrentTime: React.FC = () => {
         if (newTime >= end) {
           if (!cropState.isCrop) video.pause();
           dispatch(pause());
-          newTime = end;
+          if (newTime > end) video.setCurrentTime((newTime = end));
           dispatch(moveTo(end));
         }
         newTime = Math.floor(newTime - start);
