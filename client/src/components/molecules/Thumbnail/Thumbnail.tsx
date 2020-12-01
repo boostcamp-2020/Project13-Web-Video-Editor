@@ -75,7 +75,7 @@ const Thumbnail: React.FC = () => {
       {isCrop && <CropLayer />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
-      {thumbnails.map(image => {
+      {(isCrop ? video.getThumbnails() : thumbnails).map(image => {
         return <StyledImg key={image} src={image} alt="" />;
       })}
     </StyledDiv>
