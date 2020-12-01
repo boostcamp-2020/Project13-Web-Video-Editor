@@ -7,12 +7,7 @@ import { cropEnd } from '@/store/actionTypes';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/atoms/HoverSlider';
 import video from '@/video';
-import {
-  getThumbnails,
-  getIsCrop,
-  getIsCropConfirm,
-  getStartEnd,
-} from '@/store/selectors';
+import { getThumbnailsEffect, getStartEnd } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
 
 const StyledDiv = styled.div`
@@ -29,14 +24,14 @@ const StyledImg = styled.img`
 `;
 
 const Thumbnail: React.FC = () => {
-  const thumbnails = useSelector(getThumbnails);
-  const isCrop = useSelector(getIsCrop);
-  const isCropConfirm = useSelector(getIsCropConfirm);
-  // const { thumbnails,isCrop, isCropConfirm } = useSelector(getThumbnailsEffect, shallowEqual);
+  const { thumbnails, isCrop, isCropConfirm } = useSelector(
+    getThumbnailsEffect,
+    shallowEqual
+  );
+  const { start, end } = useSelector(getStartEnd);
 
   const [time, setTime] = useState(0);
   const [position, setPosition] = useState([0, 0]);
-  const { start, end } = useSelector(getStartEnd);
 
   const dispatch = useDispatch();
 
