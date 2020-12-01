@@ -19,19 +19,22 @@ interface button {
   message: string;
   type: 'default' | 'transparent';
   children: React.ReactChild;
+  disabled?: boolean;
 }
 
 export const getVideoToolsData = (
   backwardVideo: () => void,
   playPauseVideo: () => void,
   forwardVideo: () => void,
-  play: boolean
+  play: boolean,
+  hasEmptyVideo: boolean
 ): button[] => [
   {
     onClick: backwardVideo,
     message: '',
     type: 'transparent',
     children: <BsFillSkipStartFill size={size.BIG_ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: playPauseVideo,
@@ -42,37 +45,43 @@ export const getVideoToolsData = (
     ) : (
       <BsFillPlayFill size={size.BIG_ICON_SIZE} />
     ),
+    disabled: hasEmptyVideo,
   },
   {
     onClick: forwardVideo,
     message: '',
     type: 'transparent',
     children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
 ];
 
 export const getEditToolData = (
   rotateReverse: () => void,
   ratio: () => void,
-  crop: () => void
+  crop: () => void,
+  hasEmptyVideo: boolean
 ): button[] => [
   {
     onClick: rotateReverse,
     message: '회전 / 반전',
     type: 'transparent',
     children: <MdScreenRotation size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: ratio,
     message: '비율',
     type: 'transparent',
     children: <BsAspectRatio size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: crop,
     message: '자르기',
     type: 'transparent',
     children: <RiScissorsLine size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
 ];
 

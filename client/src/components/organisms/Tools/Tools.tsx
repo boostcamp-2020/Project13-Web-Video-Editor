@@ -70,6 +70,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
+  const hasEmptyVideo = !video.get('src');
 
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
@@ -191,7 +192,8 @@ const Tools: React.FC<props> = ({ setEdit }) => {
           backwardVideo,
           playPauseVideo,
           forwardVideo,
-          playing
+          playing,
+          hasEmptyVideo
         )}
       />
       <StyledEditToolDiv>
@@ -204,7 +206,8 @@ const Tools: React.FC<props> = ({ setEdit }) => {
           buttonData={getEditToolData(
             handleRotateReverse,
             handleRatio,
-            handleCrop
+            handleCrop,
+            hasEmptyVideo
           )}
         />
       </StyledEditToolDiv>

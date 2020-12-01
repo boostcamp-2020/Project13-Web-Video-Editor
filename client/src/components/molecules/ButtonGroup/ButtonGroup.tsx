@@ -16,6 +16,7 @@ interface button {
   message: string;
   type: 'default' | 'transparent';
   children: React.ReactChild;
+  disabled: boolean;
 }
 
 interface Props {
@@ -31,6 +32,7 @@ const ButtonGroup: React.FC<Props> = ({ buttonData, StyledProps }) => (
         onClick={data.onClick}
         message={data.message}
         type={data.type}
+        disabled={data.disabled}
       >
         {data.children}
       </Button>

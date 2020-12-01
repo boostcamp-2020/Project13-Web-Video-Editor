@@ -21,6 +21,9 @@ const StyledButton = styled.button<StyledProps>`
   &:focus {
     outline: none;
   }
+  &:disabled {
+    cursor: not-allowed;
+  }
 `;
 
 interface Props {
@@ -28,10 +31,17 @@ interface Props {
   message: string;
   onClick?: () => void;
   type: ButtonType;
+  disabled: boolean;
 }
 
-const Button: React.FC<Props> = ({ children, message, onClick, type }) => (
-  <StyledButton buttonType={type} onClick={onClick}>
+const Button: React.FC<Props> = ({
+  children,
+  message,
+  onClick,
+  type,
+  disabled,
+}) => (
+  <StyledButton buttonType={type} onClick={onClick} disabled={disabled}>
     {children}
     {children && <br />}
     {message}
