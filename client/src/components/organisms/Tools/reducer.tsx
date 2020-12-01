@@ -10,6 +10,12 @@ import { CgMergeHorizontal, CgMergeVertical } from 'react-icons/cg';
 
 import size from '@/theme/sizes';
 
+export enum ButtonTypes {
+  crop = 'crop',
+  videoEffect = 'videoEffect',
+  ratio = 'ratio',
+}
+
 export interface ButtonData {
   onClicks: (() => void)[];
   messages: string[];
@@ -17,8 +23,8 @@ export interface ButtonData {
   childrens: React.ReactChild[];
 }
 
-export interface ButtonDataAction {
-  type: 'crop' | 'videoEffect' | 'ratio' | null;
+interface ButtonDataAction {
+  type: ButtonTypes | null;
   payload?: (() => void)[];
 }
 
@@ -55,21 +61,21 @@ export const initialData: ButtonData = {
 
 export default (state: ButtonData, action: ButtonDataAction): ButtonData => {
   switch (action.type) {
-    case 'crop':
+    case ButtonTypes.crop:
       return {
         onClicks: action.payload,
         messages: cropMessages,
         type: 'transparent',
         childrens: cropChildrens,
       };
-    case 'videoEffect':
+    case ButtonTypes.videoEffect:
       return {
         onClicks: action.payload,
         messages: rotateReverseMessages,
         type: 'transparent',
         childrens: rotateReverseChildrens,
       };
-    case 'ratio':
+    case ButtonTypes.ratio:
       return {
         onClicks: action.payload,
         messages: ratioMessages,
