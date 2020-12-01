@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useCallback, useMemo } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
@@ -11,10 +11,9 @@ import {
   pause,
   moveTo,
 } from '@/store/currentVideo/actions';
-import { getStartEnd } from '@/store/selectors';
+import { getStartEnd, getPlaying } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
-
-import reducer, { initialData, ButtonDataAction } from './reducer';
+import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
   getSubEditToolsData,
@@ -126,56 +125,53 @@ const Tools: React.FC<props> = ({ setEdit }) => {
     dispatchButtonData({ type: null });
   };
 
-  const openSubtool = (
-    type: 'videoEffect' | 'ratio' | 'crop',
-    payload: (() => void)[]
-  ) => {
-    if (type !== 'crop') dispatch(cropCancel());
+  const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
+    if (type !== ButtonTypes.crop) dispatch(cropCancel());
     setEdit(UP);
     setToolType(type);
     dispatchButtonData({ type, payload });
   };
 
-  const handleRotateLeft90Degree = () => webglController.rotateLeft90Degree();
-  const handleRotateRight90Degree = () => webglController.rotateRight90Degree();
-  const handleReverseUpsideDown = () => webglController.reverseUpsideDown();
-  const handleReverseSideToSide = () => webglController.reverseSideToSide();
-  const rotateReverseMethods = [
-    handleRotateLeft90Degree,
-    handleRotateRight90Degree,
-    handleReverseUpsideDown,
-    handleReverseSideToSide,
-  ];
-
-  const handleRatioEnlarge = () => webglController.enlarge();
-  const handleRatioReduce = () => webglController.reduce();
-  const ratioMethods = [handleRatioEnlarge, handleRatioReduce];
-
-  const handleCropInsert = () => {}; // TODO:
-  const handleCropConfirm = () => {
+  const handleCropManually = useCallback(() => {}, []); // TODO:
+  const handleCropConfirm = useCallback(() => {
     dispatch(cropConfirm());
     closeSubtool();
-  };
-  const handleCropCancel = () => {
-    closeSubtool();
+  }, [dispatch]);
+  const handleCropCancel = useCallback(() => {
     dispatch(cropCancel());
-  };
-  const cropMethods = [handleCropInsert, handleCropConfirm, handleCropCancel];
+    closeSubtool();
+  }, [dispatch]);
+
+  const methods = useMemo(
+    () => ({
+      rotateReverse: [
+        webglController.rotateLeft90Degree,
+        webglController.rotateRight90Degree,
+        webglController.reverseUpsideDown,
+        webglController.reverseSideToSide,
+      ],
+      ratio: [webglController.enlarge, webglController.reduce],
+      crop: [handleCropManually, handleCropConfirm, handleCropCancel],
+    }),
+    []
+  );
 
   const handleRotateReverse = () =>
-    toolType === 'videoEffect'
+    toolType === ButtonTypes.videoEffect
       ? closeSubtool()
-      : openSubtool('videoEffect', rotateReverseMethods);
+      : openSubtool(ButtonTypes.videoEffect, methods.rotateReverse);
 
   const handleRatio = () =>
-    toolType === 'ratio' ? closeSubtool() : openSubtool('ratio', ratioMethods);
+    toolType === ButtonTypes.ratio
+      ? closeSubtool()
+      : openSubtool(ButtonTypes.ratio, methods.ratio);
 
   const handleCrop = () => {
-    if (toolType === 'crop') {
+    if (toolType === ButtonTypes.crop) {
       dispatch(cropCancel());
       closeSubtool();
     } else {
-      openSubtool('crop', cropMethods);
+      openSubtool(ButtonTypes.crop, methods.crop);
       dispatch(cropStart());
     }
   };
