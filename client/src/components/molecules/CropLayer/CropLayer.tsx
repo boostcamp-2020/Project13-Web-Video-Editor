@@ -59,7 +59,7 @@ const Thumb = styled.div`
 `;
 
 const CropLayer = ({ positions, setPositions }) => {
-  const MAX = video.getDuration();
+  const MAX = video.get('duration');
   const STEP = (MAX - MIN) / 1024;
   return (
     <CropLayerDiv>
