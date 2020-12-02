@@ -2,9 +2,11 @@ import { Express } from 'express';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
-import { retrieveByUser } from '../model/video';
+import { retrieveByUser, create } from '../model/video';
 
 require('dotenv').config();
+
+const USER_ID = 1; // FIXME: token authorization
 
 const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
 const region = process.env.REGION;
@@ -29,14 +31,13 @@ const upload = async (file: Express.Multer.File) => {
     Body: file.buffer,
   }).promise();
 
-  if (httpResponse.statusCode === 200) {
-    const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
-    return url;
-  }
-
-  throw Object.assign(new Error(httpResponse.statusMessage), {
-    status: httpResponse.statusCode,
-  });
+  if (httpResponse.statusCode !== 200)
+    throw Object.assign(new Error(httpResponse.statusMessage), {
+      status: httpResponse.statusCode,
+    });
+  const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
+  const id = await create(USER_ID, fileKey, url, null);
+  return { url, id };
 };
 
 const download = () => {
@@ -44,8 +45,8 @@ const download = () => {
 };
 
 const getByUser = async (id: number) => {
-  const videoList = await retrieveByUser(id);
-  return videoList;
+  const videos = await retrieveByUser(id);
+  return videos;
 };
 
 export default { upload, download, getByUser };

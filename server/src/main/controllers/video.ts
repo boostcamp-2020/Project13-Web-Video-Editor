@@ -11,8 +11,8 @@ export const uploadVideo = async (
   next: express.NextFunction
 ) => {
   try {
-    const url: string = await videoService.upload(req.file);
-    responseHandler(res, 200, { url });
+    const result = await videoService.upload(req.file);
+    responseHandler(res, 200, result);
   } catch (err) {
     next(err);
   }
@@ -30,8 +30,8 @@ export const getVideoList = async (
   // next: express.NextFunction
 ) => {
   try {
-    const videoList = await videoService.getByUser(USER_ID); // FIXME
-    responseHandler(res, 200, { videoList });
+    const videos = await videoService.getByUser(USER_ID); // FIXME
+    responseHandler(res, 200, { videos });
   } catch (err) {
     console.log(err);
   }
