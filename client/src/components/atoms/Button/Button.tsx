@@ -23,6 +23,7 @@ const StyledButton = styled.button<StyledProps>`
   }
   &:disabled {
     cursor: not-allowed;
+    opacity: 0.5;
   }
 `;
 
