@@ -6,7 +6,7 @@ import {
   BsArrowRepeat,
 } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
-import { getFile } from '@/store/selectors';
+import { getFile, getVisible } from '@/store/selectors';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
@@ -27,48 +27,56 @@ interface button {
   message: string;
   type: 'default' | 'transparent';
   children: React.ReactChild;
+  disabled: boolean;
 }
 
 const getHistoryToolData = (
   handlePrevious: () => void,
   handleNext: () => void,
-  handleReset: () => void
+  handleReset: () => void,
+  hasEmptyVideo: boolean
 ): button[] => [
   {
     onClick: handlePrevious,
     message: '이전',
     type: 'transparent',
     children: <BsArrowClockwise size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: handleNext,
     message: '다음',
     type: 'transparent',
     children: <BsArrowCounterclockwise size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: handleReset,
     message: '원본으로',
     type: 'transparent',
     children: <BsArrowRepeat size={size.ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
 ];
 
 const getCancelConfirmData = (
   handleCancel: () => void,
-  handleConfirm: () => void
+  handleConfirm: () => void,
+  hasEmptyVideo: boolean
 ): button[] => [
   {
     onClick: handleCancel,
     message: '취소',
     type: 'default',
     children: null,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: handleConfirm,
     message: '완료',
     type: 'default',
     children: null,
+    disabled: hasEmptyVideo,
   },
 ];
 
@@ -84,6 +92,7 @@ const CancelConfirmStyle = `
 const Header = () => {
   const videoFile = useSelector(getFile);
   const dispatch = useDispatch();
+  const hasEmptyVideo = !useSelector(getVisible);
 
   const handlePrevious = () => {};
   const handleNext = () => {};
@@ -105,11 +114,20 @@ const Header = () => {
     <StyledHeader>
       <Logo />
       <HistoryTool
-        buttonData={getHistoryToolData(handlePrevious, handleNext, handleReset)}
+        buttonData={getHistoryToolData(
+          handlePrevious,
+          handleNext,
+          handleReset,
+          hasEmptyVideo
+        )}
       />
       <CancelConfirm
         StyledProps={CancelConfirmStyle}
-        buttonData={getCancelConfirmData(handleCancel, handleConfirm)}
+        buttonData={getCancelConfirmData(
+          handleCancel,
+          handleConfirm,
+          hasEmptyVideo
+        )}
       />
     </StyledHeader>
   );
