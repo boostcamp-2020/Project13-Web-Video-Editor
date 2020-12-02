@@ -44,6 +44,7 @@ const UploadArea: React.FC = () => {
         message="불러오기"
         onClick={() => setVisible(!visible)}
         type="default"
+        disabled={false}
       />
       {visible && <FileInput ref={ref} handleChange={handleChange} />}
     </StyledDiv>

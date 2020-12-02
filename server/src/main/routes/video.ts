@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
-import { uploadVideo } from '@/main/controllers/video';
+import { getVideoList, uploadVideo } from '@/main/controllers/video';
 import setMulter from '@/main/middlewares/multer';
 
 const router = Router();
 
-router.post('/video', setMulter, uploadVideo);
+router.get('/list', getVideoList);
+router.post('/', setMulter, uploadVideo);
 
 export default router;
