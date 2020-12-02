@@ -7,7 +7,7 @@ import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
-import { getStartEnd, getPlaying } from '@/store/selectors';
+import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
@@ -70,7 +70,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
-  const hasEmptyVideo = !video.get('src');
+  const hasEmptyVideo = !useSelector(getVisible);
 
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
