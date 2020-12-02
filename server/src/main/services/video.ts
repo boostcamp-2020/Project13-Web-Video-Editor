@@ -2,6 +2,8 @@ import { Express } from 'express';
 import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
+import { retrieveByUser } from '../model/video';
+
 require('dotenv').config();
 
 const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
@@ -41,4 +43,9 @@ const download = () => {
   return null;
 };
 
-export default { upload, download };
+const getByUser = async (id: number) => {
+  const videoList = await retrieveByUser(id);
+  return videoList;
+};
+
+export default { upload, download, getByUser };
