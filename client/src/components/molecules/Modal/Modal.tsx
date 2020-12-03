@@ -28,23 +28,22 @@ const StyledModalSection = styled.div`
   top: 30%;
   left: 50%;
   ${({ styleProps }) => styleProps}
-  background-color: ${color.WHITE};
+  background-color: ${color.MODAL};
   border-radius: 12px;
-  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.7);
-  color: ${color.BLACK};
+  box-shadow: 0 0 10px 8px rgba(255, 255, 255, 0.2);
+  color: ${color.WHITE};
   z-index: 3;
 `;
 
 const StyledModalButtonRow = styled.div`
   position: absolute;
-  bottom: 0;
   width: 100%;
-  height: 20%;
-  padding: 0% 5%;
+  bottom: 1rem;
+  margin-top: 1rem;
   text-align: center;
 
   button {
-    color: ${color.BLACK};
+    color: ${color.WHITE};
   }
 `;
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import {
   BsArrowClockwise,
@@ -6,13 +6,13 @@ import {
   BsArrowRepeat,
 } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
-import { getFile, getVisible } from '@/store/selectors';
+import { getName, getVisible } from '@/store/selectors';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import Modal from '@/components/molecules/Modal';
-import videoAPI from '@/api/video';
+import color from '@/theme/colors';
 import { reset } from '@/store/actionTypes';
 import { encodeStart } from '@/store/originalVideo/actions';
 
@@ -94,15 +94,37 @@ const CancelConfirmStyle = `
 const StyledModalRow = styled.div`
   display: flex;
   align-items: center;
-  height: 50%;
   padding: 5%;
 `;
 
-const Header = () => {
-  const videoFile = useSelector(getFile);
+const StyledInput = styled.input`
+  margin-left: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.1);
+  background-color: ${color.MODAL};
+  color: ${color.WHITE};
+`;
+
+const StyledP = styled.p`
+  margin: 0;
+  font-size: 12px;
+`;
+
+const modalLayout = `
+top: 45vh;
+left: 40vw;
+width: 20vw;
+height: 10vh;
+`;
+
+const Header: React.FC = () => {
   const dispatch = useDispatch();
-  const hasEmptyVideo = !useSelector(getVisible);
   const [complete, setComplete] = useState(false);
+  const name = useSelector(getName);
+  const hasEmptyVideo = !useSelector(getVisible);
+  const inputRef = useRef(null);
 
   const handlePrevious = () => {};
   const handleNext = () => {};
@@ -112,7 +134,7 @@ const Header = () => {
   };
 
   const handleConfirmComplete = async () => {
-    dispatch(encodeStart(videoFile.name));
+    dispatch(encodeStart(inputRef.current.value));
     setComplete(false);
   };
 
@@ -124,21 +146,20 @@ const Header = () => {
     setComplete(true);
   };
 
-  const handleVideoNameChange = () => {};
+  const modalInnerComponent = () => {
+    const [value, setValue] = useState(name);
 
-  const modalLayout = `
-    top: 35vh;
-    left: 35vw;
-    width: 30vw;
-    height: 30vh;
-  `;
-  const modalInnerComponent: React.FC = () => {
+    const handleVideoNameChange = ({ target }) => {
+      setValue(target.value);
+    };
+
     return (
       <StyledModalRow>
-        <p>파일 이름 :</p>
-        <input
+        <StyledP>파일 이름 :</StyledP>
+        <StyledInput
+          ref={inputRef}
           type="text"
-          value={videoFile?.name}
+          value={value}
           onChange={handleVideoNameChange}
         />
       </StyledModalRow>
