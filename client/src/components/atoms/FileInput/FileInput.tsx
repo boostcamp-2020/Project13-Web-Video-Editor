@@ -55,10 +55,11 @@ const StyledInput = styled.input`
 
 interface Props {
   handleChange: () => void;
+  handleClick: () => void;
 }
 
 const FileInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ handleChange }, forwardedRef) => {
+  ({ handleChange, handleClick }, forwardedRef) => {
     return (
       <StyledDiv>
         <FromLocal htmlFor="local">로컬</FromLocal>
@@ -68,7 +69,7 @@ const FileInput = React.forwardRef<HTMLInputElement, Props>(
           ref={forwardedRef}
           onChange={handleChange}
         />
-        <FromServer>서버</FromServer>
+        <FromServer onClick={handleClick}>서버</FromServer>
       </StyledDiv>
     );
   }
