@@ -131,12 +131,12 @@ const Header: React.FC = () => {
   const handleReset = () => {};
   const handleCancel = () => dispatch(reset());
 
-  const handleConfirmComplete = () => {
+  const handleModalConfirm = () => {
     dispatch(encodeStart(inputRef.current.value));
     setComplete(false);
   };
 
-  const handleCancelComplete = () => setComplete(false);
+  const handleModalCancel = () => setComplete(false);
   const handleComplete = () => setComplete(true);
 
   const modalInnerComponent = () => {
@@ -181,9 +181,9 @@ const Header: React.FC = () => {
       {complete && (
         <Modal
           styleProps={modalLayout}
-          handleOverlay={handleCancelComplete}
-          handleButton1={handleCancelComplete}
-          handleButton2={handleConfirmComplete}
+          handleOverlay={handleModalCancel}
+          handleButton1={handleModalCancel}
+          handleButton2={handleModalConfirm}
           buttonMessage1="취소"
           buttonMessage2="확인"
           component={modalInnerComponent}
