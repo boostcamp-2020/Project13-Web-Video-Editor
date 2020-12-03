@@ -20,6 +20,6 @@ function* updateThumbnails(action) {
   }
 }
 
-export default function* CropThumbnail() {
+export default function* watchCrop() {
   yield takeLatest(CROP, updateThumbnails);
 }

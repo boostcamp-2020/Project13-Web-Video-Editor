@@ -18,13 +18,8 @@ export const CROP = 'current/CROP';
 
 // crop
 export const CROP_START = 'crop/CROP_START';
-export const cropStart = () => ({ type: CROP_START });
-
 export const CROP_CANCEL = 'crop/CROP_CANCEL';
-export const cropCancel = () => ({ type: CROP_CANCEL });
-
 export const CROP_CONFIRM = 'crop/CROP_CONFIRM';
-export const cropConfirm = () => ({ type: CROP_CONFIRM });
 
 // history
 
