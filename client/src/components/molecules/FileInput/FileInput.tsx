@@ -70,7 +70,7 @@ const FileInput = React.forwardRef<HTMLInputElement, Props>(
   ({ handleChange }, forwardedRef) => {
     const [modalVisible, setModalVisible] = useState(false);
 
-    const handleClick = async () => setModalVisible(true);
+    const handleClick = () => setModalVisible(true);
     const handleCancel = () => setModalVisible(false);
     const handleConfirm = () => setModalVisible(false);
 
