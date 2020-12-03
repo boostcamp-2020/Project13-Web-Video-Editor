@@ -33,17 +33,27 @@ const StyledModalSection = styled.div`
   box-shadow: 0 0 10px 8px rgba(255, 255, 255, 0.2);
   color: ${color.WHITE};
   z-index: 3;
+  margin-bottom: 1rem;
 `;
 
 const StyledModalButtonRow = styled.div`
   position: absolute;
   width: 100%;
-  bottom: 1rem;
-  margin-top: 1rem;
-  text-align: center;
+  bottom: 0.5rem;
+  padding-top: 0.5rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid ${color.BORDER};
 
   button {
     color: ${color.WHITE};
+    padding: 0.5rem 2rem;
+    border-radius: 40%;
+    &:hover {
+      background-color: ${color.BORDER};
+      box-shadow: 0 0 10px 8px rgba(255, 255, 255, 0.2);
+    }
   }
 `;
 

@@ -7,7 +7,7 @@ import color from '@/theme/colors';
 
 const slide = keyframes`
   from {
-    transform: translate(0, -50px) rotate(90deg);
+    transform: translate(0, -2rem) rotate(90deg);
     opacity: 0;
   }
   to {
@@ -22,7 +22,7 @@ const StyledDiv = styled.div`
   flex-direction: column;
   justify-content: center;
   border-radius: 5px;
-  top: 2rem;
+  top: 3rem;
   right: 0;
   border: 1px solid ${color.BORDER};
   background-color: ${color.BLACK};
