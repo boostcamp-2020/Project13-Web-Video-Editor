@@ -22,6 +22,8 @@ const StyledHeader = styled.header`
   align-items: center;
   height: 100px;
   padding: 0 2rem 0 1rem;
+  background-color: ${color.VIDEO};
+  border-bottom: 1px solid ${color.BORDER};
 `;
 
 interface button {
@@ -84,6 +86,14 @@ const getCancelConfirmData = (
 
 const HistoryTool = styled(ButtonGroup)``;
 
+const HistoryWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 20rem;
+  position: absolute;
+  left: calc(50% - 10rem);
+`;
+
 const CancelConfirm = styled(ButtonGroup)``;
 const CancelConfirmStyle = `
   button {
@@ -93,30 +103,33 @@ const CancelConfirmStyle = `
 
 const StyledModalRow = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 5%;
+  padding: 1rem;
 `;
 
 const StyledInput = styled.input`
-  margin-left: 5px;
-  padding: 5px;
+  width: 75%;
+  padding: 0.5rem;
   border-radius: 5px;
   border: none;
   box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.1);
   background-color: ${color.MODAL};
   color: ${color.WHITE};
+  outline: none;
 `;
 
 const StyledP = styled.p`
   margin: 0;
+  width: 25%;
   font-size: 12px;
 `;
 
 const modalLayout = `
-top: 45vh;
+top: 35vh;
 left: 40vw;
 width: 20vw;
-height: 10vh;
+height: 12vh;
 `;
 
 const Header: React.FC = () => {
@@ -162,14 +175,16 @@ const Header: React.FC = () => {
   return (
     <StyledHeader>
       <Logo />
-      <HistoryTool
-        buttonData={getHistoryToolData(
-          handlePrevious,
-          handleNext,
-          handleReset,
-          hasEmptyVideo
-        )}
-      />
+      <HistoryWrapper>
+        <HistoryTool
+          buttonData={getHistoryToolData(
+            handlePrevious,
+            handleNext,
+            handleReset,
+            hasEmptyVideo
+          )}
+        />
+      </HistoryWrapper>
       <CancelConfirm
         StyledProps={CancelConfirmStyle}
         buttonData={getCancelConfirmData(

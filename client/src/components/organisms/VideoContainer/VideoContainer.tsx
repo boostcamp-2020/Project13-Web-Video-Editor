@@ -8,10 +8,10 @@ const DOWN = 'down';
 
 const slideUp = keyframes`
   from {
-    transform: translate(0, 2rem);
+    transform: translate(0, 0);
   }
   to {
-    transform: translate(0, 0);
+    transform: translate(0, -2rem);
   }
 `;
 
@@ -36,13 +36,19 @@ const StyledDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: ${color.VIDEO};
+  padding: 3rem 0;
+  border-bottom: 1px solid ${color.BORDER};
 `;
 
 const StyledCanvas = styled.canvas`
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.1);
   height: 32rem;
   background-color: ${color.BLACK};
   ${({ isEdit }) => (isEdit === UP ? videoUp : '')};
   ${({ isEdit }) => (isEdit === DOWN ? videoDown : '')};
+  ${({ isEdit }) =>
+    `transform: ${isEdit === UP ? `translate(0, -2rem)` : `translate(0, 0)`}`};
 `;
 
 interface props {

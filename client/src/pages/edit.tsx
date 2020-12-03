@@ -29,7 +29,7 @@ const EditPage: React.FC = () => {
       <Header />
       <VideoContainer isEdit={isEdit} />
       <BottomDiv>
-        <Tools setEdit={setEdit} />
+        <Tools setEdit={setEdit} isEdit={isEdit} />
         <TimeLine />
       </BottomDiv>
     </StyledDiv>

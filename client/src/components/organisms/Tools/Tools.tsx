@@ -9,6 +9,7 @@ import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
+import color from '@/theme/colors';
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
@@ -24,24 +25,29 @@ const StyledDiv = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  flex-wrap: wrap;
   padding: 1rem;
+  height: 5.5rem;
 `;
 
 const slide = keyframes`
   from {
-    transform: translate(0, 50px);
+    transform: translate(0, 2rem);
     opacity: 0;
   }
   to {
-    transform: translate(0, 0);
+    transform: translate(0, -1.5rem);
     opacity: 1;
   }
 `;
 
 const StyledEditToolDiv = styled.div`
   display: flex;
+  width: 20rem;
   flex-direction: column;
   align-items: center;
+  position: absolute;
+  left: calc(50% - 10rem);
 `;
 
 const EditTool = styled(ButtonGroup)`
@@ -52,20 +58,27 @@ const WrapperDiv = styled.div`
   width: 25rem;
   display: flex;
   justify-content: center;
-  animation: ${slide} 0.5s -0.1s ease-out;
+  animation: ${slide} 0.5s -0.2s ease-out;
+  ${({ isEdit }) =>
+    `transform: ${
+      isEdit === UP ? `translate(0, -1.5rem)` : `translate(0, 0)`
+    }`};
 `;
 
 const SubEditTool = styled(ButtonGroup)`
   width: 100%;
 `;
 
-const VideoTool = styled(ButtonGroup)``;
+const VideoTool = styled(ButtonGroup)`
+  display: flex;
+`;
 
 interface props {
   setEdit: Function;
+  isEdit: string;
 }
 
-const Tools: React.FC<props> = ({ setEdit }) => {
+const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const playing = useSelector(getPlaying);
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
@@ -199,7 +212,7 @@ const Tools: React.FC<props> = ({ setEdit }) => {
       />
       <StyledEditToolDiv>
         {toolType && (
-          <WrapperDiv>
+          <WrapperDiv isEdit={isEdit}>
             <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
           </WrapperDiv>
         )}
@@ -208,7 +221,8 @@ const Tools: React.FC<props> = ({ setEdit }) => {
             handleRotateReverse,
             handleRatio,
             handleCrop,
-            hasEmptyVideo
+            hasEmptyVideo,
+            toolType
           )}
         />
       </StyledEditToolDiv>
