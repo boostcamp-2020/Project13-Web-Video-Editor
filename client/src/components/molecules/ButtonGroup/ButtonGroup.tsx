@@ -14,7 +14,7 @@ const StyledDiv = styled.div<string>`
 interface button {
   onClick: () => void;
   message: string;
-  type: 'default' | 'transparent';
+  type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
   disabled: boolean;
 }

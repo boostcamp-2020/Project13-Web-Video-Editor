@@ -1,3 +1,3 @@
 export { default } from './Button';
 
-export type ButtonType = 'default' | 'transparent';
+export type ButtonType = 'default' | 'transparent' | 'selected';
