@@ -4,6 +4,9 @@ import {
   LOAD_METADATA,
   SET_THUMBNAILS,
   CROP_CONFIRM,
+  ENCODE_START,
+  UPLOAD_START,
+  UPLOAD_SUCCESS,
   RESET,
   ERROR,
 } from '../actionTypes';
@@ -66,11 +69,22 @@ export default (
         ...state,
         message: Message.PROCESSING,
       };
+    case ENCODE_START:
+      return {
+        ...state,
+        message: Message.ENCODING,
+      };
+    case UPLOAD_START:
+      return {
+        ...state,
+        message: Message.UPLOADING,
+      };
     case ERROR:
       return {
         ...initialState,
         message: Message.FAIL,
       };
+    case UPLOAD_SUCCESS:
     case RESET:
       return initialState;
     default:
