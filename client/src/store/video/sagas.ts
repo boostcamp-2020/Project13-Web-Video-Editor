@@ -21,8 +21,8 @@ function* fetchVideos(action) {
       )
     );
   } catch (err) {
-    yield put(error());
     console.log(err);
+    yield put(error());
   }
 }
 

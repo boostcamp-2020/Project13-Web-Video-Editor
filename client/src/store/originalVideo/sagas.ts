@@ -89,7 +89,7 @@ function* upload(action) {
     yield put(
       uploadSuccess({
         id,
-        name: action.payload.name,
+        name: action.payload.file.name,
         video: url,
         updatedAt: new Date(),
       })

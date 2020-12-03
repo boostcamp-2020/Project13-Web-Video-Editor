@@ -5,6 +5,7 @@ import {
   watchUploadStart,
   deleteSrc,
 } from '@/store/originalVideo/sagas';
+import watchFetchListStart from '@/store/video/sagas';
 import watchCrop from '@/store/crop/sagas';
 import { RESET } from './actionTypes';
 
@@ -19,5 +20,6 @@ export default function* rootSaga() {
     watchUploadStart(),
     watchReset(),
     watchCrop(),
+    watchFetchListStart(),
   ]);
 }

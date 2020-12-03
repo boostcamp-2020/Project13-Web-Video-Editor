@@ -4,7 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
-import HoverSlider from '@/components/atoms/HoverSlider';
+import HoverSlider from '@/components/molecules/HoverSlider';
 import video from '@/video';
 import { getThumbnails, getIsCrop, getStartEnd } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
