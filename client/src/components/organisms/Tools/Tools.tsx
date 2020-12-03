@@ -111,7 +111,8 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   };
 
   document.onkeydown = (event: KeyboardEvent) => {
-    (document.activeElement as HTMLButtonElement).blur();
+    const element = document.activeElement as HTMLButtonElement;
+    if (element.tagName !== 'INPUT') element.blur();
 
     switch (event.code) {
       case 'ArrowLeft':
