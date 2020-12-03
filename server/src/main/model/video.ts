@@ -7,14 +7,9 @@ export const retrieveByUser = async (id: number) => {
   return videos;
 };
 
-export const create = async (
-  editor: number,
-  name: string,
-  video: string,
-  audio: string
-) => {
+export const create = async (editor: number, name: string, video: string) => {
   const id = ((
-    await connection.query(query.video.create, [editor, name, video, audio])
+    await connection.query(query.video.create, [editor, name, video])
   )[0] as OkPacket).insertId;
   return id;
 };

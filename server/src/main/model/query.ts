@@ -3,8 +3,8 @@ const user = {
 };
 
 const video = {
-  retrieveByUser: `SELECT * FROM video WHERE editor = ?;`,
-  create: `INSERT INTO video(editor, name, video, audio) VALUES (?, ?, ?, ?);`,
+  retrieveByUser: `SELECT id, name, video, updated_at FROM video WHERE editor = ?;`,
+  create: `INSERT INTO video(editor, name, video) VALUES (?, ?, ?);`,
   deleteById: `DELETE FROM video WHERE id = ?;`,
 };
 
