@@ -129,22 +129,15 @@ const Header: React.FC = () => {
   const handlePrevious = () => {};
   const handleNext = () => {};
   const handleReset = () => {};
-  const handleCancel = () => {
-    dispatch(reset());
-  };
+  const handleCancel = () => dispatch(reset());
 
-  const handleConfirmComplete = async () => {
+  const handleConfirmComplete = () => {
     dispatch(encodeStart(inputRef.current.value));
     setComplete(false);
   };
 
-  const handleCancelComplete = async () => {
-    setComplete(false);
-  };
-
-  const handleComplete = async () => {
-    setComplete(true);
-  };
+  const handleCancelComplete = () => setComplete(false);
+  const handleComplete = () => setComplete(true);
 
   const modalInnerComponent = () => {
     const [value, setValue] = useState(name);
