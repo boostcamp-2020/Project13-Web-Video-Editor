@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   BsArrowClockwise,
@@ -11,8 +11,10 @@ import { getFile, getVisible } from '@/store/selectors';
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
+import Modal from '@/components/molecules/Modal';
 import videoAPI from '@/api/video';
 import { reset } from '@/store/actionTypes';
+import { encodeStart } from '@/store/originalVideo/actions';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -89,10 +91,18 @@ const CancelConfirmStyle = `
   }
 `;
 
+const StyledModalRow = styled.div`
+  display: flex;
+  align-items: center;
+  height: 50%;
+  padding: 5%;
+`;
+
 const Header = () => {
   const videoFile = useSelector(getFile);
   const dispatch = useDispatch();
   const hasEmptyVideo = !useSelector(getVisible);
+  const [complete, setComplete] = useState(false);
 
   const handlePrevious = () => {};
   const handleNext = () => {};
@@ -101,13 +111,38 @@ const Header = () => {
     dispatch(reset());
   };
 
-  const handleConfirm = async () => {
-    const formData = new FormData();
-    formData.append('video', videoFile);
+  const handleConfirmComplete = async () => {
+    dispatch(encodeStart(videoFile.name));
+    setComplete(false);
+  };
 
-    const {
-      data: { url },
-    } = await videoAPI.upload(formData);
+  const handleCancelComplete = async () => {
+    setComplete(false);
+  };
+
+  const handleComplete = async () => {
+    setComplete(true);
+  };
+
+  const handleVideoNameChange = () => {};
+
+  const modalLayout = `
+    top: 35vh;
+    left: 35vw;
+    width: 30vw;
+    height: 30vh;
+  `;
+  const modalInnerComponent: React.FC = () => {
+    return (
+      <StyledModalRow>
+        <p>파일 이름 :</p>
+        <input
+          type="text"
+          value={videoFile?.name}
+          onChange={handleVideoNameChange}
+        />
+      </StyledModalRow>
+    );
   };
 
   return (
@@ -125,10 +160,21 @@ const Header = () => {
         StyledProps={CancelConfirmStyle}
         buttonData={getCancelConfirmData(
           handleCancel,
-          handleConfirm,
+          handleComplete,
           hasEmptyVideo
         )}
       />
+      {complete && (
+        <Modal
+          styleProps={modalLayout}
+          handleOverlay={handleCancelComplete}
+          handleButton1={handleCancelComplete}
+          handleButton2={handleConfirmComplete}
+          buttonMessage1="취소"
+          buttonMessage2="확인"
+          component={modalInnerComponent}
+        />
+      )}
     </StyledHeader>
   );
 };
