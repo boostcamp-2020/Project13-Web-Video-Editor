@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+import Modal from '@/components/molecules/Modal';
+import VideoList from '@/components/atoms/VideoList';
 import color from '@/theme/colors';
 
 const slide = keyframes`
@@ -57,10 +59,35 @@ interface Props {
   handleChange: () => void;
 }
 
+const modalLayout = `
+  top: 20vh;
+  left: 35vw;
+  width: 30vw;
+  height: 60vh;
+`;
+
 const FileInput = React.forwardRef<HTMLInputElement, Props>(
   ({ handleChange }, forwardedRef) => {
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleClick = () => setModalVisible(true);
+    const handleCancel = () => setModalVisible(false);
+    const handleConfirm = () => setModalVisible(false);
+
+    const handleOverlay = () => setModalVisible(false);
     return (
       <StyledDiv>
+        {modalVisible && (
+          <Modal
+            styleProps={modalLayout}
+            handleOverlay={handleOverlay}
+            handleButton1={handleCancel}
+            handleButton2={handleConfirm}
+            buttonMessage1="취소"
+            buttonMessage2="확인"
+            component={VideoList}
+          />
+        )}
         <FromLocal htmlFor="local">로컬</FromLocal>
         <StyledInput
           type="file"
@@ -68,7 +95,7 @@ const FileInput = React.forwardRef<HTMLInputElement, Props>(
           ref={forwardedRef}
           onChange={handleChange}
         />
-        <FromServer>서버</FromServer>
+        <FromServer onClick={handleClick}>서버</FromServer>
       </StyledDiv>
     );
   }

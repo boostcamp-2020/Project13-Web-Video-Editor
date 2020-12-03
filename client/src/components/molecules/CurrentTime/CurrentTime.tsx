@@ -41,7 +41,7 @@ const CurrentTime: React.FC = () => {
           if (newTime > end) video.setCurrentTime((newTime = end));
           dispatch(moveTo(end));
         }
-        newTime = Math.floor(newTime - start);
+        newTime = Math.floor(Number((newTime - start).toFixed(1)));
         if (time !== newTime) setTime(newTime);
       }, 50);
     return () => clearInterval(timer);

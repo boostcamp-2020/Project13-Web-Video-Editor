@@ -2,10 +2,19 @@ import { put, call, takeLatest, select } from 'redux-saga/effects';
 
 import video from '@/video/video';
 import webglController from '@/webgl/webglController';
-import { loadMetadata } from './actions';
+import videoAPI from '@/api/video';
+
+import { loadMetadata, uploadStart, EncodeStartAction } from './actions';
 import { setThumbnails } from '../currentVideo/actions';
-import { SET_VIDEO, error } from '../actionTypes';
-import { getDuration } from '../selectors';
+import { uploadSuccess } from '../video/actions';
+import {
+  SET_VIDEO,
+  ENCODE_START,
+  UPLOAD_START,
+  error,
+  reset,
+} from '../actionTypes';
+import { getFile } from '../selectors';
 
 const TIMEOUT = 5_000;
 
@@ -49,4 +58,49 @@ function* load(action) {
 
 export function* watchSetVideo() {
   yield takeLatest(SET_VIDEO, load);
+}
+
+function* encode(action: EncodeStartAction) {
+  try {
+    const temp = yield select(getFile);
+    const file = yield call(
+      name => new Promise(resolve => setTimeout(() => resolve(temp), TIMEOUT)),
+      action.payload.name
+    ); // FIXME: do encoding here
+    yield put(uploadStart(file));
+  } catch (err) {
+    console.log(err);
+    yield put(error());
+  }
+}
+
+export function* watchEncodeStart() {
+  yield takeLatest(ENCODE_START, encode);
+}
+
+function* upload(action) {
+  try {
+    const formData = new FormData();
+    formData.append('video', action.payload.file);
+    const {
+      data: { id, url },
+    } = yield call(videoAPI.upload, formData);
+
+    yield put(
+      uploadSuccess({
+        id,
+        name: action.payload.file.name,
+        video: url,
+        updatedAt: new Date(),
+      })
+    );
+    yield put(reset());
+  } catch (err) {
+    console.log(err);
+    yield put(error());
+  }
+}
+
+export function* watchUploadStart() {
+  yield takeLatest(UPLOAD_START, upload);
 }

@@ -1,6 +1,5 @@
 import { Express } from 'express';
 import AWS from 'aws-sdk';
-import { v4 as uuidv4 } from 'uuid';
 
 import { retrieveByUser, create } from '../model/video';
 
@@ -20,8 +19,8 @@ const S3 = new AWS.S3({
 });
 
 const upload = async (file: Express.Multer.File) => {
-  const fileKey = `${uuidv4()}.${file.mimetype.split('/')[1]}`;
-
+  const folderName = `USER${USER_ID}`;
+  const fileKey = `${folderName}/${file.originalname}`;
   const {
     $response: { httpResponse },
   } = await S3.putObject({
@@ -36,7 +35,7 @@ const upload = async (file: Express.Multer.File) => {
       status: httpResponse.statusCode,
     });
   const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
-  const id = await create(USER_ID, fileKey, url, null);
+  const id = await create(USER_ID, fileKey, url);
   return { url, id };
 };
 

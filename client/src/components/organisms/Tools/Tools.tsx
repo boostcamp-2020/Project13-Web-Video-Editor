@@ -8,7 +8,7 @@ import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
-import { cropStart, cropCancel, cropConfirm } from '@/store/actionTypes';
+import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
@@ -111,7 +111,8 @@ const Tools: React.FC<props> = ({ setEdit }) => {
   };
 
   document.onkeydown = (event: KeyboardEvent) => {
-    (document.activeElement as HTMLButtonElement).blur();
+    const element = document.activeElement as HTMLButtonElement;
+    if (element.tagName !== 'INPUT') element.blur();
 
     switch (event.code) {
       case 'ArrowLeft':

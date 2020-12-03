@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import {
   BsArrowClockwise,
@@ -6,13 +6,15 @@ import {
   BsArrowRepeat,
 } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
-import { getFile, getVisible } from '@/store/selectors';
+import { getName, getVisible } from '@/store/selectors';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
-import videoAPI from '@/api/video';
+import Modal from '@/components/molecules/Modal';
+import color from '@/theme/colors';
 import { reset } from '@/store/actionTypes';
+import { encodeStart } from '@/store/originalVideo/actions';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -89,25 +91,72 @@ const CancelConfirmStyle = `
   }
 `;
 
-const Header = () => {
-  const videoFile = useSelector(getFile);
+const StyledModalRow = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 5%;
+`;
+
+const StyledInput = styled.input`
+  margin-left: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.1);
+  background-color: ${color.MODAL};
+  color: ${color.WHITE};
+`;
+
+const StyledP = styled.p`
+  margin: 0;
+  font-size: 12px;
+`;
+
+const modalLayout = `
+top: 45vh;
+left: 40vw;
+width: 20vw;
+height: 10vh;
+`;
+
+const Header: React.FC = () => {
   const dispatch = useDispatch();
+  const [complete, setComplete] = useState(false);
+  const name = useSelector(getName);
   const hasEmptyVideo = !useSelector(getVisible);
+  const inputRef = useRef(null);
 
   const handlePrevious = () => {};
   const handleNext = () => {};
   const handleReset = () => {};
-  const handleCancel = () => {
-    dispatch(reset());
+  const handleCancel = () => dispatch(reset());
+
+  const handleModalConfirm = () => {
+    dispatch(encodeStart(inputRef.current.value));
+    setComplete(false);
   };
 
-  const handleConfirm = async () => {
-    const formData = new FormData();
-    formData.append('video', videoFile);
+  const handleModalCancel = () => setComplete(false);
+  const handleComplete = () => setComplete(true);
 
-    const {
-      data: { url },
-    } = await videoAPI.upload(formData);
+  const modalInnerComponent = () => {
+    const [value, setValue] = useState(name);
+
+    const handleVideoNameChange = ({ target }) => {
+      setValue(target.value);
+    };
+
+    return (
+      <StyledModalRow>
+        <StyledP>파일 이름 :</StyledP>
+        <StyledInput
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={handleVideoNameChange}
+        />
+      </StyledModalRow>
+    );
   };
 
   return (
@@ -125,10 +174,21 @@ const Header = () => {
         StyledProps={CancelConfirmStyle}
         buttonData={getCancelConfirmData(
           handleCancel,
-          handleConfirm,
+          handleComplete,
           hasEmptyVideo
         )}
       />
+      {complete && (
+        <Modal
+          styleProps={modalLayout}
+          handleOverlay={handleModalCancel}
+          handleButton1={handleModalCancel}
+          handleButton2={handleModalConfirm}
+          buttonMessage1="취소"
+          buttonMessage2="확인"
+          component={modalInnerComponent}
+        />
+      )}
     </StyledHeader>
   );
 };

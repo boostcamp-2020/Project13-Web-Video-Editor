@@ -87,8 +87,10 @@ class WebglController {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
     canvas.setAttribute('width', canvas.clientWidth.toString());
     canvas.setAttribute('height', canvas.clientHeight.toString());
-    const gl = (canvas.getContext('webgl') ||
-      canvas.getContext('experimental-webgl')) as WebGLRenderingContext;
+    const gl = (canvas.getContext('webgl', { alpha: false }) ||
+      canvas.getContext('experimental-webgl', {
+        alpha: false,
+      })) as WebGLRenderingContext;
 
     return gl;
   };

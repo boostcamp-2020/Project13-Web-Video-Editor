@@ -3,12 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
-import FileInput from '@/components/atoms/FileInput';
+import FileInput from '@/components/molecules/FileInput';
 import { setVideo } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
-import { reset } from '@/store/actionTypes';
-
-import webglController from '@/webgl/webglController';
 
 const StyledDiv = styled.div`
   display: flex;
