@@ -25,6 +25,10 @@ const StyledButton = styled.button<StyledProps>`
     cursor: not-allowed;
     opacity: 0.5;
   }
+  &:hover {
+    background-color: ${color.BORDER};
+    box-shadow: 0 0 10px 8px rgba(255, 255, 255, 0.2);
+  }
 `;
 
 interface Props {

@@ -8,7 +8,12 @@ import { setVideo } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
 
 const StyledDiv = styled.div`
+  height: 100%;
+`;
+
+const WrapperDiv = styled.div`
   display: flex;
+  height: 100%;
   align-items: center;
   position: relative;
 `;
@@ -36,14 +41,16 @@ const UploadArea: React.FC = () => {
 
   return (
     <StyledDiv>
-      <StyledP>{name}</StyledP>
-      <Button
-        message="불러오기"
-        onClick={() => setVisible(!visible)}
-        type="default"
-        disabled={false}
-      />
-      {visible && <FileInput ref={ref} handleChange={handleChange} />}
+      <WrapperDiv>
+        <StyledP>{name}</StyledP>
+        <Button
+          message="불러오기"
+          onClick={() => setVisible(!visible)}
+          type="default"
+          disabled={false}
+        />
+        {visible && <FileInput ref={ref} handleChange={handleChange} />}
+      </WrapperDiv>
     </StyledDiv>
   );
 };
