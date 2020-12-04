@@ -3,7 +3,7 @@ import handleError from '@/utils/error';
 
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://115.85.181.29'
+    ? 'http://115.85.181.29:3000'
     : 'http://127.0.0.1:3000';
 
 const getInstance = (isFileOperation: boolean) =>
