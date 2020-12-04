@@ -1,6 +1,6 @@
 import React from 'react';
 
-import EditPage from '@/pages/Edit';
+import EditPage from '@/pages/edit';
 import GlobalStyle from '@/theme/globalStyle';
 
 const App: React.FC = () => {
