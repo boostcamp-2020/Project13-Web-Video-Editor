@@ -123,6 +123,7 @@ const StyledP = styled.p`
   margin: 0;
   width: 25%;
   font-size: 12px;
+  text-align: center;
 `;
 
 const modalLayout = `
