@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import parseTime from '@/utils/time';
+import { parseTime } from '@/utils/time';
 
 const StyledP = styled.p`
   margin: 0;

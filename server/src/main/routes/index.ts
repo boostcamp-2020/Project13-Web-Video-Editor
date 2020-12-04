@@ -4,6 +4,6 @@ import videoRouter from '@/main/routes/video';
 
 const router = Router();
 
-router.use('/', videoRouter);
+router.use('/video', videoRouter);
 
 export default router;

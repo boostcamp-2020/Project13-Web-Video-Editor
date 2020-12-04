@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import styled from 'styled-components';
 
 import TimeText from '@/components/atoms/TimeText';
 import video from '@/video';
 import color from '@/theme/colors';
-import { getVisible } from '@/store/selectors';
+import {
+  getVisible,
+  getIsCropAndDuration,
+  getStartEnd,
+} from '@/store/selectors';
+import { moveTo, pause } from '@/store/currentVideo/actions';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -17,16 +22,26 @@ const StyledDiv = styled.div`
 `;
 
 const CurrentTime: React.FC = () => {
-  const currentTime = () => Math.round(video.get('currentTime'));
-
-  const [time, setTime] = useState(currentTime());
+  const currentTime = () => video.get('currentTime');
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
+  const cropState = useSelector(getIsCropAndDuration, shallowEqual);
+  const [time, setTime] = useState(Math.floor(currentTime() - start));
   const visible = useSelector(getVisible);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const timer =
       visible &&
       setInterval(() => {
-        const newTime = currentTime();
+        let newTime = currentTime();
+        if (newTime >= end) {
+          if (!cropState.isCrop) video.pause();
+          dispatch(pause());
+          if (newTime > end) video.setCurrentTime((newTime = end));
+          dispatch(moveTo(end));
+        }
+        newTime = Math.floor(Number((newTime - start).toFixed(1)));
         if (time !== newTime) setTime(newTime);
       }, 50);
     return () => clearInterval(timer);

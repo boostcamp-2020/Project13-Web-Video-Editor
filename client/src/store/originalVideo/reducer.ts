@@ -3,6 +3,10 @@ import {
   SET_VIDEO,
   LOAD_METADATA,
   SET_THUMBNAILS,
+  CROP_CONFIRM,
+  ENCODE_START,
+  UPLOAD_START,
+  UPLOAD_SUCCESS,
   RESET,
   ERROR,
 } from '../actionTypes';
@@ -12,7 +16,8 @@ enum Message {
   OK = '',
   DOWNLOADING = '서버에서 동영상을 다운로드하는 중...',
   LOADING = '동영상을 로드하는 중...',
-  PROCESSING = '편집한 동영상을 저장하는 중...',
+  PROCESSING = '썸네일을 다시 추출하는 중...',
+  ENCODING = '편집한 동영상을 인코딩하는 중...',
   UPLOADING = '서버에 동영상을 업로드하는 중...',
   FAIL = '작업에 실패하였습니다.',
 }
@@ -59,11 +64,27 @@ export default (
         ...state,
         message: Message.OK,
       };
+    case CROP_CONFIRM:
+      return {
+        ...state,
+        message: Message.PROCESSING,
+      };
+    case ENCODE_START:
+      return {
+        ...state,
+        message: Message.ENCODING,
+      };
+    case UPLOAD_START:
+      return {
+        ...state,
+        message: Message.UPLOADING,
+      };
     case ERROR:
       return {
         ...initialState,
         message: Message.FAIL,
       };
+    case UPLOAD_SUCCESS:
     case RESET:
       return initialState;
     default:

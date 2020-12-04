@@ -49,3 +49,6 @@ export const getIsCropAndDuration = (state: RootState) => {
     duration: length,
   };
 };
+
+// video
+export const getVideos = (state: RootState) => state.video.videos;

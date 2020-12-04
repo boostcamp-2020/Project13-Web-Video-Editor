@@ -1,8 +1,11 @@
 import { Express } from 'express';
 import AWS from 'aws-sdk';
-import { v4 as uuidv4 } from 'uuid';
+
+import { retrieveByUser, create } from '../model/video';
 
 require('dotenv').config();
+
+const USER_ID = 1; // FIXME: token authorization
 
 const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
 const region = process.env.REGION;
@@ -16,8 +19,8 @@ const S3 = new AWS.S3({
 });
 
 const upload = async (file: Express.Multer.File) => {
-  const fileKey = `${uuidv4()}.${file.mimetype.split('/')[1]}`;
-
+  const folderName = `USER${USER_ID}`;
+  const fileKey = `${folderName}/${file.originalname}`;
   const {
     $response: { httpResponse },
   } = await S3.putObject({
@@ -27,18 +30,22 @@ const upload = async (file: Express.Multer.File) => {
     Body: file.buffer,
   }).promise();
 
-  if (httpResponse.statusCode === 200) {
-    const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
-    return url;
-  }
-
-  throw Object.assign(new Error(httpResponse.statusMessage), {
-    status: httpResponse.statusCode,
-  });
+  if (httpResponse.statusCode !== 200)
+    throw Object.assign(new Error(httpResponse.statusMessage), {
+      status: httpResponse.statusCode,
+    });
+  const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
+  const id = await create(USER_ID, fileKey, url);
+  return { url, id };
 };
 
 const download = () => {
   return null;
 };
 
-export default { upload, download };
+const getByUser = async (id: number) => {
+  const videos = await retrieveByUser(id);
+  return videos;
+};
+
+export default { upload, download, getByUser };

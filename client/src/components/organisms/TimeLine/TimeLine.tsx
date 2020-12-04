@@ -7,6 +7,8 @@ import TimeZone from '@/components/molecules/TimeZone';
 import CurrentTime from '@/components/molecules/CurrentTime';
 import { getName } from '@/store/selectors';
 import color from '@/theme/colors';
+import size from '@/theme/sizes';
+import { MdVideoLibrary } from 'react-icons/md';
 
 const Container = styled.div`
   display: flex;
@@ -41,6 +43,7 @@ const StyledDiv = styled.div`
   width: 100%;
   height: 70%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
@@ -51,6 +54,7 @@ const WrapperDiv = styled(StyledDiv)`
 
 const Name = styled.p`
   margin: 0;
+  margin-top: 0.5rem;
   font-size: 12px;
 `;
 
@@ -62,6 +66,7 @@ const TimeLine: React.FC = () => {
       <TimeLineLeft>
         <CurrentTime />
         <StyledDiv>
+          <MdVideoLibrary size={size.ICON_SIZE} />
           <Name>{name}</Name>
         </StyledDiv>
       </TimeLineLeft>

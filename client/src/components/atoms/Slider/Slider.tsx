@@ -1,8 +1,8 @@
 import React, { MutableRefObject, useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 
-import { getPlaying, getCurrentTime } from '@/store/selectors';
+import { getPlaying, getCurrentTime, getStartEnd } from '@/store/selectors';
 import color from '@/theme/colors';
 import video from '@/video';
 
@@ -35,6 +35,7 @@ const StyledDiv = styled.div`
 const Slider: React.FC<Props> = ({ thumbnailRef }) => {
   const [location, setLocation] = useState(0);
   const [duration, setDuration] = useState(0);
+  const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const isPlaying = useSelector(getPlaying);
   const time = useSelector(getCurrentTime);
@@ -43,10 +44,10 @@ const Slider: React.FC<Props> = ({ thumbnailRef }) => {
     const currentTime = video.get('currentTime');
 
     const width = thumbnailRef.current.clientWidth;
-    const totalDuration = video.get('duration');
+    const totalDuration = end - start;
 
     const movedLocation = totalDuration
-      ? (currentTime / totalDuration) * width
+      ? ((currentTime - start) / totalDuration) * width
       : 0;
 
     const restWidth = width - movedLocation;

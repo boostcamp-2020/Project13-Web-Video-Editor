@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
-import FileInput from '@/components/atoms/FileInput';
+import FileInput from '@/components/molecules/FileInput';
 import { setVideo } from '@/store/originalVideo/actions';
 import { getName } from '@/store/selectors';
-import { reset } from '@/store/actionTypes';
-
-import webglController from '@/webgl/webglController';
 
 const StyledDiv = styled.div`
+  height: 100%;
+`;
+
+const WrapperDiv = styled.div`
   display: flex;
+  height: 100%;
   align-items: center;
   position: relative;
 `;
@@ -39,13 +41,16 @@ const UploadArea: React.FC = () => {
 
   return (
     <StyledDiv>
-      <StyledP>{name}</StyledP>
-      <Button
-        message="불러오기"
-        onClick={() => setVisible(!visible)}
-        type="default"
-      />
-      {visible && <FileInput ref={ref} handleChange={handleChange} />}
+      <WrapperDiv>
+        <StyledP>{name}</StyledP>
+        <Button
+          message="불러오기"
+          onClick={() => setVisible(!visible)}
+          type="default"
+          disabled={false}
+        />
+        {visible && <FileInput ref={ref} handleChange={handleChange} />}
+      </WrapperDiv>
     </StyledDiv>
   );
 };

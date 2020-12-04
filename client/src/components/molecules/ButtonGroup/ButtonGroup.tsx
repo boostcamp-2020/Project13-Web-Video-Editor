@@ -14,8 +14,9 @@ const StyledDiv = styled.div<string>`
 interface button {
   onClick: () => void;
   message: string;
-  type: 'default' | 'transparent';
+  type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
+  disabled: boolean;
 }
 
 interface Props {
@@ -31,6 +32,7 @@ const ButtonGroup: React.FC<Props> = ({ buttonData, StyledProps }) => (
         onClick={data.onClick}
         message={data.message}
         type={data.type}
+        disabled={data.disabled}
       >
         {data.children}
       </Button>

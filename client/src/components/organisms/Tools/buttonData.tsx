@@ -12,26 +12,30 @@ import { MdScreenRotation } from 'react-icons/md';
 
 import size from '@/theme/sizes';
 
-import { ButtonData } from './reducer';
+import color from '@/theme/colors';
+import { ButtonData, ButtonTypes } from './reducer';
 
 interface button {
   onClick: () => void;
   message: string;
-  type: 'default' | 'transparent';
+  type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
+  disabled?: boolean;
 }
 
 export const getVideoToolsData = (
   backwardVideo: () => void,
   playPauseVideo: () => void,
   forwardVideo: () => void,
-  play: boolean
+  play: boolean,
+  hasEmptyVideo: boolean
 ): button[] => [
   {
     onClick: backwardVideo,
     message: '',
     type: 'transparent',
     children: <BsFillSkipStartFill size={size.BIG_ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
   {
     onClick: playPauseVideo,
@@ -42,37 +46,61 @@ export const getVideoToolsData = (
     ) : (
       <BsFillPlayFill size={size.BIG_ICON_SIZE} />
     ),
+    disabled: hasEmptyVideo,
   },
   {
     onClick: forwardVideo,
     message: '',
     type: 'transparent',
     children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
+    disabled: hasEmptyVideo,
   },
 ];
 
 export const getEditToolData = (
   rotateReverse: () => void,
   ratio: () => void,
-  crop: () => void
+  crop: () => void,
+  hasEmptyVideo: boolean,
+  toolType: ButtonTypes
 ): button[] => [
   {
     onClick: rotateReverse,
     message: '회전 / 반전',
-    type: 'transparent',
-    children: <MdScreenRotation size={size.ICON_SIZE} />,
+    type: toolType === ButtonTypes.videoEffect ? 'selected' : 'transparent',
+    children: (
+      <MdScreenRotation
+        size={size.ICON_SIZE}
+        color={
+          toolType === ButtonTypes.videoEffect ? color.PALE_PURPLE : undefined
+        }
+      />
+    ),
+    disabled: hasEmptyVideo,
   },
   {
     onClick: ratio,
     message: '비율',
-    type: 'transparent',
-    children: <BsAspectRatio size={size.ICON_SIZE} />,
+    type: toolType === ButtonTypes.ratio ? 'selected' : 'transparent',
+    children: (
+      <BsAspectRatio
+        size={size.ICON_SIZE}
+        color={toolType === ButtonTypes.ratio ? color.PALE_PURPLE : undefined}
+      />
+    ),
+    disabled: hasEmptyVideo,
   },
   {
     onClick: crop,
     message: '자르기',
-    type: 'transparent',
-    children: <RiScissorsLine size={size.ICON_SIZE} />,
+    type: toolType === ButtonTypes.crop ? 'selected' : 'transparent',
+    children: (
+      <RiScissorsLine
+        size={size.ICON_SIZE}
+        color={toolType === ButtonTypes.crop ? color.PALE_PURPLE : undefined}
+      />
+    ),
+    disabled: hasEmptyVideo,
   },
 ];
 

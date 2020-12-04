@@ -12,6 +12,8 @@ const colors = {
   LIGHT_GREEN: '#E5F5F9',
   GREEN: '#99D8C9',
   DARK_GREEN: '#2CA25F',
+  MODAL: '#0A0A0A',
+  VIDEO: '#181818',
 };
 
 export default colors;

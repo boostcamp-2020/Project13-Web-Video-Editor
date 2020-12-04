@@ -13,6 +13,11 @@ export default (type: ButtonType) => {
       return `
         background : transparent;
       `;
+    case 'selected':
+      return `
+          background : transparent;
+          color: ${color.PALE_PURPLE};
+        `;
     default:
       return ``;
   }
