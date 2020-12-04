@@ -35,7 +35,7 @@ const upload = async (file: Express.Multer.File) => {
       status: httpResponse.statusCode,
     });
   const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
-  const id = await create(USER_ID, fileKey, url);
+  const id = await create(USER_ID, file.originalname, url);
   return { url, id };
 };
 
