@@ -38,10 +38,13 @@ const NameDiv = styled.div`
   margin-left: 1rem;
 `;
 
-const Name = styled.p``;
+const Name = styled.p`
+  white-space: nowrap;
+`;
 
 const Timestamp = styled.p`
   font-size: 12px;
+  white-space: nowrap;
 `;
 
 interface Props {
