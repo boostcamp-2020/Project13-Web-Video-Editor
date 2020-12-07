@@ -24,14 +24,16 @@ const WrapperDiv = styled.div`
   left: -15px;
 `;
 
-const HoverSlider: React.FC<Props> = ({ hoverSliderRef, hoverTime }) => {
-  return (
-    <StyledDiv ref={hoverSliderRef}>
-      <WrapperDiv>
-        <TimeText time={hoverTime} />
-      </WrapperDiv>
-    </StyledDiv>
-  );
-};
+const HoverSlider: React.FC<Props> = React.memo(
+  ({ hoverSliderRef, hoverTime }) => {
+    return (
+      <StyledDiv ref={hoverSliderRef}>
+        <WrapperDiv>
+          <TimeText time={hoverTime} />
+        </WrapperDiv>
+      </StyledDiv>
+    );
+  }
+);
 
 export default HoverSlider;
