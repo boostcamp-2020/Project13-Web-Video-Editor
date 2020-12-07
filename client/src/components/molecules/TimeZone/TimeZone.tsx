@@ -2,12 +2,7 @@ import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import {
-  getDuration,
-  getStartEnd,
-  getIsCrop,
-  getIsCropAndDuration,
-} from '@/store/selectors';
+import { getStartEnd, getIsCropAndDuration } from '@/store/selectors';
 import TimeText from '@/components/atoms/TimeText';
 import color from '@/theme/colors';
 
