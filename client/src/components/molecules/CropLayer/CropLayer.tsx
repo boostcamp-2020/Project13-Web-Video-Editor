@@ -61,7 +61,7 @@ const Thumb = styled.div`
   }
 `;
 
-const CropLayer = () => {
+const CropLayer = React.memo(() => {
   const MAX = video.get('duration');
   const STEP = (MAX - MIN) / 1024;
 
@@ -125,6 +125,6 @@ const CropLayer = () => {
       />
     </CropLayerDiv>
   );
-};
+});
 
 export default CropLayer;
