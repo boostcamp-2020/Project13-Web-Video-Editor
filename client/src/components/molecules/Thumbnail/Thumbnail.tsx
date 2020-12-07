@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
@@ -12,8 +13,6 @@ import {
   getStartEnd,
 } from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
-
-import hash from '@/utils/hash';
 
 const StyledDiv = styled.div`
   position: relative;
@@ -27,9 +26,6 @@ const StyledImg = styled.img`
   width: 3.3333%;
   height: 50px;
 `;
-
-const getKeyFromURL = (image, idx) => hash(image.slice(22 + idx, 222 + idx));
-// URL starts with `data:image/png;base64,`
 
 const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
@@ -76,7 +72,7 @@ const Thumbnail: React.FC = () => {
   const Thumbnails = useMemo(
     () =>
       (isCrop ? video.getThumbnails() : thumbnails).map((image, idx) => (
-        <StyledImg key={getKeyFromURL(image, idx)} src={image} alt="" />
+        <StyledImg key={uuidv4()} src={image} alt="" />
       )),
     [isCrop, thumbnails]
   );
