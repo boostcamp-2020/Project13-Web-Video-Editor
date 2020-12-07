@@ -46,16 +46,24 @@ class WebglController {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
 
+  swapWidthHeight = () => {
+    const temp = this.gl.canvas.width;
+    this.gl.canvas.width = this.gl.canvas.height;
+    this.gl.canvas.height = temp;
+  };
+
   rotateLeft90Degree = () => {
     // 0123 => 1230
     this.positions.push(this.positions.shift());
     this.buffers = this.initBuffers();
+    this.swapWidthHeight();
   };
 
   rotateRight90Degree = () => {
     // 0123 => 3012
     this.positions.unshift(this.positions.pop());
     this.buffers = this.initBuffers();
+    this.swapWidthHeight();
   };
 
   reverseUpsideDown = () => {
@@ -85,8 +93,8 @@ class WebglController {
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    canvas.setAttribute('width', canvas.clientWidth.toString());
-    canvas.setAttribute('height', canvas.clientHeight.toString());
+    canvas.setAttribute('width', videoWidth);
+    canvas.setAttribute('height', videoHeight);
     const gl = (canvas.getContext('webgl', { alpha: false }) ||
       canvas.getContext('experimental-webgl', {
         alpha: false,
@@ -231,9 +239,12 @@ class WebglController {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.clearDepth(1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.enable(this.gl.BLEND);
     this.gl.depthFunc(this.gl.LEQUAL);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
     const zNear = 0.1;
     const zFar = 100.0;
