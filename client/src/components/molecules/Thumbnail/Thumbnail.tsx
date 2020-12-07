@@ -8,7 +8,7 @@ import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/molecules/HoverSlider';
 import video from '@/video';
 import {
-  getURL,
+  getMessage,
   getThumbnails,
   getIsCropAndDuration,
   getStartEnd,
@@ -28,11 +28,11 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
-const renderThumbnails = thumbnails =>
+const renderThumbnails = (thumbnails: string[]) =>
   thumbnails.map(image => <StyledImg key={uuidv4()} src={image} alt="" />);
 
 const Thumbnail: React.FC = () => {
-  const URL = useSelector(getURL);
+  const message = useSelector(getMessage);
   const thumbnails = useSelector(getThumbnails);
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
@@ -76,7 +76,7 @@ const Thumbnail: React.FC = () => {
 
   const OriginalThumbnails = useMemo(
     () => renderThumbnails(video.getThumbnails()),
-    [URL]
+    [message] // URL is not enough to check whether thumbnail is ready
   );
   const Thumbnails = useMemo(() => renderThumbnails(thumbnails), [thumbnails]);
 
