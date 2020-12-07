@@ -8,6 +8,7 @@ import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/molecules/HoverSlider';
 import video from '@/video';
 import {
+  getURL,
   getThumbnails,
   getIsCropAndDuration,
   getStartEnd,
@@ -27,7 +28,11 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
+const renderThumbnails = thumbnails =>
+  thumbnails.map(image => <StyledImg key={uuidv4()} src={image} alt="" />);
+
 const Thumbnail: React.FC = () => {
+  const URL = useSelector(getURL);
   const thumbnails = useSelector(getThumbnails);
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
@@ -69,13 +74,11 @@ const Thumbnail: React.FC = () => {
     hoverSliderRef.current.style.display = 'block';
   };
 
-  const Thumbnails = useMemo(
-    () =>
-      (isCrop ? video.getThumbnails() : thumbnails).map((image, idx) => (
-        <StyledImg key={uuidv4()} src={image} alt="" />
-      )),
-    [isCrop, thumbnails]
+  const OriginalThumbnails = useMemo(
+    () => renderThumbnails(video.getThumbnails()),
+    [URL]
   );
+  const Thumbnails = useMemo(() => renderThumbnails(thumbnails), [thumbnails]);
 
   return (
     <StyledDiv
@@ -88,7 +91,7 @@ const Thumbnail: React.FC = () => {
       {isCrop && <CropLayer />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
-      {Thumbnails}
+      {isCrop ? OriginalThumbnails : Thumbnails}
     </StyledDiv>
   );
 };
