@@ -5,11 +5,7 @@ import styled from 'styled-components';
 import TimeText from '@/components/atoms/TimeText';
 import video from '@/video';
 import color from '@/theme/colors';
-import {
-  getVisible,
-  getIsCropAndDuration,
-  getStartEnd,
-} from '@/store/selectors';
+import { getVisible, getIsCrop, getStartEnd } from '@/store/selectors';
 import { moveTo, pause } from '@/store/currentVideo/actions';
 
 const StyledDiv = styled.div`
@@ -21,11 +17,14 @@ const StyledDiv = styled.div`
   height: 30%;
 `;
 
+const getVideoCurrentTime = () => video.get('currentTime');
+
 const CurrentTime: React.FC = () => {
-  const currentTime = () => video.get('currentTime');
   const { start, end } = useSelector(getStartEnd, shallowEqual);
-  const cropState = useSelector(getIsCropAndDuration, shallowEqual);
-  const [time, setTime] = useState(Math.floor(currentTime() - start));
+  const isCrop = useSelector(getIsCrop);
+  const [time, setTime] = useState(
+    Math.floor(getVideoCurrentTime() - (!isCrop && start))
+  );
   const visible = useSelector(getVisible);
 
   const dispatch = useDispatch();
@@ -34,18 +33,20 @@ const CurrentTime: React.FC = () => {
     const timer =
       visible &&
       setInterval(() => {
-        let newTime = currentTime();
+        let newTime = getVideoCurrentTime();
         if (newTime >= end) {
-          if (!cropState.isCrop) video.pause();
+          video.pause();
           dispatch(pause());
-          if (newTime > end) video.setCurrentTime((newTime = end));
-          dispatch(moveTo(end));
+          if (newTime > end) {
+            video.setCurrentTime((newTime = end));
+            dispatch(moveTo(end));
+          }
         }
-        newTime = Math.floor(Number((newTime - start).toFixed(1)));
+        newTime = Math.floor(Number((newTime - (!isCrop && start)).toFixed(1)));
         if (time !== newTime) setTime(newTime);
       }, 50);
     return () => clearInterval(timer);
-  }, [visible]);
+  }, [isCrop, visible]);
 
   return (
     <StyledDiv>

@@ -2,7 +2,12 @@ import React, { MutableRefObject, useEffect, useState } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useSelector, shallowEqual } from 'react-redux';
 
-import { getPlaying, getCurrentTime, getStartEnd } from '@/store/selectors';
+import {
+  getPlaying,
+  getCurrentTime,
+  getIsCropAndDuration,
+  getStartEnd,
+} from '@/store/selectors';
 import color from '@/theme/colors';
 import video from '@/video';
 
@@ -32,11 +37,12 @@ const StyledDiv = styled.div`
     `};
 `;
 
-const Slider: React.FC<Props> = ({ thumbnailRef }) => {
+const Slider: React.FC<Props> = React.memo(({ thumbnailRef }) => {
   const [location, setLocation] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [restDuration, setRestDuration] = useState(0);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
+  const { isCrop, duration } = useSelector(getIsCropAndDuration);
   const isPlaying = useSelector(getPlaying);
   const time = useSelector(getCurrentTime);
 
@@ -44,22 +50,20 @@ const Slider: React.FC<Props> = ({ thumbnailRef }) => {
     const currentTime = video.get('currentTime');
 
     const width = thumbnailRef.current.clientWidth;
-    const totalDuration = end - start;
+    const totalDuration = isCrop ? duration : end - start;
 
     const movedLocation = totalDuration
-      ? ((currentTime - start) / totalDuration) * width
+      ? ((currentTime - (!isCrop && start)) / totalDuration) * width
       : 0;
+    setLocation(movedLocation);
 
     const restWidth = width - movedLocation;
-    const restDuration = (restWidth / width) * totalDuration;
-
-    setLocation(movedLocation);
-    setDuration(restDuration);
-  }, [isPlaying, time]);
+    setRestDuration((restWidth / width) * totalDuration);
+  }, [isCrop, isPlaying, time]);
 
   return (
-    <StyledDiv location={location} duration={duration} active={isPlaying} />
+    <StyledDiv location={location} duration={restDuration} active={isPlaying} />
   );
-};
+});
 
 export default Slider;

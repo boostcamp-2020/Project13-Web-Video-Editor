@@ -5,7 +5,7 @@ class Video {
 
   private THUMBNAIL_COUNT: number = 30;
 
-  private thumbnails: string[];
+  private thumbnails: string[] = [];
 
   private getAllowedFields: Set<string> = new Set([
     'paused',
