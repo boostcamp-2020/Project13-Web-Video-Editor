@@ -199,6 +199,24 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     }
   };
 
+  const handleSign = () => {
+    dispatchButtonData({ type: null });
+    dispatch(cropCancel());
+    if (isEdit === UP) setEdit(DOWN);
+    setToolType(toolType === ButtonTypes.sign ? null : ButtonTypes.sign);
+
+    const input = document.createElement('input');
+
+    input.addEventListener('change', e => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(e.target.files[0]);
+      webglController.setSign(img);
+    });
+
+    input.type = 'file';
+    input.click();
+  };
+
   return (
     <StyledDiv>
       <VideoTool
@@ -221,6 +239,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
             handleRotateReverse,
             handleRatio,
             handleCrop,
+            handleSign,
             hasEmptyVideo,
             toolType
           )}

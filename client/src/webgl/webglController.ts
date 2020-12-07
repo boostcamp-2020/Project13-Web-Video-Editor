@@ -42,6 +42,8 @@ class WebglController {
     ],
   };
 
+  sign: HTMLImageElement;
+
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
@@ -235,6 +237,76 @@ class WebglController {
     );
   };
 
+  setSign = sign => {
+    this.sign = sign;
+  };
+
+  drawSign = (modelViewMatrix, projectionMatrix, programInfo) => {
+    const reduce = 0.25;
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [
+      reduce,
+      reduce * (this.sign.height / this.sign.width),
+      1.0,
+    ]);
+
+    this.gl.useProgram(programInfo.program);
+
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.projectionMatrix,
+      false,
+      projectionMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.modelViewMatrix,
+      false,
+      modelViewMatrix
+    );
+
+    const texture2 = this.gl.createTexture();
+
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture2);
+
+    this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
+    const level = 0;
+    const internalFormat = this.gl.RGBA;
+    const srcFormat = this.gl.RGBA;
+    const srcType = this.gl.UNSIGNED_BYTE;
+
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      level,
+      internalFormat,
+      srcFormat,
+      srcType,
+      this.sign
+    );
+
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+
+    {
+      const offset = 0;
+      const type = this.gl.UNSIGNED_SHORT;
+      const vertexCount = 6;
+      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+  };
+
   drawScene = (programInfo: ProgramInfo, texture: WebGLTexture) => {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.clearDepth(1.0);
@@ -320,6 +392,10 @@ class WebglController {
       const type = this.gl.UNSIGNED_SHORT;
       const offset = 0;
       this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+
+    if (this.sign) {
+      this.drawSign(modelViewMatrix, projectionMatrix, programInfo);
     }
   };
 
