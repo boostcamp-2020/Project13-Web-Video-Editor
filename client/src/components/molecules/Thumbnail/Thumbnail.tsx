@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
@@ -6,8 +6,14 @@ import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/molecules/HoverSlider';
 import video from '@/video';
-import { getThumbnails, getIsCrop, getStartEnd } from '@/store/selectors';
+import {
+  getThumbnails,
+  getIsCropAndDuration,
+  getStartEnd,
+} from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
+
+import hash from '@/utils/hash';
 
 const StyledDiv = styled.div`
   position: relative;
@@ -22,9 +28,12 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
+const getKeyFromURL = (image, idx) => hash(image.slice(22 + idx, 222 + idx));
+// URL starts with `data:image/png;base64,`
+
 const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
-  const isCrop = useSelector(getIsCrop);
+  const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const [time, setTime] = useState(0);
@@ -49,10 +58,9 @@ const Thumbnail: React.FC = () => {
     const distance = mouseLocation - offset;
 
     const width = thumbnailRef.current.clientWidth;
-    const duration = end - start;
+    const interval = isCrop ? duration : end - start;
 
-    const hoverTime = (distance / width) * duration;
-
+    const hoverTime = (distance / width) * interval;
     setTime(hoverTime);
     slider.style.left = `${distance}px`;
   };
@@ -65,6 +73,14 @@ const Thumbnail: React.FC = () => {
     hoverSliderRef.current.style.display = 'block';
   };
 
+  const Thumbnails = useMemo(
+    () =>
+      (isCrop ? video.getThumbnails() : thumbnails).map((image, idx) => (
+        <StyledImg key={getKeyFromURL(image, idx)} src={image} alt="" />
+      )),
+    [isCrop, thumbnails]
+  );
+
   return (
     <StyledDiv
       ref={thumbnailRef}
@@ -76,9 +92,7 @@ const Thumbnail: React.FC = () => {
       {isCrop && <CropLayer />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
-      {(isCrop ? video.getThumbnails() : thumbnails).map(image => {
-        return <StyledImg key={image} src={image} alt="" />;
-      })}
+      {Thumbnails}
     </StyledDiv>
   );
 };
