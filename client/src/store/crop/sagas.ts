@@ -4,6 +4,7 @@ import video from '@/video/video';
 import webglController from '@/webgl/webglController';
 import { setThumbnails } from '../currentVideo/actions';
 import { CROP, error } from '../actionTypes';
+import { applyCrop } from '../history/actions';
 
 function* updateThumbnails(action) {
   try {
@@ -14,6 +15,7 @@ function* updateThumbnails(action) {
     );
     yield call(webglController.main);
     yield put(setThumbnails(thumbnails));
+    yield put(applyCrop(thumbnails, action.payload.start, action.payload.end));
   } catch (err) {
     console.log(err);
     yield put(error());
