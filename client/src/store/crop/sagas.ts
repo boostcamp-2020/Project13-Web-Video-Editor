@@ -1,6 +1,6 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 
-import video from '@/video/video';
+import video from '@/video';
 import webglController from '@/webgl/webglController';
 import { setThumbnails, moveTo, pause } from '../currentVideo/actions';
 import { CROP, error } from '../actionTypes';
