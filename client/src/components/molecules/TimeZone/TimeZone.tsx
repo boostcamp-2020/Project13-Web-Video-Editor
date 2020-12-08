@@ -32,6 +32,11 @@ const getTimes = ({ start, end }): number[] => {
 
   let secs = 0;
 
+  if (duration < 6) {
+    for (let count = 0; count <= duration; count += 1) times.push(count);
+    return times;
+  }
+
   for (let count = 0; count <= PART_COUNT; count += 1) {
     times.push(Math.round(secs));
     secs += gap;
