@@ -70,7 +70,6 @@ export default (
 ): HistoryState => {
   // console.log(action);
   let logs = [...state.logs];
-  console.log(logs);
 
   if (action.type === (APPLY_EFFECT || CROP))
     logs = state.logs.slice(0, state.index);
