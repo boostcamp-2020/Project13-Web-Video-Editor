@@ -25,7 +25,7 @@ const EditPage: React.FC = () => {
 
   return (
     <StyledDiv>
-      {message && <Loading message={message} />}
+      {/* message && <Loading message={message} /> */}
       <Header />
       <VideoContainer isEdit={isEdit} />
       <BottomDiv>
