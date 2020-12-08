@@ -2,14 +2,14 @@ import React, { useState, useReducer, useCallback, useMemo } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
-import webglController from '@/webgl/webglController';
+import { Effect, applyEffect } from '@/store/history/actions';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
-import color from '@/theme/colors';
+
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
@@ -168,12 +168,15 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const methods = useMemo(
     () => ({
       rotateReverse: [
-        webglController.rotateLeft90Degree,
-        webglController.rotateRight90Degree,
-        webglController.reverseUpsideDown,
-        webglController.reverseSideToSide,
+        () => dispatch(applyEffect(Effect.RotateCounterClockwise)),
+        () => dispatch(applyEffect(Effect.RotateClockwise)),
+        () => dispatch(applyEffect(Effect.FlipHorizontal)),
+        () => dispatch(applyEffect(Effect.FlipVertical)),
       ],
-      ratio: [webglController.enlarge, webglController.reduce],
+      ratio: [
+        () => dispatch(applyEffect(Effect.Enlarge)),
+        () => dispatch(applyEffect(Effect.Reduce)),
+      ],
       crop: [handleCropManually, handleCropConfirm, handleCropCancel],
     }),
     []
