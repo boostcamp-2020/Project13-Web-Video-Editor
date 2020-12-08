@@ -355,6 +355,10 @@ class WebglController {
     requestAnimationFrame(render);
   };
 
+  renderFromImageBitmap = (image: ImageBitmap) => {
+    return image;
+  };
+
   main = () => {
     this.glInit();
   };
