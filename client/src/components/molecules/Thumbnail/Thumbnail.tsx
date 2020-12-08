@@ -1,12 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 import { moveTo } from '@/store/currentVideo/actions';
 import Slider from '@/components/atoms/Slider';
 import HoverSlider from '@/components/molecules/HoverSlider';
 import video from '@/video';
-import { getThumbnails, getIsCrop, getStartEnd } from '@/store/selectors';
+import {
+  getMessage,
+  getThumbnails,
+  getIsCropAndDuration,
+  getStartEnd,
+} from '@/store/selectors';
 import CropLayer from '@/components/molecules/CropLayer';
 
 const StyledDiv = styled.div`
@@ -22,9 +28,13 @@ const StyledImg = styled.img`
   height: 50px;
 `;
 
+const renderThumbnails = (thumbnails: string[]) =>
+  thumbnails.map(image => <StyledImg key={uuidv4()} src={image} alt="" />);
+
 const Thumbnail: React.FC = () => {
+  const message = useSelector(getMessage);
   const thumbnails = useSelector(getThumbnails);
-  const isCrop = useSelector(getIsCrop);
+  const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const [time, setTime] = useState(0);
@@ -49,10 +59,9 @@ const Thumbnail: React.FC = () => {
     const distance = mouseLocation - offset;
 
     const width = thumbnailRef.current.clientWidth;
-    const duration = end - start;
+    const interval = isCrop ? duration : end - start;
 
-    const hoverTime = (distance / width) * duration;
-
+    const hoverTime = (distance / width) * interval;
     setTime(hoverTime);
     slider.style.left = `${distance}px`;
   };
@@ -65,6 +74,12 @@ const Thumbnail: React.FC = () => {
     hoverSliderRef.current.style.display = 'block';
   };
 
+  const OriginalThumbnails = useMemo(
+    () => renderThumbnails(video.getThumbnails()),
+    [message] // URL is not enough to check whether thumbnail is ready
+  );
+  const Thumbnails = useMemo(() => renderThumbnails(thumbnails), [thumbnails]);
+
   return (
     <StyledDiv
       ref={thumbnailRef}
@@ -76,9 +91,7 @@ const Thumbnail: React.FC = () => {
       {isCrop && <CropLayer />}
       <HoverSlider hoverSliderRef={hoverSliderRef} hoverTime={time} />
       <Slider thumbnailRef={thumbnailRef} />
-      {(isCrop ? video.getThumbnails() : thumbnails).map(image => {
-        return <StyledImg key={image} src={image} alt="" />;
-      })}
+      {isCrop ? OriginalThumbnails : Thumbnails}
     </StyledDiv>
   );
 };

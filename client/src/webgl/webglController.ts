@@ -42,20 +42,30 @@ class WebglController {
     ],
   };
 
+  sign: HTMLImageElement;
+
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
+
+  swapWidthHeight = () => {
+    const temp = this.gl.canvas.width;
+    this.gl.canvas.width = this.gl.canvas.height;
+    this.gl.canvas.height = temp;
+  };
 
   rotateLeft90Degree = () => {
     // 0123 => 1230
     this.positions.push(this.positions.shift());
     this.buffers = this.initBuffers();
+    this.swapWidthHeight();
   };
 
   rotateRight90Degree = () => {
     // 0123 => 3012
     this.positions.unshift(this.positions.pop());
     this.buffers = this.initBuffers();
+    this.swapWidthHeight();
   };
 
   reverseUpsideDown = () => {
@@ -85,8 +95,8 @@ class WebglController {
 
   initCanvas = (videoWidth: string, videoHeight: string) => {
     const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    canvas.setAttribute('width', canvas.clientWidth.toString());
-    canvas.setAttribute('height', canvas.clientHeight.toString());
+    canvas.setAttribute('width', videoWidth);
+    canvas.setAttribute('height', videoHeight);
     const gl = (canvas.getContext('webgl', { alpha: false }) ||
       canvas.getContext('experimental-webgl', {
         alpha: false,
@@ -227,13 +237,86 @@ class WebglController {
     );
   };
 
+  setSign = sign => {
+    this.sign = sign;
+  };
+
+  drawSign = (modelViewMatrix, projectionMatrix, programInfo) => {
+    const reduce = 0.25;
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [
+      reduce,
+      reduce * (this.sign.height / this.sign.width),
+      1.0,
+    ]);
+
+    this.gl.useProgram(programInfo.program);
+
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.projectionMatrix,
+      false,
+      projectionMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.modelViewMatrix,
+      false,
+      modelViewMatrix
+    );
+
+    const texture2 = this.gl.createTexture();
+
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture2);
+
+    this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
+    const level = 0;
+    const internalFormat = this.gl.RGBA;
+    const srcFormat = this.gl.RGBA;
+    const srcType = this.gl.UNSIGNED_BYTE;
+
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      level,
+      internalFormat,
+      srcFormat,
+      srcType,
+      this.sign
+    );
+
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+
+    {
+      const offset = 0;
+      const type = this.gl.UNSIGNED_SHORT;
+      const vertexCount = 6;
+      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+  };
+
   drawScene = (programInfo: ProgramInfo, texture: WebGLTexture) => {
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
     this.gl.clearDepth(1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.enable(this.gl.BLEND);
     this.gl.depthFunc(this.gl.LEQUAL);
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
 
     const zNear = 0.1;
     const zFar = 100.0;
@@ -309,6 +392,10 @@ class WebglController {
       const type = this.gl.UNSIGNED_SHORT;
       const offset = 0;
       this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    }
+
+    if (this.sign) {
+      this.drawSign(modelViewMatrix, projectionMatrix, programInfo);
     }
   };
 

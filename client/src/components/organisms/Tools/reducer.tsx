@@ -14,6 +14,7 @@ export enum ButtonTypes {
   crop = 'crop',
   videoEffect = 'videoEffect',
   ratio = 'ratio',
+  sign = 'sign',
 }
 
 export interface ButtonData {
