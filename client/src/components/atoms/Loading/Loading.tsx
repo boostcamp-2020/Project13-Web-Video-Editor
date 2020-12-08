@@ -15,6 +15,7 @@ const jump = keyframes`
     top:-70px;
   } 
 `;
+
 const StyledDiv = styled.div`
   display: flex;
   align-items: center;
@@ -24,7 +25,7 @@ const StyledDiv = styled.div`
   height: 100vh;
   background-color: ${color.BLACK};
   z-index: 10;
-  opacity: 0.8;
+  opacity: 0.5;
   flex-direction: column;
   font-size: 2rem;
   font-family: Sans-Serif;
@@ -39,13 +40,14 @@ const StyledSubDiv = styled.div`
   margin-top: -120px;
   z-index: 11;
 `;
+
 const One = styled.div`
   background: ${color.DARK_PURPLE};
   margin-right: 10px;
   height: 150px;
   position: relative;
   width: 50px;
-  &: before {
+  &:before {
     border-bottom: 35px solid ${color.DARK_PURPLE};
     border-right: 50px solid transparent;
     content: '';
@@ -57,13 +59,14 @@ const One = styled.div`
   }
   animation: ${jump} 0.4s 0s ease-in Infinite Alternate;
 `;
+
 const Two = styled.div`
   background: ${color.PURPLE};
   height: 100px;
   margin-right: 10px;
   position: relative;
   width: 50px;
-  &: before {
+  &:before {
     border-bottom: 35px solid ${color.PURPLE};
     border-right: 50px solid transparent;
     content: '';
@@ -75,6 +78,7 @@ const Two = styled.div`
   }
   animation: ${jump} 0.4s 0.1s ease-in Infinite Alternate;
 `;
+
 const Three = styled.div`
   background: ${color.PALE_PURPLE};
   height: 85px;
@@ -82,13 +86,14 @@ const Three = styled.div`
   width: 50px;
   animation: ${jump} 0.4s 0.2s ease-in Infinite Alternate;
 `;
+
 const Four = styled.div`
   background: ${color.MEDIUM_BLUE};
   height: 100px;
   position: relative;
   margin-left: 10px;
   width: 50px;
-  &: before {
+  &:before {
     border-bottom: 35px solid ${color.MEDIUM_BLUE};
     border-left: 50px solid transparent;
     content: '';
@@ -100,13 +105,14 @@ const Four = styled.div`
   }
   animation: ${jump} 0.4s 0.3s ease-in Infinite Alternate;
 `;
+
 const Five = styled.div`
   background: ${color.ROYAL_BLUE};
   height: 150px;
   position: relative;
   width: 50px;
   margin-left: 10px;
-  &: before {
+  &:before {
     border-bottom: 35px solid ${color.ROYAL_BLUE};
     border-left: 50px solid transparent;
     content: '';
