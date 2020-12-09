@@ -1,10 +1,10 @@
-import { call, put, takeEvery, takeLeading, select } from 'redux-saga/effects';
+import { call, put, takeLeading, select } from 'redux-saga/effects';
 import webglController from '@/webgl/webglController';
 import video from '@/video';
 import { APPLY_EFFECT, UNDO, REDO, CLEAR, error } from '../actionTypes';
-import { Effect } from './actions';
+import { Effect, Log } from './actions';
 import { getIndexAndLogs } from '../selectors';
-import { setThumbnails } from '../currentVideo/actions';
+import { updateStartEnd, setThumbnails, moveTo } from '../currentVideo/actions';
 
 const revokeURL = (urls: string[]) => {
   return new Promise(resolve => {
@@ -27,10 +27,12 @@ function* checkApplyEffect(action) {
   }
 }
 
-function* updateThumbnailsHistory(thumbnails: string[]) {
+function* updateThumbnailsHistory(thumbnails: string[], { start, end }) {
   try {
-    yield call(webglController.main);
     yield put(setThumbnails(thumbnails));
+    yield put(updateStartEnd(start, end));
+    yield put(moveTo(start));
+    yield call(video.setCurrentTime, start);
   } catch (err) {
     console.log(err);
     yield put(error());
@@ -69,7 +71,6 @@ const effectMapper = (effect: Effect) => {
         apply: webglController.reduce,
         rollback: webglController.enlarge,
       };
-
     default:
       return {};
   }
@@ -82,10 +83,14 @@ function* controlWebgl(action) {
 function* undoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
 
-  const targetLog = logs[index];
+  const targetLog: Log = logs[index];
   if (index >= 0) {
     if (targetLog.effect === Effect.Crop)
-      yield call(updateThumbnailsHistory, targetLog.thumbnails);
+      yield call(
+        updateThumbnailsHistory,
+        targetLog.thumbnails.prev,
+        targetLog.interval.prev
+      );
     else yield call(effectMapper(targetLog.effect).rollback);
   }
 }
@@ -93,17 +98,25 @@ function* undoEffect(action) {
 function* redoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
 
-  const targetLog = logs[index - 1];
+  const targetLog: Log = logs[index - 1];
 
   if (index - 1 >= 0 && index - 1 < logs.length) {
     if (targetLog.effect === Effect.Crop)
-      yield call(updateThumbnailsHistory, targetLog.thumbnails);
+      yield call(
+        updateThumbnailsHistory,
+        targetLog.thumbnails.current,
+        targetLog.interval.current
+      );
     else yield call(effectMapper(targetLog.effect).apply);
   }
 }
 
 function* clearEffect(action) {
   yield call(webglController.clear);
+  yield call(updateThumbnailsHistory, video.getThumbnails(), {
+    start: 0,
+    end: video.get('duration'),
+  });
 }
 
 export function* watchApplyEffect() {
