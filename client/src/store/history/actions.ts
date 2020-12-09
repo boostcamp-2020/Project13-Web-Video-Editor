@@ -83,12 +83,12 @@ export type HistoryClearAction = {
   type: typeof CLEAR;
 };
 
-export type HistoryApplyEffect = {
+export type HistoryApplyEffectAction = {
   type: typeof APPLY_EFFECT;
   payload: Log;
 };
 
-export type HistoryApplyCrop = {
+export type HistoryApplyCropAction = {
   type: typeof APPLY_CROP;
   payload: {
     thumbnails: Thumbnails;
@@ -100,7 +100,7 @@ export type HistoryAction =
   | HistoryUndoAction
   | HistoryRedoAction
   | HistoryClearAction
-  | HistoryApplyEffect
-  | HistoryApplyCrop
+  | HistoryApplyEffectAction
+  | HistoryApplyCropAction
   | CropAction
   | ResetAction;

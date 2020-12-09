@@ -3,12 +3,13 @@ import {
   UNDO,
   REDO,
   APPLY_EFFECT,
-  CROP,
   RESET,
   CLEAR,
   APPLY_CROP,
 } from '../actionTypes';
 import { HistoryAction, Log, Effect, Status } from './actions';
+
+export const MAX_HISTORY = 20;
 
 export interface HistoryState {
   logs: Log[];
@@ -68,11 +69,8 @@ export default (
   state: HistoryState = initialState,
   action: HistoryAction
 ): HistoryState => {
-  let logs = [...state.logs];
-
-  if (action.type === (APPLY_EFFECT || CROP))
-    logs = state.logs.slice(0, state.index);
-  if (state.logs.length >= 20) logs.shift();
+  const isFull = state.index === MAX_HISTORY;
+  const logs = state.logs.slice(isFull ? 1 : 0, state.index);
 
   switch (action.type) {
     case UNDO:
@@ -83,13 +81,13 @@ export default (
     case REDO:
       return {
         ...state,
-        index: state.index === 20 ? state.index : state.index + 1,
+        index: state.index === MAX_HISTORY ? state.index : state.index + 1,
       };
     case APPLY_EFFECT:
       return {
         ...state,
         logs: [...logs, { effect: action.payload.effect }],
-        index: state.index === 20 ? state.index : state.index + 1,
+        index: state.index === MAX_HISTORY ? state.index : state.index + 1,
         status: getStatusFromEffect(state.status, action.payload.effect),
       };
     case APPLY_CROP:
@@ -109,7 +107,7 @@ export default (
             },
           },
         ],
-        index: state.index === 20 ? state.index : state.index + 1,
+        index: state.index === MAX_HISTORY ? state.index : state.index + 1,
       };
     case CLEAR:
     case RESET:

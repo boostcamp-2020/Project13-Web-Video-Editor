@@ -1,27 +1,25 @@
 import { call, put, takeLeading, select } from 'redux-saga/effects';
 import webglController from '@/webgl/webglController';
 import video from '@/video';
+import { MAX_HISTORY } from '@/store/history/reducer';
 import { APPLY_EFFECT, UNDO, REDO, CLEAR, error } from '../actionTypes';
 import { Effect, Log } from './actions';
 import { getIndexAndLogs } from '../selectors';
 import { updateStartEnd, setThumbnails, moveTo } from '../currentVideo/actions';
 
 const revokeURL = (urls: string[]) => {
-  return new Promise(resolve => {
-    urls.forEach(url => URL.revokeObjectURL(url));
-    resolve();
-  });
+  urls.forEach(url => URL.revokeObjectURL(url));
 };
 
 function* checkApplyEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
 
-  const isFirstCrop = index === 20 && logs[0].effect === Effect.Crop;
-  if (isFirstCrop) yield call(revokeURL, logs[0].thumbnails);
+  const isFirstCrop = index === MAX_HISTORY && logs[0].effect === Effect.Crop;
+  if (isFirstCrop) yield call(revokeURL, logs[0].thumbnails.current);
   else {
     const target = logs
       .filter((log, logIndex) => index < logIndex && log.Effect === Effect.Crop)
-      .map(log => log.thumbnails);
+      .map(log => log.thumbnails.current);
 
     if (target.lenght > 0) yield call(revokeURL, target.flat());
   }

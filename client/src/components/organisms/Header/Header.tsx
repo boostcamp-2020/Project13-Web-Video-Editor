@@ -45,22 +45,22 @@ const getHistoryToolData = (
   handleNext: () => void,
   handleReset: () => void,
   hasEmptyVideo: boolean,
-  isPrevDisable: boolean,
-  isNextDisable: boolean
+  isPrevDisabled: boolean,
+  isNextDisabled: boolean
 ): button[] => [
   {
     onClick: handlePrevious,
     message: '이전',
     type: 'transparent',
     children: <BsArrowClockwise size={size.ICON_SIZE} />,
-    disabled: hasEmptyVideo || isPrevDisable,
+    disabled: hasEmptyVideo || isPrevDisabled,
   },
   {
     onClick: handleNext,
     message: '다음',
     type: 'transparent',
     children: <BsArrowCounterclockwise size={size.ICON_SIZE} />,
-    disabled: hasEmptyVideo || isNextDisable,
+    disabled: hasEmptyVideo || isNextDisabled,
   },
   {
     onClick: handleReset,
