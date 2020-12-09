@@ -46,7 +46,7 @@ const CurrentTime: React.FC = () => {
         if (time !== newTime) setTime(newTime);
       }, 50);
     return () => clearInterval(timer);
-  }, [isCrop, visible]);
+  }, [isCrop, visible, start, end]);
 
   return (
     <StyledDiv>
