@@ -9,7 +9,7 @@ import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
-
+import webglController from '@/webgl/webglController';
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
