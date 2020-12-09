@@ -41,7 +41,7 @@ const StyledSubDiv = styled.div`
   z-index: 11;
 `;
 
-const One = styled.div`
+const Wave1 = styled.div`
   background: ${color.DARK_PURPLE};
   margin-right: 10px;
   height: 150px;
@@ -60,7 +60,7 @@ const One = styled.div`
   animation: ${jump} 0.4s 0s ease-in Infinite Alternate;
 `;
 
-const Two = styled.div`
+const Wave2 = styled.div`
   background: ${color.PURPLE};
   height: 100px;
   margin-right: 10px;
@@ -79,7 +79,7 @@ const Two = styled.div`
   animation: ${jump} 0.4s 0.1s ease-in Infinite Alternate;
 `;
 
-const Three = styled.div`
+const Wave3 = styled.div`
   background: ${color.PALE_PURPLE};
   height: 85px;
   position: relative;
@@ -87,7 +87,7 @@ const Three = styled.div`
   animation: ${jump} 0.4s 0.2s ease-in Infinite Alternate;
 `;
 
-const Four = styled.div`
+const Wave4 = styled.div`
   background: ${color.MEDIUM_BLUE};
   height: 100px;
   position: relative;
@@ -106,7 +106,7 @@ const Four = styled.div`
   animation: ${jump} 0.4s 0.3s ease-in Infinite Alternate;
 `;
 
-const Five = styled.div`
+const Wave5 = styled.div`
   background: ${color.ROYAL_BLUE};
   height: 150px;
   position: relative;
@@ -129,11 +129,11 @@ const Loading: React.FC<Props> = ({ message }) => {
   return (
     <StyledDiv>
       <StyledSubDiv>
-        <One />
-        <Two />
-        <Three />
-        <Four />
-        <Five />
+        <Wave1 />
+        <Wave2 />
+        <Wave3 />
+        <Wave4 />
+        <Wave5 />
       </StyledSubDiv>
       {message}
     </StyledDiv>
