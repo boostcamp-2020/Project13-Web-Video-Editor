@@ -55,197 +55,171 @@ class WebglController {
     ],
   };
 
+  // option params
+  internalFormat: number;
+
+  srcFormat: number;
+
+  srcType: number;
+
+  type: number;
+
+  typeShort: number;
+
+  // edit params
   sign: HTMLImageElement;
+
+  rate: number = 1;
+
+  rotate: boolean = false;
+
+  flip: boolean = false;
+
+  encode: boolean = false;
 
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
 
-  swapWidthHeight = () => {
-    const temp = this.gl.canvas.width;
-    this.gl.canvas.width = this.gl.canvas.height;
-    this.gl.canvas.height = temp;
-  };
-
   rotateLeft90Degree = () => {
     // 0123 => 1230
-    this.positions.push(this.positions.shift());
-    this.buffers = this.initBuffers();
-    this.swapWidthHeight();
+    if (this.flip) {
+      this.positions.unshift(this.positions.pop());
+    } else {
+      this.positions.push(this.positions.shift());
+    }
+
+    this.rate *= this.rotate
+      ? this.gl.canvas.width / this.gl.canvas.height
+      : this.gl.canvas.height / this.gl.canvas.width;
+
+    this.rotate = !this.rotate;
+
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   rotateRight90Degree = () => {
     // 0123 => 3012
-    this.positions.unshift(this.positions.pop());
-    this.buffers = this.initBuffers();
-    this.swapWidthHeight();
+    if (this.flip) {
+      this.positions.push(this.positions.shift());
+    } else {
+      this.positions.unshift(this.positions.pop());
+    }
+
+    this.rate *= this.rotate
+      ? this.gl.canvas.width / this.gl.canvas.height
+      : this.gl.canvas.height / this.gl.canvas.width;
+    this.rotate = !this.rotate;
+
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   reverseUpsideDown = () => {
     // 0123 => 3210
-    this.positions.reverse();
-    this.buffers = this.initBuffers();
+    this.flip = !this.flip;
+
+    this.positions.forEach(element => {
+      element[1] = -element[1];
+    });
+
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   reverseSideToSide = () => {
     // 0123 => 1032
-    this.positions = [
-      ...this.positions.slice(0, 2).reverse(),
-      ...this.positions.slice(-2).reverse(),
-    ];
-    this.buffers = this.initBuffers();
+    this.flip = !this.flip;
+
+    this.positions.forEach(element => {
+      element[0] = -element[0];
+    });
+
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   enlarge = () => {
     this.positions = this.positions.map(pair => pair.map(val => val * RATIO));
-    this.buffers = this.initBuffers();
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   reduce = () => {
     this.positions = this.positions.map(pair => pair.map(val => val * INVERSE));
-    this.buffers = this.initBuffers();
+    this.buffers = initBuffers(this.gl, this.positions);
   };
 
-  initCanvas = (videoWidth: string, videoHeight: string) => {
-    const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-    canvas.setAttribute('width', videoWidth);
-    canvas.setAttribute('height', videoHeight);
-    const gl = (canvas.getContext('webgl', { alpha: false }) ||
-      canvas.getContext('experimental-webgl', {
-        alpha: false,
-      })) as WebGLRenderingContext;
-
-    return gl;
-  };
-
-  initBuffers = () => {
-    const positionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      new Float32Array(this.positions.flat()),
-      this.gl.STATIC_DRAW
-    );
-
-    const textureCoordinates = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
-    const textureCoordBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
-    this.gl.bufferData(
-      this.gl.ARRAY_BUFFER,
-      new Float32Array(textureCoordinates),
-      this.gl.STATIC_DRAW
-    );
-
-    const indices = [0, 1, 2, 0, 2, 3];
-    const indexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(
-      this.gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(indices),
-      this.gl.STATIC_DRAW
-    );
-
+  getDrawingBufferWidthHeight = () => {
     return {
-      position: positionBuffer,
-      textureCoord: textureCoordBuffer,
-      indices: indexBuffer,
+      drawingBufferWidth: this.gl.drawingBufferWidth,
+      drawingBufferHeight: this.gl.drawingBufferHeight,
     };
   };
 
-  loadShader = (type: number, source: string) => {
-    const shader = this.gl.createShader(type);
+  getPixelsFromImage = image => {
+    this.encode = true;
 
-    this.gl.shaderSource(shader, source);
-
-    this.gl.compileShader(shader);
-
-    if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-      this.gl.deleteShader(shader);
-      return null;
-    }
-
-    return shader;
-  };
-
-  initShaderProgram = () => {
-    const vertexShader = this.loadShader(
-      this.gl.VERTEX_SHADER,
-      vertexShaderSource
-    );
-    const fragmentShader = this.loadShader(
-      this.gl.FRAGMENT_SHADER,
-      fragmentShaderSource
-    );
-
-    const shaderProgram = this.gl.createProgram();
-    this.gl.attachShader(shaderProgram, vertexShader);
-    this.gl.attachShader(shaderProgram, fragmentShader);
-    this.gl.linkProgram(shaderProgram);
-
-    if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
-      return null;
-    }
-
-    return shaderProgram;
-  };
-
-  initTexture = () => {
-    const texture = this.gl.createTexture();
-
-    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-
-    const level = 0;
-    const internalFormat = this.gl.RGBA;
-    const width = 1;
-    const height = 1;
-    const border = 0;
-    const srcFormat = this.gl.RGBA;
-    const srcType = this.gl.UNSIGNED_BYTE;
-    const pixel = new Uint8Array([0, 0, 0, 255]);
-
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
       level,
-      internalFormat,
-      width,
-      height,
-      border,
-      srcFormat,
-      srcType,
-      pixel
+      this.internalFormat,
+      this.srcFormat,
+      this.srcType,
+      image
     );
 
-    this.gl.texParameteri(
-      this.gl.TEXTURE_2D,
-      this.gl.TEXTURE_WRAP_S,
-      this.gl.CLAMP_TO_EDGE
-    );
-    this.gl.texParameteri(
-      this.gl.TEXTURE_2D,
-      this.gl.TEXTURE_WRAP_T,
-      this.gl.CLAMP_TO_EDGE
-    );
-    this.gl.texParameteri(
-      this.gl.TEXTURE_2D,
-      this.gl.TEXTURE_MIN_FILTER,
-      this.gl.LINEAR
+    this.drawScene(this.programInfo, this.texture);
+    const pixels = new Uint8Array(
+      this.gl.drawingBufferWidth * this.gl.drawingBufferHeight * 4
     );
 
-    return texture;
+    this.gl.readPixels(
+      0,
+      0,
+      this.gl.drawingBufferWidth,
+      this.gl.drawingBufferHeight,
+      this.gl.RGBA,
+      this.gl.UNSIGNED_BYTE,
+      pixels
+    );
+
+    return pixels;
+  };
+
+  encodeTexture = res => {
+    return new Promise(resolve => {
+      this.encode = true;
+
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+      this.gl.texImage2D(
+        this.gl.TEXTURE_2D,
+        level,
+        this.internalFormat,
+        this.srcFormat,
+        this.srcType,
+        res
+      );
+
+      this.drawScene(this.programInfo, this.texture);
+
+      createImageBitmap(
+        this.gl.canvas,
+        0,
+        0,
+        this.gl.canvas.width,
+        this.gl.canvas.height
+      ).then(resultImage => {
+        resolve(resultImage);
+      });
+    });
   };
 
   updateTexture = (texture: WebGLTexture) => {
-    const level = 0;
-    const internalFormat = this.gl.RGBA;
-    const srcFormat = this.gl.RGBA;
-    const srcType = this.gl.UNSIGNED_BYTE;
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
       level,
-      internalFormat,
-      srcFormat,
-      srcType,
+      this.internalFormat,
+      this.srcFormat,
+      this.srcType,
       video.getVideo()
     );
   };

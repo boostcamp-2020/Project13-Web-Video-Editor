@@ -1,6 +1,7 @@
 import { put, call, takeLatest, select } from 'redux-saga/effects';
 
 import video from '@/video/video';
+import encodeVideo from '@/video/encoding';
 import webglController from '@/webgl/webglController';
 import videoAPI from '@/api/video';
 
@@ -14,7 +15,7 @@ import {
   error,
   reset,
 } from '../actionTypes';
-import { getFile } from '../selectors';
+import { getFile, getStartEnd } from '../selectors';
 
 const TIMEOUT = 5_000;
 
@@ -64,11 +65,9 @@ export function* watchSetVideo() {
 
 function* encode(action: EncodeStartAction) {
   try {
-    const temp = yield select(getFile);
-    const file = yield call(
-      name => new Promise(resolve => setTimeout(() => resolve(temp), TIMEOUT)),
-      action.payload.name
-    ); // FIXME: do encoding here
+    const { start, end } = yield select(getStartEnd);
+    const file = yield call(encodeVideo, start, end);
+
     yield put(uploadStart(file));
   } catch (err) {
     console.log(err);
