@@ -7,6 +7,7 @@ import {
   CROP,
   RESET,
   ERROR,
+  UPDATE_START_END,
 } from '../actionTypes';
 import { CurrentVideoAction } from './actions';
 
@@ -51,11 +52,17 @@ export default (
         ...state,
         end: action.payload.length,
       };
+    case UPDATE_START_END:
     case SET_THUMBNAILS:
-    case CROP:
       return {
         ...state,
         ...action.payload,
+      };
+    case CROP:
+      return {
+        ...state,
+        start: action.payload.current.start,
+        end: action.payload.current.end,
       };
     case RESET:
       return initialState;

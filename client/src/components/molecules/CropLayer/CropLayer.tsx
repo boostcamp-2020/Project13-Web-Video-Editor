@@ -77,7 +77,10 @@ const CropLayer = React.memo(() => {
   }, [isCrop]);
 
   useEffect(() => {
-    if (isCropConfirm) dispatch(crop(positions[0], positions[1]));
+    if (isCropConfirm)
+      dispatch(
+        crop({ start, end }, { start: positions[0], end: positions[1] })
+      );
   }, [isCropConfirm]);
 
   return (

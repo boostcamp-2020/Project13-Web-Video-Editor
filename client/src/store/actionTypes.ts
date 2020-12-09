@@ -12,13 +12,12 @@ export const PAUSE = 'current/PAUSE';
 export const MOVE_TO = 'current/MOVE_TO';
 export const SET_THUMBNAILS = 'current/SET_THUMBNAILS';
 export const CROP = 'current/CROP';
+export const UPDATE_START_END = 'current/UPDATE_START_END';
 
 // crop
 export const CROP_START = 'crop/CROP_START';
 export const CROP_CANCEL = 'crop/CROP_CANCEL';
 export const CROP_CONFIRM = 'crop/CROP_CONFIRM';
-
-// history
 
 // video
 export const FETCH_LIST_START = 'video/FETCH_LIST_START';
@@ -28,6 +27,13 @@ export const UPLOAD_SUCCESS = 'video/UPLOAD_SUCCESS';
 // user
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
+
+// history
+export const UNDO = 'history/UNDO';
+export const REDO = 'history/REDO';
+export const CLEAR = 'history/CLEAR';
+export const APPLY_EFFECT = 'history/APPLY_EFFECT';
+export const APPLY_CROP = 'history/APPLY_CROP';
 
 // global
 export const RESET = 'RESET';

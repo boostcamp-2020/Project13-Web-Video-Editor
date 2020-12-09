@@ -7,6 +7,7 @@ import {
 } from '@/store/originalVideo/sagas';
 import watchFetchListStart from '@/store/video/sagas';
 import watchCrop from '@/store/crop/sagas';
+import { watchApplyEffect, watchHistory } from '@/store/history/sagas';
 import { RESET } from './actionTypes';
 
 function* watchReset() {
@@ -21,5 +22,7 @@ export default function* rootSaga() {
     watchReset(),
     watchCrop(),
     watchFetchListStart(),
+    watchApplyEffect(),
+    watchHistory(),
   ]);
 }

@@ -49,6 +49,8 @@ function* load(action) {
     const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
 
     yield call(webglController.main);
+    yield call(webglController.clear);
+
     yield put(setThumbnails(thumbnails));
   } catch (err) {
     console.log(err);

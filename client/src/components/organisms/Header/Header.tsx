@@ -6,7 +6,12 @@ import {
   BsArrowRepeat,
 } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
-import { getName, getVisible } from '@/store/selectors';
+import {
+  getName,
+  getVisible,
+  getIsPrevDisabled,
+  getIsNextDisabled,
+} from '@/store/selectors';
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
@@ -15,6 +20,7 @@ import Modal from '@/components/molecules/Modal';
 import color from '@/theme/colors';
 import { reset } from '@/store/actionTypes';
 import { encodeStart } from '@/store/originalVideo/actions';
+import { undo, redo, clear } from '@/store/history/actions';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -38,21 +44,23 @@ const getHistoryToolData = (
   handlePrevious: () => void,
   handleNext: () => void,
   handleReset: () => void,
-  hasEmptyVideo: boolean
+  hasEmptyVideo: boolean,
+  isPrevDisabled: boolean,
+  isNextDisabled: boolean
 ): button[] => [
   {
     onClick: handlePrevious,
     message: '이전',
     type: 'transparent',
     children: <BsArrowClockwise size={size.ICON_SIZE} />,
-    disabled: hasEmptyVideo,
+    disabled: hasEmptyVideo || isPrevDisabled,
   },
   {
     onClick: handleNext,
     message: '다음',
     type: 'transparent',
     children: <BsArrowCounterclockwise size={size.ICON_SIZE} />,
-    disabled: hasEmptyVideo,
+    disabled: hasEmptyVideo || isNextDisabled,
   },
   {
     onClick: handleReset,
@@ -138,11 +146,20 @@ const Header: React.FC = () => {
   const [complete, setComplete] = useState(false);
   const name = useSelector(getName);
   const hasEmptyVideo = !useSelector(getVisible);
+  const isPrevDisabled = useSelector(getIsPrevDisabled);
+  const isNextDisabled = useSelector(getIsNextDisabled);
+
   const inputRef = useRef(null);
 
-  const handlePrevious = () => {};
-  const handleNext = () => {};
-  const handleReset = () => {};
+  const handlePrevious = () => {
+    dispatch(undo());
+  };
+  const handleNext = () => {
+    dispatch(redo());
+  };
+  const handleReset = () => {
+    dispatch(clear());
+  };
   const handleCancel = () => dispatch(reset());
 
   const handleModalConfirm = () => {
@@ -182,7 +199,9 @@ const Header: React.FC = () => {
             handlePrevious,
             handleNext,
             handleReset,
-            hasEmptyVideo
+            hasEmptyVideo,
+            isPrevDisabled,
+            isNextDisabled
           )}
         />
       </HistoryWrapper>

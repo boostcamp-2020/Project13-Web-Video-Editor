@@ -23,8 +23,8 @@ interface ProgramInfo {
   };
 }
 
-const RATIO = 1.25;
-const INVERSE = 1 / RATIO;
+export const RATIO = 1.25;
+export const INVERSE = 1 / RATIO;
 
 class WebglController {
   positions: number[][];
@@ -446,10 +446,14 @@ class WebglController {
     this.glInit();
   };
 
+  clear = () => {
+    this.positions = this.init.positions.map(pair => [...pair]);
+    this.buffers = this.initBuffers();
+  };
+
   reset = () => {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    this.positions = this.init.positions.map(pair => [...pair]);
-    this.initBuffers();
+    this.clear();
   };
 }
 export default new WebglController();
