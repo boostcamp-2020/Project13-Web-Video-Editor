@@ -1,8 +1,7 @@
 import { mat4 } from 'gl-matrix';
 
 import video from '@/video';
-import vertexShaderSource from './vertexShaderSource';
-import fragmentShaderSource from './fragmentShaderSource';
+import { initConfig, initBuffers, clearCanvas } from './webglConfig';
 
 interface Buffers {
   position: WebGLBuffer;
@@ -26,12 +25,26 @@ interface ProgramInfo {
 export const RATIO = 1.25;
 export const INVERSE = 1 / RATIO;
 
+const level = 0;
+const stride = 0;
+const offset = 0;
+const numComponents = 2;
+const vertexCount = 6;
+const normalize = false;
+
 class WebglController {
-  positions: number[][];
+  // gl config params
+  gl: WebGLRenderingContext;
 
   buffers: Buffers;
 
-  gl: WebGLRenderingContext;
+  positions: number[][];
+
+  shaderProgram: WebGLProgram;
+
+  programInfo: ProgramInfo;
+
+  texture: WebGLTexture;
 
   init = {
     positions: [
@@ -263,23 +276,18 @@ class WebglController {
       modelViewMatrix
     );
 
-    const texture2 = this.gl.createTexture();
+    const texture = this.gl.createTexture();
 
-    this.gl.bindTexture(this.gl.TEXTURE_2D, texture2);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
 
     this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
-
-    const level = 0;
-    const internalFormat = this.gl.RGBA;
-    const srcFormat = this.gl.RGBA;
-    const srcType = this.gl.UNSIGNED_BYTE;
 
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
       level,
-      internalFormat,
-      srcFormat,
-      srcType,
+      this.internalFormat,
+      this.srcFormat,
+      this.srcType,
       this.sign
     );
 
@@ -299,72 +307,53 @@ class WebglController {
       this.gl.LINEAR
     );
 
-    {
-      const offset = 0;
-      const type = this.gl.UNSIGNED_SHORT;
-      const vertexCount = 6;
-      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-    }
+    this.gl.drawElements(
+      this.gl.TRIANGLES,
+      vertexCount,
+      this.typeShort,
+      offset
+    );
   };
 
   drawScene = (programInfo: ProgramInfo, texture: WebGLTexture) => {
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    this.gl.clearDepth(1.0);
-    this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.enable(this.gl.BLEND);
-    this.gl.depthFunc(this.gl.LEQUAL);
-
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+    clearCanvas(this.gl);
 
     const zNear = 0.1;
-    const zFar = 100.0;
+    const zFar = 1.0;
     const projectionMatrix = mat4.create();
 
     mat4.ortho(projectionMatrix, -1.0, 1.0, -1.0, 1.0, zNear, zFar);
 
     const modelViewMatrix = mat4.create();
 
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -1.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -0.5]);
+    mat4.scale(modelViewMatrix, modelViewMatrix, [
+      this.rate * this.rate,
+      1.0,
+      1.0,
+    ]);
 
-    {
-      const numComponents = 2;
-      const type = this.gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
-      this.gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexPosition,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset
-      );
-      this.gl.enableVertexAttribArray(
-        programInfo.attribLocations.vertexPosition
-      );
-    }
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+    this.gl.vertexAttribPointer(
+      programInfo.attribLocations.vertexPosition,
+      numComponents,
+      this.type,
+      normalize,
+      stride,
+      offset
+    );
+    this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 
-    {
-      const numComponents = 2;
-      const type = this.gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.textureCoord);
-      this.gl.vertexAttribPointer(
-        programInfo.attribLocations.textureCoord,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset
-      );
-      this.gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
-    }
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.textureCoord);
+    this.gl.vertexAttribPointer(
+      programInfo.attribLocations.textureCoord,
+      numComponents,
+      this.type,
+      normalize,
+      stride,
+      offset
+    );
+    this.gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
 
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
 
@@ -387,12 +376,12 @@ class WebglController {
 
     this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
 
-    {
-      const vertexCount = 6;
-      const type = this.gl.UNSIGNED_SHORT;
-      const offset = 0;
-      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-    }
+    this.gl.drawElements(
+      this.gl.TRIANGLES,
+      vertexCount,
+      this.typeShort,
+      offset
+    );
 
     if (this.sign) {
       this.drawSign(modelViewMatrix, projectionMatrix, programInfo);
@@ -400,42 +389,25 @@ class WebglController {
   };
 
   glInit = () => {
-    this.gl = this.initCanvas(
-      video.get('videoWidth').toString(),
-      video.get('videoHeight').toString()
-    );
-    this.buffers = this.initBuffers();
-    const shaderProgram = this.initShaderProgram();
+    const config = initConfig(this.positions);
 
-    const programInfo = {
-      program: shaderProgram,
-      attribLocations: {
-        vertexPosition: this.gl.getAttribLocation(
-          shaderProgram,
-          'aVertexPosition'
-        ),
-        textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
-      },
-      uniformLocations: {
-        projectionMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          'uProjectionMatrix'
-        ),
-        modelViewMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          'uModelViewMatrix'
-        ),
-        uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
-      },
-    };
+    this.gl = config.gl;
+    this.buffers = config.buffers;
+    this.shaderProgram = config.shaderProgram;
+    this.programInfo = config.programInfo;
+    this.texture = config.texture;
 
-    const texture = this.initTexture();
+    this.internalFormat = this.gl.RGBA;
+    this.srcFormat = this.gl.RGBA;
+    this.srcType = this.gl.UNSIGNED_BYTE;
+    this.type = this.gl.FLOAT;
+    this.typeShort = this.gl.UNSIGNED_SHORT;
 
     const render = () => {
       if (!video.get('src')) return;
 
-      this.updateTexture(texture);
-      this.drawScene(programInfo, texture);
+      this.updateTexture(this.texture);
+      this.drawScene(this.programInfo, this.texture);
 
       requestAnimationFrame(render);
     };
@@ -448,7 +420,10 @@ class WebglController {
 
   clear = () => {
     this.positions = this.init.positions.map(pair => [...pair]);
-    this.buffers = this.initBuffers();
+    this.buffers = initBuffers(this.gl, this.positions);
+    this.rotate = false;
+    this.flip = false;
+    this.rate = 1;
   };
 
   reset = () => {
