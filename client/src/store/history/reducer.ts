@@ -68,7 +68,6 @@ export default (
   state: HistoryState = initialState,
   action: HistoryAction
 ): HistoryState => {
-  // console.log(action);
   let logs = [...state.logs];
 
   if (action.type === (APPLY_EFFECT || CROP))
@@ -100,8 +99,14 @@ export default (
           ...logs,
           {
             effect: Effect.Crop,
-            thumbnails: action.payload.thumbnails,
-            interval: { start: action.payload.start, end: action.payload.end },
+            thumbnails: {
+              prev: action.payload.thumbnails.prev,
+              current: action.payload.thumbnails.current,
+            },
+            interval: {
+              prev: action.payload.interval.prev,
+              current: action.payload.interval.current,
+            },
           },
         ],
         index: state.index === 20 ? state.index : state.index + 1,

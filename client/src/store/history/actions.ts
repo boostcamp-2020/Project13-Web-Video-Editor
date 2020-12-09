@@ -18,9 +18,15 @@ export enum Effect {
   Crop,
 }
 
-interface Interval {
-  start: number;
-  end: number;
+export interface Interval {
+  prev: {
+    start: number;
+    end: number;
+  };
+  current: {
+    start: number;
+    end: number;
+  };
 }
 
 export interface Status {
@@ -29,9 +35,14 @@ export interface Status {
   flipped: boolean;
 }
 
+export interface Thumbnails {
+  prev: string[];
+  current: string[];
+}
+
 export interface Log {
   effect: Effect;
-  thumbnails?: string[];
+  thumbnails?: Thumbnails;
   interval?: Interval;
 }
 
@@ -52,13 +63,12 @@ export const applyEffect = (effect: Effect) => ({
   payload: { effect },
 });
 
-export const applyCrop = (
-  thumbnails: string[],
-  start: number,
-  end: number
-) => ({
+export const applyCrop = (thumbnails: Thumbnails, interval: Interval) => ({
   type: APPLY_CROP,
-  payload: { thumbnails, start, end },
+  payload: {
+    thumbnails,
+    interval,
+  },
 });
 
 export type HistoryUndoAction = {
@@ -81,9 +91,8 @@ export type HistoryApplyEffect = {
 export type HistoryApplyCrop = {
   type: typeof APPLY_CROP;
   payload: {
-    thumbnails: string[];
-    start: number;
-    end: number;
+    thumbnails: Thumbnails;
+    interval: Interval;
   };
 };
 
