@@ -71,3 +71,8 @@ export const getIsNextDisabled = (state: RootState) => {
   const { index, logs } = state.history;
   return index === logs.length;
 };
+
+export const getStatus = (state: RootState) => {
+  const { status } = state.history;
+  return status;
+};
