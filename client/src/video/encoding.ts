@@ -70,16 +70,10 @@ export default async (start, end) => {
       }
     };
 
-    const addEventListenerThenPlay = () => {
-      video.play();
-      video.addEventListener(
-        'play',
-        () => videoTrackReader.start(handleFrame),
-        { once: true }
-      );
-    };
-
     video.setCurrentTime(start);
-    addEventListenerThenPlay();
+    video.play();
+    video.addEventListener('play', () => videoTrackReader.start(handleFrame), {
+      once: true,
+    });
   });
 };

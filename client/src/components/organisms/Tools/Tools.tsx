@@ -215,7 +215,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     closeSubtool();
   }, [dispatch]);
 
-  const handleSignFetch = useCallback(() => {
+  const handleSignUpload = useCallback(() => {
     input.type = 'file';
     input.addEventListener('change', handleInputChange);
     input.click();
@@ -246,7 +246,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
         () => dispatch(applyEffect(Effect.Reduce)),
       ],
       crop: [/* handleCropManually , */ handleCropConfirm, handleCropCancel],
-      sign: [handleSignFetch, handleSignConfirm, handleSignCancel],
+      sign: [handleSignUpload, handleSignConfirm, handleSignCancel],
     }),
     []
   );
