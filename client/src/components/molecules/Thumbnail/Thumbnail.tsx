@@ -35,7 +35,7 @@ const StyledImg = styled.img`
   width: 100%;
   height: 50px;
   transform: scale(${props => props.status.scale})
-    scaleX(${props => (props.status.flipped ? -1 : 1)})
+    scaleY(${props => (props.status.flipped ? -1 : 1)})
     rotate(${props => props.status.rotation}deg);
 `;
 const ImageDiv = styled.div`
@@ -63,6 +63,7 @@ const Thumbnail: React.FC = () => {
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
   const status = useSelector(getStatus);
+
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
 

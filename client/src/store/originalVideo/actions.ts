@@ -8,10 +8,8 @@ import {
   FETCH_START,
   SET_VIDEO,
   LOAD_METADATA,
-  LOAD_SUCCESS,
   ENCODE_START,
   UPLOAD_START,
-  UPLOAD_SUCCESS,
   ResetAction,
   ErrorAction,
 } from '../actionTypes';

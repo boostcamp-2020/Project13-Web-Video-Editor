@@ -20,6 +20,31 @@ const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
   }
+  input[type=range] {
+  -webkit-appearance: none;
+  cursor: pointer;
+  color: ${color.PURPLE};
+  background: ${color.LIGHT_PURPLE};
+  height: 0.5rem;
+  border-radius: 5px;
+}
+
+input[type=range]:focus {
+  outline: none; 
+}
+input[type=range]::-webkit-slider-thumb { 
+  -webkit-appearance: none; 
+  background: ${color.WHITE}; 
+  cursor: pointer; 
+  border: none; 
+  height: 0.8rem; width: 0.8rem; 
+  border-radius: 40%; 
+}
+
+input[type=range]::-webkit-slider-thumb:hover { 
+  transform: scale(1.2, 1.3);
+  box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
+}
 `;
 
 export default GlobalStyle;

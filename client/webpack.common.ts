@@ -43,6 +43,10 @@ module.exports = {
           limit: 10000,
         },
       },
+      {
+        test: /\.js$/,
+        loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+      },
     ],
   },
   plugins: [
