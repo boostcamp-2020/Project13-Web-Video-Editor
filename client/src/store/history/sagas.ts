@@ -51,13 +51,13 @@ const effectMapper = (effect: Effect) => {
       };
     case Effect.FlipHorizontal:
       return {
-        apply: webglController.reverseSideToSide,
+        apply: webglController.reverseUpsideDown,
         rollback: webglController.reverseUpsideDown,
       };
     case Effect.FlipVertical:
       return {
         apply: webglController.reverseSideToSide,
-        rollback: webglController.reverseUpsideDown,
+        rollback: webglController.reverseSideToSide,
       };
     case Effect.Enlarge:
       return {
