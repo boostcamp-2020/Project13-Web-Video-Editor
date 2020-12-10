@@ -1,7 +1,7 @@
 import { RATIO, INVERSE } from '@/webgl/webglController';
 import {
-  UNDO,
-  REDO,
+  UNDO_SUCCESS,
+  REDO_SUCCESS,
   APPLY_EFFECT,
   RESET,
   CLEAR,
@@ -32,12 +32,12 @@ const getStatusFromEffect = (status: Status, effect: Effect) => {
     case Effect.RotateClockwise:
       return {
         ...status,
-        rotation: (status.rotation + 90) % 360,
+        rotation: (status.rotation + (status.flipped ? 270 : 90)) % 360,
       };
     case Effect.RotateCounterClockwise:
       return {
         ...status,
-        rotation: (status.rotation + 270) % 360,
+        rotation: (status.rotation + (status.flipped ? 90 : 270)) % 360,
       };
     case Effect.FlipHorizontal:
       return {
@@ -73,15 +73,12 @@ export default (
   const logs = state.logs.slice(isFull ? 1 : 0, state.index);
 
   switch (action.type) {
-    case UNDO:
+    case UNDO_SUCCESS: // fallthrough
+    case REDO_SUCCESS:
       return {
         ...state,
-        index: state.index === 0 ? state.index : state.index - 1,
-      };
-    case REDO:
-      return {
-        ...state,
-        index: state.index === MAX_HISTORY ? state.index : state.index + 1,
+        index: action.payload.index,
+        status: getStatusFromEffect(state.status, action.payload.reverseEffect),
       };
     case APPLY_EFFECT:
       return {

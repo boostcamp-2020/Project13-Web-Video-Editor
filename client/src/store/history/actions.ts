@@ -1,6 +1,8 @@
 import {
   UNDO,
+  UNDO_SUCCESS,
   REDO,
+  REDO_SUCCESS,
   CLEAR,
   APPLY_EFFECT,
   APPLY_CROP,
@@ -50,8 +52,24 @@ export const undo = () => ({
   type: UNDO,
 });
 
+export const undoSuccess = (index, reverseEffect) => ({
+  type: UNDO_SUCCESS,
+  payload: {
+    index,
+    reverseEffect,
+  },
+});
+
 export const redo = () => ({
   type: REDO,
+});
+
+export const redoSuccess = (index, reverseEffect) => ({
+  type: REDO_SUCCESS,
+  payload: {
+    index,
+    reverseEffect,
+  },
 });
 
 export const clear = () => ({
@@ -71,12 +89,20 @@ export const applyCrop = (thumbnails: Thumbnails, interval: Interval) => ({
   },
 });
 
-export type HistoryUndoAction = {
-  type: typeof UNDO;
+export type HistoryUndoSuccessAction = {
+  type: typeof UNDO_SUCCESS;
+  payload: {
+    index: number;
+    reverseEffect: Effect;
+  };
 };
 
-export type HistoryRedoAction = {
-  type: typeof REDO;
+export type HistoryRedoSuccessAction = {
+  type: typeof REDO_SUCCESS;
+  payload: {
+    index: number;
+    reverseEffect: Effect;
+  };
 };
 
 export type HistoryClearAction = {
@@ -97,8 +123,8 @@ export type HistoryApplyCropAction = {
 };
 
 export type HistoryAction =
-  | HistoryUndoAction
-  | HistoryRedoAction
+  | HistoryUndoSuccessAction
+  | HistoryRedoSuccessAction
   | HistoryClearAction
   | HistoryApplyEffectAction
   | HistoryApplyCropAction

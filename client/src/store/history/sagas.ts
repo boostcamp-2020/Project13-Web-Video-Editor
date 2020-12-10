@@ -2,8 +2,9 @@ import { call, put, takeLeading, select } from 'redux-saga/effects';
 import webglController from '@/webgl/webglController';
 import video from '@/video';
 import { MAX_HISTORY } from '@/store/history/reducer';
+
 import { APPLY_EFFECT, UNDO, REDO, CLEAR, error } from '../actionTypes';
-import { Effect, Log } from './actions';
+import { Effect, Log, undoSuccess } from './actions';
 import { getIndexAndLogs } from '../selectors';
 import { updateStartEnd, setThumbnails, moveTo } from '../currentVideo/actions';
 
@@ -13,14 +14,12 @@ const revokeURL = (urls: string[]) => {
 
 function* checkApplyEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
-
   const isFirstCrop = index === MAX_HISTORY && logs[0].effect === Effect.Crop;
   if (isFirstCrop) yield call(revokeURL, logs[0].thumbnails.current);
   else {
     const target = logs
       .filter((log, logIndex) => index < logIndex && log.Effect === Effect.Crop)
       .map(log => log.thumbnails.current);
-
     if (target.lenght > 0) yield call(revokeURL, target.flat());
   }
 }
@@ -80,32 +79,43 @@ function* controlWebgl(action) {
 
 function* undoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
-
-  const targetLog: Log = logs[index];
-  if (index >= 0) {
+  if (index > 0) {
+    const targetLog: Log = logs[index];
     if (targetLog.effect === Effect.Crop)
       yield call(
         updateThumbnailsHistory,
         targetLog.thumbnails.prev,
         targetLog.interval.prev
       );
-    else yield call(effectMapper(targetLog.effect).rollback);
+    else {
+      const { rollback, reverseEffect } = effectMapper[targetLog.effect];
+      yield call(rollback);
+      yield put(undoSuccess(index - 1, reverseEffect));
+    }
+  } else {
+    console.log('더 이상 되돌릴 수 없습니다.');
+    yield put(error());
   }
 }
 
 function* redoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
-
-  const targetLog: Log = logs[index - 1];
-
-  if (index - 1 >= 0 && index - 1 < logs.length) {
+  if (index < logs.length) {
+    const targetLog: Log = logs[index];
     if (targetLog.effect === Effect.Crop)
       yield call(
         updateThumbnailsHistory,
         targetLog.thumbnails.current,
         targetLog.interval.current
       );
-    else yield call(effectMapper(targetLog.effect).apply);
+    else {
+      const { apply, reverseEffect } = effectMapper[targetLog.effect];
+      yield call(apply);
+      yield put(undoSuccess(index + 1, reverseEffect));
+    }
+  } else {
+    console.log('더 이상 다시 실행할 수 없습니다.');
+    yield put(error());
   }
 }
 
