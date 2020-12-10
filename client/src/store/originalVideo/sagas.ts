@@ -47,6 +47,11 @@ export function* deleteSrc() {
   yield call(video.revoke);
 }
 
+export function* clearErrorLoading() {
+  yield call(() => new Promise(resolve => setTimeout(resolve, TIMEOUT)));
+  yield put(setThumbnails([]));
+}
+
 function waitMetadataLoading(objectURL) {
   return new Promise<number>((resolve, reject) => {
     const timer = setTimeout(reject, TIMEOUT, 'loading metadata timeout');
