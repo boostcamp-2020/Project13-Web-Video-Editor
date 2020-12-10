@@ -15,6 +15,7 @@ import {
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
+import { TextInput } from '@/components/atoms/ModalComponent';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import Modal from '@/components/molecules/Modal';
 import color from '@/theme/colors';
@@ -109,31 +110,6 @@ const CancelConfirmStyle = `
   }
 `;
 
-const StyledModalRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-`;
-
-const StyledInput = styled.input`
-  width: 75%;
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: none;
-  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.1);
-  background-color: ${color.MODAL};
-  color: ${color.WHITE};
-  outline: none;
-`;
-
-const StyledP = styled.p`
-  margin: 0;
-  width: 25%;
-  font-size: 12px;
-  text-align: center;
-`;
-
 const modalLayout = `
 top: 35vh;
 left: 40vw;
@@ -143,13 +119,11 @@ height: 12vh;
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
-  const [complete, setComplete] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const name = useSelector(getName);
   const hasEmptyVideo = !useSelector(getVisible);
   const isPrevDisabled = useSelector(getIsPrevDisabled);
   const isNextDisabled = useSelector(getIsNextDisabled);
-
-  const inputRef = useRef(null);
 
   const handlePrevious = () => {
     dispatch(undo());
@@ -162,33 +136,13 @@ const Header: React.FC = () => {
   };
   const handleCancel = () => dispatch(reset());
 
-  const handleModalConfirm = () => {
-    dispatch(encodeStart(inputRef.current.value));
-    setComplete(false);
+  const handleModalConfirm = fileName => {
+    dispatch(encodeStart(fileName));
+    setModalVisible(false);
   };
 
-  const handleModalCancel = () => setComplete(false);
-  const handleComplete = () => setComplete(true);
-
-  const modalInnerComponent = () => {
-    const [value, setValue] = useState(name);
-
-    const handleVideoNameChange = ({ target }) => {
-      setValue(target.value);
-    };
-
-    return (
-      <StyledModalRow>
-        <StyledP>파일 이름 :</StyledP>
-        <StyledInput
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={handleVideoNameChange}
-        />
-      </StyledModalRow>
-    );
-  };
+  const handleModalCancel = () => setModalVisible(false);
+  const handleComplete = () => setModalVisible(true);
 
   return (
     <StyledHeader>
@@ -213,15 +167,14 @@ const Header: React.FC = () => {
           hasEmptyVideo
         )}
       />
-      {complete && (
+      {modalVisible && (
         <Modal
           styleProps={modalLayout}
           handleOverlay={handleModalCancel}
-          handleButton1={handleModalCancel}
-          handleButton2={handleModalConfirm}
-          buttonMessage1="취소"
-          buttonMessage2="확인"
-          component={modalInnerComponent}
+          handleCancel={handleModalCancel}
+          handleConfirm={handleModalConfirm}
+          component={TextInput}
+          initialState={name}
         />
       )}
     </StyledHeader>

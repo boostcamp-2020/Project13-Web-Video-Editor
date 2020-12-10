@@ -170,10 +170,12 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     e.target.removeEventListener('mousemove', handleCanvasMouseMove);
   }, []);
 
-  const handleInputChange = useCallback(e => {
+  const handleInputChange = useCallback(({ target }) => {
+    const file = (target as HTMLInputElement).files[0];
     const img = document.createElement('img');
-    setIsSign(!!e.target.files[0]);
-    img.src = URL.createObjectURL(e.target.files[0]);
+
+    setIsSign(!!file);
+    img.src = URL.createObjectURL(file);
     webglController.setSign(img);
     webglController.setSignEdit(true);
   }, []);
@@ -202,7 +204,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     dispatchButtonData({ type, payload });
   };
 
-  const handleCropManually = useCallback(() => {}, []); // TODO:
+  // const handleCropManually = useCallback(() => {}, []); // TODO: 정말정말진짜로 시간이 남는다면 해보자!!
   const handleCropConfirm = useCallback(() => {
     dispatch(cropConfirm());
     closeSubtool();
@@ -242,7 +244,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
         () => dispatch(applyEffect(Effect.Enlarge)),
         () => dispatch(applyEffect(Effect.Reduce)),
       ],
-      crop: [handleCropManually, handleCropConfirm, handleCropCancel],
+      crop: [/* handleCropManually , */ handleCropConfirm, handleCropCancel],
       sign: [handleSignFetch, handleSignConfirm, handleSignCancel],
     }),
     []

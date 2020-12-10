@@ -35,6 +35,7 @@ const StyledDiv = styled.div`
     css`
       ${moveSlider(location)} ${duration}s linear forwards;
     `};
+  z-index: 5;
 `;
 
 const Slider: React.FC<Props> = React.memo(({ thumbnailRef }) => {

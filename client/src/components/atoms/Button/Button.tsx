@@ -39,18 +39,14 @@ interface Props {
   disabled: boolean;
 }
 
-const Button: React.FC<Props> = ({
-  children,
-  message,
-  onClick,
-  type,
-  disabled,
-}) => (
-  <StyledButton buttonType={type} onClick={onClick} disabled={disabled}>
-    {children}
-    {children && <br />}
-    {message}
-  </StyledButton>
+const Button: React.FC<Props> = React.memo(
+  ({ children, message, onClick, type, disabled }) => (
+    <StyledButton buttonType={type} onClick={onClick} disabled={disabled}>
+      {children}
+      {children && <br />}
+      {message}
+    </StyledButton>
+  )
 );
 
 export default Button;

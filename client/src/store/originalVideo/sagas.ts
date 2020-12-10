@@ -5,10 +5,16 @@ import encodeVideo from '@/video/encoding';
 import webglController from '@/webgl/webglController';
 import videoAPI from '@/api/video';
 
-import { loadMetadata, uploadStart, EncodeStartAction } from './actions';
+import {
+  setVideo,
+  loadMetadata,
+  uploadStart,
+  EncodeStartAction,
+} from './actions';
 import { setThumbnails } from '../currentVideo/actions';
 import { uploadSuccess } from '../video/actions';
 import {
+  FETCH_START,
   SET_VIDEO,
   ENCODE_START,
   UPLOAD_START,
@@ -19,9 +25,32 @@ import { getStartEnd } from '../selectors';
 
 const TIMEOUT = 5_000;
 
+function* downloadFromServer(action) {
+  try {
+    const { data } = yield call(videoAPI.download, action.payload.video);
+    const file = new File([data], action.payload.name, {
+      type: 'video/mp4',
+    });
+    const url = URL.createObjectURL(file);
+    yield put(setVideo(file, url));
+  } catch (err) {
+    console.log(err);
+    yield put(error());
+  }
+}
+
+export function* watchFetchStart() {
+  yield takeLatest(FETCH_START, downloadFromServer);
+}
+
 export function* deleteSrc() {
   yield call(webglController.reset);
   yield call(video.revoke);
+}
+
+export function* clearErrorLoading() {
+  yield call(() => new Promise(resolve => setTimeout(resolve, TIMEOUT)));
+  yield put(setThumbnails([]));
 }
 
 function waitMetadataLoading(objectURL) {

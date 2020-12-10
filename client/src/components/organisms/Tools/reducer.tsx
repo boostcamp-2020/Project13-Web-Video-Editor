@@ -31,9 +31,9 @@ interface ButtonDataAction {
 }
 
 // crop
-const cropMessages = ['직접입력', '확인', '취소'];
+const cropMessages = [/* '직접입력',  */ '확인', '취소'];
 const cropChildrens = [
-  <BsTerminal size={size.ICON_SIZE} />,
+  // <BsTerminal size={size.ICON_SIZE} />,
   <BsCheck size={size.ICON_SIZE} />,
   <BsX size={size.ICON_SIZE} />,
 ];
