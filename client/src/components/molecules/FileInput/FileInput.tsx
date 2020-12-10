@@ -31,7 +31,7 @@ const StyledDiv = styled.div`
   animation: ${slide} 0.4s -0.1s ease-out;
   transform-origin: center center;
   width: 5rem;
-  z-index: 10;
+  z-index: 5;
 `;
 const FromLocal = styled.label`
   color: ${color.WHITE};
