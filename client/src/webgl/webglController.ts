@@ -171,34 +171,6 @@ class WebglController {
     return pixels;
   };
 
-  encodeTexture = res => {
-    return new Promise(resolve => {
-      this.encode = true;
-
-      this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-      this.gl.texImage2D(
-        this.gl.TEXTURE_2D,
-        level,
-        this.internalFormat,
-        this.srcFormat,
-        this.srcType,
-        res
-      );
-
-      this.drawScene(this.programInfo, this.texture);
-
-      createImageBitmap(
-        this.gl.canvas,
-        0,
-        0,
-        this.gl.canvas.width,
-        this.gl.canvas.height
-      ).then(resultImage => {
-        resolve(resultImage);
-      });
-    });
-  };
-
   updateTexture = (texture: WebGLTexture) => {
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
     this.gl.texImage2D(
@@ -390,6 +362,23 @@ class WebglController {
       1.0,
       1.0,
     ]);
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [this.ratio, this.ratio, 1.0]);
+
+    mat4.rotate(
+      modelViewMatrix,
+      modelViewMatrix,
+      ((this.phase * 90) / 180) * Math.PI,
+      [0.0, 0.0, 1.0]
+    );
+
+    if (this.flip) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    }
+
+    if (this.encode) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    }
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
     this.gl.vertexAttribPointer(
