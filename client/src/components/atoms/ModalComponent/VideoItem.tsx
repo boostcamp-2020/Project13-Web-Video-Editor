@@ -70,4 +70,4 @@ const VideoItem: React.FC<Props> = ({ video, handleCheck, selected }) => {
   );
 };
 
-export default VideoItem;
+export default React.memo(VideoItem);
