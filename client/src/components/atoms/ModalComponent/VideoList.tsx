@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getVideos } from '@/store/selectors';
 import { Video } from '@/store/video/actions';
@@ -43,7 +44,7 @@ const VideoList: React.FC<Props<Video>> = ({
       <List>
         {videos?.map(video => (
           <VideoItem
-            key={video.name}
+            key={uuidv4()}
             video={video}
             handleCheck={handleCheck}
             selected={selected}
