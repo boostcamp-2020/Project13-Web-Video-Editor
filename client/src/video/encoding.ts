@@ -2,26 +2,38 @@ import loadEncoder from 'mp4-h264';
 import webglController from '@/webgl/webglController';
 import video from '.';
 
+interface TrackReader {
+  new (track: MediaStreamTrack): {
+    start: Function;
+    stop: Function;
+  };
+}
+
+interface WebCodecs {
+  VideoTrackReader: TrackReader;
+}
+
 const framerate = 30;
 
 interface VideoElement extends HTMLVideoElement {
   captureStream(): MediaStream;
 }
 
-const frameCount: number = 0;
-
 const init = () => {
-  const track = (video.getVideo() as VideoElement)
+  const track: MediaStreamTrack = (video.getVideo() as VideoElement)
     .captureStream()
     .getVideoTracks()[0];
   track.applyConstraints({ advanced: [{ frameRate: framerate }] });
 
-  const videoTrackReader = new VideoTrackReader(track);
-  return { videoTrackReader };
+  const videoTrackReader = new ((window as unknown) as WebCodecs).VideoTrackReader(
+    track
+  );
+
+  return videoTrackReader;
 };
 
 export default async (start, end) => {
-  const { videoTrackReader } = init();
+  const videoTrackReader = init();
 
   const Encoder = await loadEncoder();
 
