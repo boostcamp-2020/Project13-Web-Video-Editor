@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { Effect, applyEffect } from '@/store/history/actions';
+import Range from '@/components/atoms/Range';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
@@ -84,8 +85,12 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
   const hasEmptyVideo = !useSelector(getVisible);
+  const [isSign, setIsSign] = useState(false);
 
   const { start, end } = useSelector(getStartEnd, shallowEqual);
+
+  const glCanvas = document.getElementById('glcanvas');
+  const input = document.createElement('input');
 
   const backwardVideo = () => {
     let dstTime = video.get('currentTime') - 10;
@@ -142,14 +147,56 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     }
   };
 
+  let originX;
+  let originY;
+
+  const handleCanvasMouseMove = useCallback(e => {
+    const diffX = e.x - originX;
+    const diffY = originY - e.y;
+
+    originX = e.x;
+    originY = e.y;
+
+    webglController.moveSign(diffX, diffY);
+  }, []);
+
+  const handleCanvasMouseDown = useCallback(e => {
+    e.target.addEventListener('mousemove', handleCanvasMouseMove);
+    originX = e.x;
+    originY = e.y;
+  }, []);
+
+  const handleCanvasMouseUp = useCallback(e => {
+    e.target.removeEventListener('mousemove', handleCanvasMouseMove);
+  }, []);
+
+  const handleInputChange = useCallback(e => {
+    const img = document.createElement('img');
+    setIsSign(!!e.target.files[0]);
+    img.src = URL.createObjectURL(e.target.files[0]);
+    webglController.setSign(img);
+    webglController.setSignEdit(true);
+  }, []);
+
+  const removeSignEvent = () => {
+    const canvas = document.getElementById('glcanvas');
+    canvas.removeEventListener('mousedown', handleCanvasMouseDown);
+    canvas.removeEventListener('mousedown', handleCanvasMouseUp);
+    input.removeEventListener('change', handleInputChange);
+  };
+
   const closeSubtool = () => {
+    removeSignEvent();
+
     setEdit(DOWN);
     setToolType(null);
     dispatchButtonData({ type: null });
   };
 
   const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
+    removeSignEvent();
     if (type !== ButtonTypes.crop) dispatch(cropCancel());
+
     setEdit(UP);
     setToolType(type);
     dispatchButtonData({ type, payload });
@@ -165,6 +212,24 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     closeSubtool();
   }, [dispatch]);
 
+  const handleSignFetch = useCallback(() => {
+    input.type = 'file';
+    input.addEventListener('change', handleInputChange);
+    input.click();
+  }, []);
+
+  const handleSignConfirm = useCallback(() => {
+    webglController.setSignEdit(false);
+    closeSubtool();
+  }, []);
+
+  const handleSignCancel = useCallback(() => {
+    setIsSign(false);
+    webglController.setSign(null);
+    webglController.setSignEdit(false);
+    closeSubtool();
+  }, []);
+
   const methods = useMemo(
     () => ({
       rotateReverse: [
@@ -178,6 +243,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
         () => dispatch(applyEffect(Effect.Reduce)),
       ],
       crop: [handleCropManually, handleCropConfirm, handleCropCancel],
+      sign: [handleSignFetch, handleSignConfirm, handleSignCancel],
     }),
     []
   );
@@ -203,21 +269,16 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   };
 
   const handleSign = () => {
-    dispatchButtonData({ type: null });
-    dispatch(cropCancel());
-    if (isEdit === UP) setEdit(DOWN);
-    setToolType(toolType === ButtonTypes.sign ? null : ButtonTypes.sign);
+    if (toolType !== ButtonTypes.sign) {
+      if (isEdit === UP) setEdit(DOWN);
+      openSubtool(ButtonTypes.sign, methods.sign);
 
-    const input = document.createElement('input');
-
-    input.addEventListener('change', e => {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(e.target.files[0]);
-      webglController.setSign(img);
-    });
-
-    input.type = 'file';
-    input.click();
+      glCanvas.addEventListener('mousedown', handleCanvasMouseDown);
+      glCanvas.addEventListener('mouseup', handleCanvasMouseUp);
+      if (webglController.sign) {
+        webglController.setSignEdit(true);
+      }
+    } else closeSubtool();
   };
 
   return (
@@ -235,6 +296,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
         {toolType && (
           <WrapperDiv isEdit={isEdit}>
             <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
+            {toolType === ButtonTypes.sign && isSign && <Range />}
           </WrapperDiv>
         )}
         <EditTool

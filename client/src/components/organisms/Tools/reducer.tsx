@@ -1,5 +1,6 @@
 import React from 'react';
-import { BsTerminal, BsCheck, BsX } from 'react-icons/bs';
+import { BsTerminal, BsCheck, BsX, BsUpload } from 'react-icons/bs';
+import { GoTrashcan } from 'react-icons/go';
 import {
   MdRotateLeft,
   MdRotateRight,
@@ -53,6 +54,14 @@ const ratioChildrens = [
   <MdZoomOut size={size.ICON_SIZE} />,
 ];
 
+// sign
+const signMessages = ['불러오기', '확인', '삭제'];
+const signChildrens = [
+  <BsUpload size={size.ICON_SIZE} />,
+  <BsCheck size={size.ICON_SIZE} />,
+  <GoTrashcan size={size.ICON_SIZE} />,
+];
+
 export const initialData: ButtonData = {
   onClicks: [],
   messages: [],
@@ -82,6 +91,13 @@ export default (state: ButtonData, action: ButtonDataAction): ButtonData => {
         messages: ratioMessages,
         type: 'transparent',
         childrens: ratioChildrens,
+      };
+    case ButtonTypes.sign:
+      return {
+        onClicks: action.payload,
+        messages: signMessages,
+        type: 'transparent',
+        childrens: signChildrens,
       };
     default:
       return initialData;

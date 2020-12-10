@@ -67,83 +67,70 @@ class WebglController {
   typeShort: number;
 
   // edit params
-  sign: HTMLImageElement;
-
   rate: number = 1;
 
   rotate: boolean = false;
 
+  phase: number = 0;
+
+  ratio: number = 1;
+
   flip: boolean = false;
 
   encode: boolean = false;
+
+  // sign params
+  sign: HTMLImageElement;
+
+  signX: number = 0;
+
+  signY: number = 0;
+
+  signRatio: number = 0.25;
+
+  signEdit: boolean = false;
+
+  signGrid: HTMLImageElement = new Image();
 
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
 
   rotateLeft90Degree = () => {
-    // 0123 => 1230
-    if (this.flip) {
-      this.positions.unshift(this.positions.pop());
-    } else {
-      this.positions.push(this.positions.shift());
-    }
+    this.phase += 1;
 
     this.rate *= this.rotate
       ? this.gl.canvas.width / this.gl.canvas.height
       : this.gl.canvas.height / this.gl.canvas.width;
 
     this.rotate = !this.rotate;
-
-    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   rotateRight90Degree = () => {
-    // 0123 => 3012
-    if (this.flip) {
-      this.positions.push(this.positions.shift());
-    } else {
-      this.positions.unshift(this.positions.pop());
-    }
+    this.phase -= 1;
 
     this.rate *= this.rotate
       ? this.gl.canvas.width / this.gl.canvas.height
       : this.gl.canvas.height / this.gl.canvas.width;
     this.rotate = !this.rotate;
-
-    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   reverseUpsideDown = () => {
-    // 0123 => 3210
     this.flip = !this.flip;
-
-    this.positions.forEach(element => {
-      element[1] = -element[1];
-    });
-
-    this.buffers = initBuffers(this.gl, this.positions);
   };
 
   reverseSideToSide = () => {
-    // 0123 => 1032
     this.flip = !this.flip;
 
-    this.positions.forEach(element => {
-      element[0] = -element[0];
-    });
-
-    this.buffers = initBuffers(this.gl, this.positions);
+    this.phase += 2;
   };
 
   enlarge = () => {
-    this.positions = this.positions.map(pair => pair.map(val => val * RATIO));
-    this.buffers = initBuffers(this.gl, this.positions);
+    this.ratio *= RATIO;
   };
 
   reduce = () => {
-    this.positions = this.positions.map(pair => pair.map(val => val * INVERSE));
-    this.buffers = initBuffers(this.gl, this.positions);
+    this.ratio *= INVERSE;
   };
 
   getDrawingBufferWidthHeight = () => {
@@ -224,16 +211,113 @@ class WebglController {
     );
   };
 
+  moveSign = (diffX: number, diffY: number) => {
+    this.signX += diffX;
+    this.signY += diffY;
+  };
+
+  setSignRatio = signRatio => {
+    this.signRatio = signRatio / 100;
+  };
+
+  setSignEdit = signEdit => {
+    this.signEdit = signEdit;
+  };
+
   setSign = sign => {
     this.sign = sign;
   };
 
+  drawGrid = (modelViewMatrix, projectionMatrix, programInfo) => {
+    this.gl.useProgram(programInfo.program);
+
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.projectionMatrix,
+      false,
+      projectionMatrix
+    );
+    this.gl.uniformMatrix4fv(
+      programInfo.uniformLocations.modelViewMatrix,
+      false,
+      modelViewMatrix
+    );
+
+    const texture = this.gl.createTexture();
+
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+
+    this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      level,
+      this.internalFormat,
+      this.srcFormat,
+      this.srcType,
+      this.signGrid
+    );
+
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+
+    this.gl.drawElements(
+      this.gl.TRIANGLES,
+      vertexCount,
+      this.typeShort,
+      offset
+    );
+  };
+
   drawSign = (modelViewMatrix, projectionMatrix, programInfo) => {
-    const reduce = 0.25;
+    if (this.flip) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    }
+
+    mat4.rotate(
+      modelViewMatrix,
+      modelViewMatrix,
+      ((-1 * this.phase * 90) / 180) * Math.PI,
+      [0.0, 0.0, 1.0]
+    );
 
     mat4.scale(modelViewMatrix, modelViewMatrix, [
-      reduce,
-      reduce * (this.sign.height / this.sign.width),
+      1 / (this.rate * this.rate),
+      1.0,
+      1.0,
+    ]);
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [
+      1 / this.ratio,
+      1 / this.ratio,
+      1.0,
+    ]);
+
+    const canvas = this.gl.canvas as HTMLElement;
+
+    mat4.translate(modelViewMatrix, modelViewMatrix, [
+      this.signX / (canvas.clientWidth / 2),
+      this.signY / (canvas.clientHeight / 2),
+      0.0,
+    ]);
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [
+      this.signRatio,
+      this.signRatio *
+        (this.gl.canvas.width / this.gl.canvas.height) *
+        (this.sign.height / this.sign.width),
       1.0,
     ]);
 
@@ -360,6 +444,10 @@ class WebglController {
     if (this.sign) {
       this.drawSign(modelViewMatrix, projectionMatrix, programInfo);
     }
+
+    if (this.signEdit) {
+      this.drawGrid(modelViewMatrix, projectionMatrix, programInfo);
+    }
   };
 
   glInit = () => {
@@ -389,7 +477,11 @@ class WebglController {
   };
 
   main = () => {
+    const gridImg =
+      'data:image/png;base64,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';
+
     this.glInit();
+    this.signGrid.src = gridImg;
   };
 
   clear = () => {
