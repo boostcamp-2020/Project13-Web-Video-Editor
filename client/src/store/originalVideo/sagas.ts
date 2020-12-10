@@ -15,7 +15,7 @@ import {
   error,
   reset,
 } from '../actionTypes';
-import { getFile, getStartEnd } from '../selectors';
+import { getStartEnd } from '../selectors';
 
 const TIMEOUT = 5_000;
 
@@ -63,10 +63,27 @@ export function* watchSetVideo() {
   yield takeLatest(SET_VIDEO, load);
 }
 
+const downloadFile = (url, filename) => {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}.mp4`;
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
+
 function* encode(action: EncodeStartAction) {
   try {
     const { start, end } = yield select(getStartEnd);
-    const file = yield call(encodeVideo, start, end);
+    const blob: Blob = yield call(encodeVideo, start, end);
+
+    const url: string = yield call(URL.createObjectURL, blob);
+    const isAgree = yield call(
+      window.confirm,
+      '인코딩된 영상을 다운받으시겠습니까?'
+    );
+    if (isAgree) downloadFile(url, action.payload.name);
+    const file = new File([blob], action.payload.name, { type: 'video/mp4' });
 
     yield put(uploadStart(file));
   } catch (err) {
