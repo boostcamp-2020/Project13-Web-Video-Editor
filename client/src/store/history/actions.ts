@@ -52,7 +52,7 @@ export const undo = () => ({
   type: UNDO,
 });
 
-export const undoSuccess = (index, reverseEffect) => ({
+export const undoSuccess = (index, reverseEffect = undefined) => ({
   type: UNDO_SUCCESS,
   payload: {
     index,
@@ -64,7 +64,7 @@ export const redo = () => ({
   type: REDO,
 });
 
-export const redoSuccess = (index, reverseEffect) => ({
+export const redoSuccess = (index, reverseEffect = undefined) => ({
   type: REDO_SUCCESS,
   payload: {
     index,

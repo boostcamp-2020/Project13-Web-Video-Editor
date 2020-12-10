@@ -197,6 +197,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
   const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
     removeSignEvent();
+    webglController.setSignEdit(false);
     if (type !== ButtonTypes.crop) dispatch(cropCancel());
 
     setEdit(UP);
@@ -237,8 +238,8 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       rotateReverse: [
         () => dispatch(applyEffect(Effect.RotateCounterClockwise)),
         () => dispatch(applyEffect(Effect.RotateClockwise)),
-        () => dispatch(applyEffect(Effect.FlipHorizontal)),
         () => dispatch(applyEffect(Effect.FlipVertical)),
+        () => dispatch(applyEffect(Effect.FlipHorizontal)),
       ],
       ratio: [
         () => dispatch(applyEffect(Effect.Enlarge)),
@@ -277,9 +278,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
       glCanvas.addEventListener('mousedown', handleCanvasMouseDown);
       glCanvas.addEventListener('mouseup', handleCanvasMouseUp);
-      if (webglController.sign) {
-        webglController.setSignEdit(true);
-      }
+      if (webglController.sign) webglController.setSignEdit(true);
     } else closeSubtool();
   };
 

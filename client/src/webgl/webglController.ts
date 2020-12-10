@@ -97,7 +97,7 @@ class WebglController {
   }
 
   rotateLeft90Degree = () => {
-    this.phase += 1;
+    this.phase += this.flip ? -1 : 1;
 
     this.rate *= this.rotate
       ? this.gl.canvas.width / this.gl.canvas.height
@@ -107,7 +107,7 @@ class WebglController {
   };
 
   rotateRight90Degree = () => {
-    this.phase -= 1;
+    this.phase += this.flip ? 1 : -1;
 
     this.rate *= this.rotate
       ? this.gl.canvas.width / this.gl.canvas.height
@@ -254,16 +254,16 @@ class WebglController {
   };
 
   drawSign = (modelViewMatrix, projectionMatrix, programInfo) => {
-    if (this.flip) {
-      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
-    }
-
     mat4.rotate(
       modelViewMatrix,
       modelViewMatrix,
       ((-1 * this.phase * 90) / 180) * Math.PI,
       [0.0, 0.0, 1.0]
     );
+
+    if (this.flip) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    }
 
     mat4.scale(modelViewMatrix, modelViewMatrix, [
       1 / (this.rate * this.rate),
@@ -365,16 +365,16 @@ class WebglController {
 
     mat4.scale(modelViewMatrix, modelViewMatrix, [this.ratio, this.ratio, 1.0]);
 
+    if (this.flip) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    }
+
     mat4.rotate(
       modelViewMatrix,
       modelViewMatrix,
       ((this.phase * 90) / 180) * Math.PI,
       [0.0, 0.0, 1.0]
     );
-
-    if (this.flip) {
-      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
-    }
 
     if (this.encode) {
       mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
@@ -473,12 +473,20 @@ class WebglController {
     this.signGrid.src = gridImg;
   };
 
+  initProps = () => {
+    this.rotate = false;
+    this.flip = false;
+    this.encode = false;
+    this.sign = null;
+    this.rate = 1;
+    this.phase = 0;
+    this.ratio = 1;
+  };
+
   clear = () => {
     this.positions = this.init.positions.map(pair => [...pair]);
     this.buffers = initBuffers(this.gl, this.positions);
-    this.rotate = false;
-    this.flip = false;
-    this.rate = 1;
+    this.initProps();
   };
 
   reset = () => {

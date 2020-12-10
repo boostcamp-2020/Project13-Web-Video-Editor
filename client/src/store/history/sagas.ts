@@ -4,7 +4,7 @@ import video from '@/video';
 import { MAX_HISTORY } from '@/store/history/reducer';
 
 import { APPLY_EFFECT, UNDO, REDO, CLEAR, error } from '../actionTypes';
-import { Effect, Log, undoSuccess } from './actions';
+import { Effect, Log, undoSuccess, redoSuccess } from './actions';
 import { getIndexAndLogs } from '../selectors';
 import { updateStartEnd, setThumbnails, moveTo } from '../currentVideo/actions';
 
@@ -47,15 +47,15 @@ const effectMapper = {
     rollback: webglController.rotateRight90Degree,
     reverseEffect: Effect.RotateClockwise,
   },
-  [Effect.FlipHorizontal]: {
+  [Effect.FlipVertical]: {
     apply: webglController.reverseUpsideDown,
     rollback: webglController.reverseUpsideDown,
-    reverseEffect: Effect.FlipHorizontal,
+    reverseEffect: Effect.FlipVertical,
   },
-  [Effect.FlipVertical]: {
+  [Effect.FlipHorizontal]: {
     apply: webglController.reverseSideToSide,
     rollback: webglController.reverseSideToSide,
-    reverseEffect: Effect.FlipVertical,
+    reverseEffect: Effect.FlipHorizontal,
   },
   [Effect.Enlarge]: {
     apply: webglController.enlarge,
@@ -76,14 +76,15 @@ function* controlWebgl(action) {
 function* undoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
   if (index > 0) {
-    const targetLog: Log = logs[index];
-    if (targetLog.effect === Effect.Crop)
+    const targetLog: Log = logs[index - 1];
+    if (targetLog.effect === Effect.Crop) {
       yield call(
         updateThumbnailsHistory,
         targetLog.thumbnails.prev,
         targetLog.interval.prev
       );
-    else {
+      yield put(undoSuccess(index - 1));
+    } else {
       const { rollback, reverseEffect } = effectMapper[targetLog.effect];
       yield call(rollback);
       yield put(undoSuccess(index - 1, reverseEffect));
@@ -98,16 +99,17 @@ function* redoEffect(action) {
   const { index, logs } = yield select(getIndexAndLogs);
   if (index < logs.length) {
     const targetLog: Log = logs[index];
-    if (targetLog.effect === Effect.Crop)
+    if (targetLog.effect === Effect.Crop) {
       yield call(
         updateThumbnailsHistory,
         targetLog.thumbnails.current,
         targetLog.interval.current
       );
-    else {
-      const { apply, reverseEffect } = effectMapper[targetLog.effect];
+      yield put(redoSuccess(index + 1));
+    } else {
+      const { apply } = effectMapper[targetLog.effect];
       yield call(apply);
-      yield put(undoSuccess(index + 1, reverseEffect));
+      yield put(redoSuccess(index + 1, targetLog.effect));
     }
   } else {
     console.log('더 이상 다시 실행할 수 없습니다.');
