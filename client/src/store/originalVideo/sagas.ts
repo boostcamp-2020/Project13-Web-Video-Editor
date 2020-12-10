@@ -22,6 +22,7 @@ import {
   reset,
 } from '../actionTypes';
 import { getStartEnd } from '../selectors';
+import { clear } from '../history/actions';
 
 const TIMEOUT = 5_000;
 
@@ -75,13 +76,13 @@ function* load(action) {
   try {
     const duration = yield call(waitMetadataLoading, action.payload.URL);
     yield put(loadMetadata(duration));
-
     const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
 
     yield call(webglController.main);
     yield call(webglController.clear);
 
     yield put(setThumbnails(thumbnails));
+    yield put(clear());
   } catch (err) {
     console.log(err);
     yield put(error());
@@ -95,7 +96,7 @@ export function* watchSetVideo() {
 const downloadFile = (url, filename) => {
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${filename}.mp4`;
+  a.download = filename;
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
