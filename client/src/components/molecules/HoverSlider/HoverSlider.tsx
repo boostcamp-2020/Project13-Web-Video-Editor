@@ -16,6 +16,7 @@ const StyledDiv = styled.div`
   width: 1px;
   border: solid 1px ${color.GRAY};
   height: 7rem;
+  z-index: 5;
 `;
 
 const WrapperDiv = styled.div`
