@@ -30,7 +30,9 @@ export const LOGOUT = 'LOGOUT';
 
 // history
 export const UNDO = 'history/UNDO';
+export const UNDO_SUCCESS = 'history/UNDO_SUCCESS';
 export const REDO = 'history/REDO';
+export const REDO_SUCCESS = 'history/REDO_SUCCESS';
 export const CLEAR = 'history/CLEAR';
 export const APPLY_EFFECT = 'history/APPLY_EFFECT';
 export const APPLY_CROP = 'history/APPLY_CROP';

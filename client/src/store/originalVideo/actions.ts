@@ -2,7 +2,7 @@ import {
   LoadMetadataAction,
   SetThumbnailsAction,
 } from '@/store/currentVideo/actions';
-import { UploadSuccessAction } from '@/store/video/actions';
+import { Video, UploadSuccessAction } from '@/store/video/actions';
 import { CropConfirmAction } from '@/store/crop/actions';
 import {
   FETCH_START,
@@ -16,7 +16,7 @@ import {
   ErrorAction,
 } from '../actionTypes';
 
-// TODO: export const fetchStart = () => ({ type: FETCH_START });
+export const fetchStart = video => ({ type: FETCH_START, payload: video });
 
 export const setVideo = (video: File, URL: string) => ({
   type: SET_VIDEO,
@@ -44,6 +44,7 @@ export const uploadStart = file => ({
 
 type FetchStartAction = {
   type: typeof FETCH_START;
+  payload: Video;
 };
 
 type SetVideoAction = {

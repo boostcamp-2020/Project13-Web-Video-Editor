@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TimeLine from '@/components/organisms/TimeLine';
@@ -7,7 +7,8 @@ import Header from '@/components/organisms/Header';
 import Tools from '@/components/organisms/Tools';
 import VideoContainer from '@/components/organisms/VideoContainer';
 import Loading from '@/components/atoms/Loading';
-import { getMessage } from '@/store/selectors';
+import { fetchListStart } from '@/store/video/actions';
+import { getMessage, getVideos } from '@/store/selectors';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -21,7 +22,13 @@ const BottomDiv = styled.div``;
 
 const EditPage: React.FC = () => {
   const message = useSelector(getMessage);
+  const videos = useSelector(getVideos);
+  const dispatch = useDispatch();
   const [isEdit, setEdit] = useState('');
+
+  useEffect(() => {
+    if (!videos) dispatch(fetchListStart());
+  }, [videos]);
 
   return (
     <StyledDiv>

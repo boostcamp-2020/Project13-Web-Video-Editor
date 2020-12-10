@@ -210,9 +210,9 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
     const input = document.createElement('input');
 
-    input.addEventListener('change', e => {
+    input.addEventListener('change', ({ target }) => {
       const img = document.createElement('img');
-      img.src = URL.createObjectURL(e.target.files[0]);
+      img.src = URL.createObjectURL((target as HTMLInputElement).files[0]);
       webglController.setSign(img);
     });
 
