@@ -2,12 +2,7 @@ import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import {
-  getDuration,
-  getStartEnd,
-  getIsCrop,
-  getIsCropAndDuration,
-} from '@/store/selectors';
+import { getStartEnd, getIsCropAndDuration } from '@/store/selectors';
 import TimeText from '@/components/atoms/TimeText';
 import color from '@/theme/colors';
 
@@ -36,6 +31,11 @@ const getTimes = ({ start, end }): number[] => {
   const gap = duration / PART_COUNT;
 
   let secs = 0;
+
+  if (duration < 6) {
+    for (let count = 0; count <= duration; count += 1) times.push(count);
+    return times;
+  }
 
   for (let count = 0; count <= PART_COUNT; count += 1) {
     times.push(Math.round(secs));

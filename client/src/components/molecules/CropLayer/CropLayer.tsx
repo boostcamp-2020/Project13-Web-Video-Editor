@@ -25,7 +25,7 @@ const CropLayerDiv = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 7;
 `;
 
 const Overlay = styled.div<OverlayProps>`
@@ -61,7 +61,7 @@ const Thumb = styled.div`
   }
 `;
 
-const CropLayer = () => {
+const CropLayer = React.memo(() => {
   const MAX = video.get('duration');
   const STEP = (MAX - MIN) / 1024;
 
@@ -77,7 +77,10 @@ const CropLayer = () => {
   }, [isCrop]);
 
   useEffect(() => {
-    if (isCropConfirm) dispatch(crop(positions[0], positions[1]));
+    if (isCropConfirm)
+      dispatch(
+        crop({ start, end }, { start: positions[0], end: positions[1] })
+      );
   }, [isCropConfirm]);
 
   return (
@@ -125,6 +128,6 @@ const CropLayer = () => {
       />
     </CropLayerDiv>
   );
-};
+});
 
 export default CropLayer;

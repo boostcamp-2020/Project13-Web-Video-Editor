@@ -7,7 +7,7 @@ import {
   BsFillPauseFill,
   BsAspectRatio,
 } from 'react-icons/bs';
-import { RiScissorsLine } from 'react-icons/ri';
+import { RiScissorsLine, RiCopyrightLine } from 'react-icons/ri';
 import { MdScreenRotation } from 'react-icons/md';
 
 import size from '@/theme/sizes';
@@ -61,6 +61,7 @@ export const getEditToolData = (
   rotateReverse: () => void,
   ratio: () => void,
   crop: () => void,
+  sign: () => void,
   hasEmptyVideo: boolean,
   toolType: ButtonTypes
 ): button[] => [
@@ -98,6 +99,18 @@ export const getEditToolData = (
       <RiScissorsLine
         size={size.ICON_SIZE}
         color={toolType === ButtonTypes.crop ? color.PALE_PURPLE : undefined}
+      />
+    ),
+    disabled: hasEmptyVideo,
+  },
+  {
+    onClick: sign,
+    message: '서명',
+    type: toolType === ButtonTypes.sign ? 'selected' : 'transparent',
+    children: (
+      <RiCopyrightLine
+        size={size.ICON_SIZE}
+        color={toolType === ButtonTypes.sign ? color.PALE_PURPLE : undefined}
       />
     ),
     disabled: hasEmptyVideo,

@@ -52,3 +52,24 @@ export const getIsCropAndDuration = (state: RootState) => {
 
 // video
 export const getVideos = (state: RootState) => state.video.videos;
+
+// history
+export const getIndexAndLogs = (state: RootState) => {
+  const { index, logs } = state.history;
+  return {
+    index,
+    logs,
+  };
+};
+
+export const getIsPrevDisabled = (state: RootState) => {
+  const { index } = state.history;
+  return index === 0;
+};
+
+export const getIsNextDisabled = (state: RootState) => {
+  const { index, logs } = state.history;
+  return index === logs.length;
+};
+
+export const getStatus = (state: RootState) => state.history.status;

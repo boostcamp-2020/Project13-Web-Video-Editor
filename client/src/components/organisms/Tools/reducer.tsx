@@ -1,5 +1,6 @@
 import React from 'react';
-import { BsTerminal, BsCheck, BsX } from 'react-icons/bs';
+import { BsTerminal, BsCheck, BsX, BsUpload } from 'react-icons/bs';
+import { GoTrashcan } from 'react-icons/go';
 import {
   MdRotateLeft,
   MdRotateRight,
@@ -14,6 +15,7 @@ export enum ButtonTypes {
   crop = 'crop',
   videoEffect = 'videoEffect',
   ratio = 'ratio',
+  sign = 'sign',
 }
 
 export interface ButtonData {
@@ -29,9 +31,9 @@ interface ButtonDataAction {
 }
 
 // crop
-const cropMessages = ['직접입력', '확인', '취소'];
+const cropMessages = [/* '직접입력',  */ '확인', '취소'];
 const cropChildrens = [
-  <BsTerminal size={size.ICON_SIZE} />,
+  // <BsTerminal size={size.ICON_SIZE} />,
   <BsCheck size={size.ICON_SIZE} />,
   <BsX size={size.ICON_SIZE} />,
 ];
@@ -50,6 +52,14 @@ const ratioMessages = ['확대', '축소'];
 const ratioChildrens = [
   <MdZoomIn size={size.ICON_SIZE} />,
   <MdZoomOut size={size.ICON_SIZE} />,
+];
+
+// sign
+const signMessages = ['불러오기', '확인', '삭제'];
+const signChildrens = [
+  <BsUpload size={size.ICON_SIZE} />,
+  <BsCheck size={size.ICON_SIZE} />,
+  <GoTrashcan size={size.ICON_SIZE} />,
 ];
 
 export const initialData: ButtonData = {
@@ -81,6 +91,13 @@ export default (state: ButtonData, action: ButtonDataAction): ButtonData => {
         messages: ratioMessages,
         type: 'transparent',
         childrens: ratioChildrens,
+      };
+    case ButtonTypes.sign:
+      return {
+        onClicks: action.payload,
+        messages: signMessages,
+        type: 'transparent',
+        childrens: signChildrens,
       };
     default:
       return initialData;

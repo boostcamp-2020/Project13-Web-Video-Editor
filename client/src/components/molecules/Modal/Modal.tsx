@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '@/components/atoms/Button';
+import { ComponentProps } from '@/components/atoms/ModalComponent';
 import color from '@/theme/colors';
 
 const StyledModal = styled.div`
@@ -57,42 +58,42 @@ const StyledModalButtonRow = styled.div`
   }
 `;
 
-interface Props {
+interface Props<T> {
   styleProps: string;
   handleOverlay: () => void;
-  handleButton1: () => void;
-  handleButton2: () => void;
-  buttonMessage1: string;
-  buttonMessage2: string;
-  component: React.FC;
+  handleCancel: () => void;
+  handleConfirm: (state: T) => void;
+  component: React.FC<ComponentProps<T>>;
+  initialState: T;
 }
 
-const Modal: React.FC<Props> = ({
+const Modal: React.FC<Props<unknown>> = ({
   styleProps,
   handleOverlay,
-  handleButton1,
-  handleButton2,
-  buttonMessage1,
-  buttonMessage2,
+  handleCancel,
+  handleConfirm,
   component: Component,
+  initialState,
 }) => {
+  const [state, setState] = useState(initialState);
+
   return (
     <StyledModal>
       <StyledModalOverlay onClick={handleOverlay} />
       <StyledModalSection styleProps={styleProps}>
-        <Component />
+        <Component state={state} setState={setState} />
         <StyledModalButtonRow>
           <Button
             type="transparent"
-            message={buttonMessage1}
-            onClick={handleButton1}
+            message="취소"
+            onClick={handleCancel}
             disabled={false}
           />
           <Button
             type="transparent"
-            message={buttonMessage2}
-            onClick={handleButton2}
-            disabled={false}
+            message="확인"
+            onClick={() => handleConfirm(state)}
+            disabled={!state}
           />
         </StyledModalButtonRow>
       </StyledModalSection>

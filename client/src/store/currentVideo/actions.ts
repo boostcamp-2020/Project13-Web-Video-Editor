@@ -7,6 +7,7 @@ import {
   CROP,
   ResetAction,
   ErrorAction,
+  UPDATE_START_END,
 } from '../actionTypes';
 
 export const play = () => ({ type: PLAY });
@@ -26,8 +27,22 @@ export const setThumbnails = (thumbnails: string[]) => ({
   },
 });
 
-export const crop = (start: number, end: number) => ({
+export const crop = (prev, current) => ({
   type: CROP,
+  payload: {
+    prev: {
+      start: prev.start,
+      end: prev.end,
+    },
+    current: {
+      start: current.start,
+      end: current.end,
+    },
+  },
+});
+
+export const updateStartEnd = (start: number, end: number) => ({
+  type: UPDATE_START_END,
   payload: {
     start,
     end,
@@ -54,6 +69,20 @@ export type SetThumbnailsAction = {
 export type CropAction = {
   type: typeof CROP;
   payload: {
+    prev: {
+      start: number;
+      end: number;
+    };
+    current: {
+      start: number;
+      end: number;
+    };
+  };
+};
+
+export type UpdateStartEndAction = {
+  type: typeof UPDATE_START_END;
+  payload: {
     start: number;
     end: number;
   };
@@ -74,4 +103,5 @@ export type CurrentVideoAction =
   | CropAction
   | LoadMetadataAction
   | ResetAction
-  | ErrorAction;
+  | ErrorAction
+  | UpdateStartEndAction;

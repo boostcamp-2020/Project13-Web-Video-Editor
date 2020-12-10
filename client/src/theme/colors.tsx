@@ -8,6 +8,8 @@ const colors = {
   BLACK: '#000',
   WHITE: '#FFF',
   BLUE: '#2B67CF',
+  MEDIUM_BLUE: '#8787E9',
+  ROYAL_BLUE: '#5D5DE1',
   BORDER: '#464646',
   LIGHT_GREEN: '#E5F5F9',
   GREEN: '#99D8C9',

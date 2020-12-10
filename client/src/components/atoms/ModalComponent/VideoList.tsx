@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
-import { fetchListStart } from '@/store/video/actions';
 import { getVideos } from '@/store/selectors';
+import { Video } from '@/store/video/actions';
 import color from '@/theme/colors';
+
+import Props from './props';
 import VideoItem from './VideoItem';
 
 const StyledDiv = styled.div`
@@ -28,16 +31,12 @@ const List = styled.div`
   overflow-y: auto;
 `;
 
-const VideoList: React.FC = () => {
-  const [selected, setSelected] = useState(null);
+const VideoList: React.FC<Props<Video>> = ({
+  state: selected,
+  setState: setSelected,
+}) => {
   const videos = useSelector(getVideos);
-  const dispatch = useDispatch();
-
   const handleCheck = video => setSelected(video);
-
-  useEffect(() => {
-    if (!videos) dispatch(fetchListStart());
-  }, [videos]);
 
   return (
     <StyledDiv>
@@ -45,7 +44,7 @@ const VideoList: React.FC = () => {
       <List>
         {videos?.map(video => (
           <VideoItem
-            key={video.name}
+            key={uuidv4()}
             video={video}
             handleCheck={handleCheck}
             selected={selected}

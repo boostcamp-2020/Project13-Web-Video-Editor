@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled, { keyframes } from 'styled-components';
-
 import Modal from '@/components/molecules/Modal';
-import VideoList from '@/components/atoms/VideoList';
+import { VideoList } from '@/components/atoms/ModalComponent';
 import color from '@/theme/colors';
+import { Video } from '@/store/video/actions';
+import { fetchStart } from '@/store/originalVideo/actions';
 
 const slide = keyframes`
   from {
@@ -15,7 +17,6 @@ const slide = keyframes`
     opacity: 1;
   }
 `;
-
 const StyledDiv = styled.div`
   position: absolute;
   display: flex;
@@ -30,8 +31,8 @@ const StyledDiv = styled.div`
   animation: ${slide} 0.4s -0.1s ease-out;
   transform-origin: center center;
   width: 5rem;
+  z-index: 5;
 `;
-
 const FromLocal = styled.label`
   color: ${color.WHITE};
   font-size: 12px;
@@ -40,52 +41,47 @@ const FromLocal = styled.label`
   padding: 5px 16px;
   transition: 0.7s;
   border-radius: 5px 5px 0 0;
-
   &:hover {
     background-color: ${color.GRAY};
   }
 `;
-
 const FromServer = styled(FromLocal)`
   border-top: 1px solid ${color.BORDER};
   border-radius: 0 0 5px 5px;
 `;
-
 const StyledInput = styled.input`
   display: none;
 `;
-
 interface Props {
   handleChange: () => void;
 }
-
 const modalLayout = `
   top: 20vh;
   left: 35vw;
   width: 30vw;
   height: 60vh;
 `;
-
 const FileInput = React.forwardRef<HTMLInputElement, Props>(
   ({ handleChange }, forwardedRef) => {
     const [modalVisible, setModalVisible] = useState(false);
-
+    const dispatch = useDispatch();
     const handleClick = () => setModalVisible(true);
     const handleCancel = () => setModalVisible(false);
-    const handleConfirm = () => setModalVisible(false);
+    const handleConfirm = (video: Video) => {
+      dispatch(fetchStart(video));
+      setModalVisible(false);
+    };
 
-    const handleOverlay = () => setModalVisible(false);
     return (
       <StyledDiv>
         {modalVisible && (
           <Modal
             styleProps={modalLayout}
-            handleOverlay={handleOverlay}
-            handleButton1={handleCancel}
-            handleButton2={handleConfirm}
-            buttonMessage1="취소"
-            buttonMessage2="확인"
+            handleOverlay={handleCancel}
+            handleCancel={handleCancel}
+            handleConfirm={handleConfirm}
             component={VideoList}
+            initialState={null}
           />
         )}
         <FromLocal htmlFor="local">로컬</FromLocal>
@@ -100,5 +96,4 @@ const FileInput = React.forwardRef<HTMLInputElement, Props>(
     );
   }
 );
-
 export default FileInput;
