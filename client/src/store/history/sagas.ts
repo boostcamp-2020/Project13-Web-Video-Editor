@@ -28,53 +28,49 @@ function* updateThumbnailsHistory(thumbnails: string[], { start, end }) {
   try {
     yield put(setThumbnails(thumbnails));
     yield put(updateStartEnd(start, end));
-    yield put(moveTo(start));
     yield call(video.setCurrentTime, start);
+    yield put(moveTo(start));
   } catch (err) {
     console.log(err);
     yield put(error());
   }
 }
 
-const effectMapper = (effect: Effect) => {
-  switch (effect) {
-    case Effect.RotateClockwise:
-      return {
-        apply: webglController.rotateRight90Degree,
-        rollback: webglController.rotateLeft90Degree,
-      };
-    case Effect.RotateCounterClockwise:
-      return {
-        apply: webglController.rotateLeft90Degree,
-        rollback: webglController.rotateRight90Degree,
-      };
-    case Effect.FlipHorizontal:
-      return {
-        apply: webglController.reverseSideToSide,
-        rollback: webglController.reverseUpsideDown,
-      };
-    case Effect.FlipVertical:
-      return {
-        apply: webglController.reverseSideToSide,
-        rollback: webglController.reverseUpsideDown,
-      };
-    case Effect.Enlarge:
-      return {
-        apply: webglController.enlarge,
-        rollback: webglController.reduce,
-      };
-    case Effect.Reduce:
-      return {
-        apply: webglController.reduce,
-        rollback: webglController.enlarge,
-      };
-    default:
-      return {};
-  }
+const effectMapper = {
+  [Effect.RotateClockwise]: {
+    apply: webglController.rotateRight90Degree,
+    rollback: webglController.rotateLeft90Degree,
+    reverseEffect: Effect.RotateCounterClockwise,
+  },
+  [Effect.RotateCounterClockwise]: {
+    apply: webglController.rotateLeft90Degree,
+    rollback: webglController.rotateRight90Degree,
+    reverseEffect: Effect.RotateClockwise,
+  },
+  [Effect.FlipHorizontal]: {
+    apply: webglController.reverseUpsideDown,
+    rollback: webglController.reverseUpsideDown,
+    reverseEffect: Effect.FlipHorizontal,
+  },
+  [Effect.FlipVertical]: {
+    apply: webglController.reverseSideToSide,
+    rollback: webglController.reverseSideToSide,
+    reverseEffect: Effect.FlipVertical,
+  },
+  [Effect.Enlarge]: {
+    apply: webglController.enlarge,
+    rollback: webglController.reduce,
+    reverseEffect: Effect.Reduce,
+  },
+  [Effect.Reduce]: {
+    apply: webglController.reduce,
+    rollback: webglController.enlarge,
+    reverseEffect: Effect.Enlarge,
+  },
 };
 
 function* controlWebgl(action) {
-  yield call(effectMapper(action.payload.effect).apply);
+  yield call(effectMapper[action.payload.effect].apply);
 }
 
 function* undoEffect(action) {
