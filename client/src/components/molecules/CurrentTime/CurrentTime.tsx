@@ -22,9 +22,7 @@ const getVideoCurrentTime = () => video.get('currentTime');
 const CurrentTime: React.FC = () => {
   const { start, end } = useSelector(getStartEnd, shallowEqual);
   const isCrop = useSelector(getIsCrop);
-  const [time, setTime] = useState(
-    Math.floor(getVideoCurrentTime() - (!isCrop && start))
-  );
+  const [time, setTime] = useState(0);
   const visible = useSelector(getVisible);
 
   const dispatch = useDispatch();
@@ -46,8 +44,7 @@ const CurrentTime: React.FC = () => {
         if (time !== newTime) setTime(newTime);
       }, 50);
     return () => clearInterval(timer);
-  }, [isCrop, visible, start, end]);
-
+  }, [isCrop, time, visible, start, end]);
   return (
     <StyledDiv>
       <TimeText time={time} color={visible ? undefined : 'transparent'} />
