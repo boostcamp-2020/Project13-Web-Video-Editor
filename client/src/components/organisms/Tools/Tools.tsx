@@ -8,7 +8,12 @@ import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
-import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
+import {
+  getStartEnd,
+  getPlaying,
+  getVisible,
+  getMessage,
+} from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
 import reducer, { initialData, ButtonTypes } from './reducer';
@@ -86,7 +91,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
   const hasEmptyVideo = !useSelector(getVisible);
   const [isSign, setIsSign] = useState(false);
-
+  const message = useSelector(getMessage);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
 
   const glCanvas = document.getElementById('glcanvas');
@@ -130,20 +135,22 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
   document.onkeydown = (event: KeyboardEvent) => {
     const element = document.activeElement as HTMLButtonElement;
-    if (element.tagName !== 'INPUT') element.blur();
 
-    switch (event.code) {
-      case 'ArrowLeft':
-        backwardVideo();
-        break;
-      case 'Space':
-        playPauseVideo();
-        break;
-      case 'ArrowRight':
-        forwardVideo();
-        break;
-      default:
-        break;
+    if (element.tagName !== 'INPUT' && message === '') {
+      element.blur();
+      switch (event.code) {
+        case 'ArrowLeft':
+          backwardVideo();
+          break;
+        case 'Space':
+          playPauseVideo();
+          break;
+        case 'ArrowRight':
+          forwardVideo();
+          break;
+        default:
+          break;
+      }
     }
   };
 
