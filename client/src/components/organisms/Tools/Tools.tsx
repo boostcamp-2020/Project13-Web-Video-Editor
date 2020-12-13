@@ -1,4 +1,10 @@
-import React, { useState, useReducer, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useReducer,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
@@ -13,6 +19,7 @@ import {
   getPlaying,
   getVisible,
   getMessage,
+  getIsCancel,
 } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
@@ -93,7 +100,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const [isSign, setIsSign] = useState(false);
   const message = useSelector(getMessage);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
-
+  const isCancel = useSelector(getIsCancel);
   const glCanvas = document.getElementById('glcanvas');
   const input = document.createElement('input');
 
@@ -196,12 +203,10 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
   const closeSubtool = () => {
     removeSignEvent();
-
     setEdit(DOWN);
     setToolType(null);
     dispatchButtonData({ type: null });
   };
-
   const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
     removeSignEvent();
     webglController.setSignEdit(false);
@@ -288,6 +293,11 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       if (webglController.sign) webglController.setSignEdit(true);
     } else closeSubtool();
   };
+  useEffect(() => {
+    if (toolType !== null) {
+      closeSubtool();
+    }
+  }, [isCancel]);
 
   return (
     <StyledDiv>

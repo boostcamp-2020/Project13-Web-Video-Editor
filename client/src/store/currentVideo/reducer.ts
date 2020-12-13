@@ -17,6 +17,7 @@ export interface CurrentVideoState {
   end: number;
   playing: boolean;
   thumbnails: string[];
+  isCancel: boolean;
 }
 
 const initialState: CurrentVideoState = {
@@ -25,6 +26,7 @@ const initialState: CurrentVideoState = {
   end: 0,
   playing: false,
   thumbnails: [],
+  isCancel: false,
 };
 
 export default (
@@ -57,6 +59,7 @@ export default (
       return {
         ...state,
         ...action.payload,
+        isCancel: false,
       };
     case CROP:
       return {
@@ -65,7 +68,10 @@ export default (
         end: action.payload.current.end,
       };
     case RESET:
-      return initialState;
+      return {
+        ...initialState,
+        isCancel: true,
+      };
     case ERROR:
     default:
       return state;
