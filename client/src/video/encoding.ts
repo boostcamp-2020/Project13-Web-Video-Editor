@@ -14,6 +14,7 @@ interface WebCodecs {
 }
 
 const framerate = 30;
+const interval = 1e6 / framerate;
 
 interface VideoElement extends HTMLVideoElement {
   captureStream(): MediaStream;
@@ -48,26 +49,31 @@ export default async (start, end) => {
     fps: 30,
   });
 
-  const applyEffect = async frame => {
+  let processedTimestamp = 0;
+
+  const applyEffect = async (frame, timestamp) => {
     const image = await frame.createImageBitmap();
     const pixels = webglController.getPixelsFromImage(image);
-    encoder.encodeRGB(pixels);
     frame.destroy();
+    do {
+      encoder.encodeRGB(pixels);
+      processedTimestamp += interval;
+    } while (timestamp >= processedTimestamp + interval); // maintain fps
   };
 
   const duration = (end - start) * 1e6; // seconds -> microseconds
-  const finished = frame => frame.timestamp > duration;
+  const finished = frame => frame.timestamp >= duration;
 
   return new Promise(resolve => {
     const handleFrame = frame => {
       if (finished(frame)) {
         videoTrackReader.stop();
         video.pause();
-        const mp4 = encoder.end();
-        resolve(new Blob([mp4], { type: 'video/mp4' }));
-      } else {
-        applyEffect(frame);
-      }
+        applyEffect(frame, duration).then(() => {
+          const mp4 = encoder.end();
+          resolve(new Blob([mp4], { type: 'video/mp4' }));
+        });
+      } else applyEffect(frame, frame.timestamp);
     };
 
     video.setCurrentTime(start);
