@@ -187,18 +187,19 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const handleInputChange = useCallback(({ target }) => {
     const file = (target as HTMLInputElement).files[0];
     const img = document.createElement('img');
-
     setIsSign(!!file);
     img.src = URL.createObjectURL(file);
-    webglController.setSign(img);
-    webglController.setSignEdit(true);
+    img.addEventListener('load', () => {
+      webglController.setSign(img);
+      webglController.setSignEdit(true);
+    });
   }, []);
-
   const removeSignEvent = () => {
     const canvas = document.getElementById('glcanvas');
     canvas.removeEventListener('mousedown', handleCanvasMouseDown);
     canvas.removeEventListener('mousedown', handleCanvasMouseUp);
     input.removeEventListener('change', handleInputChange);
+    input.value = null;
   };
 
   const closeSubtool = () => {
