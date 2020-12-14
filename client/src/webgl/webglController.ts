@@ -92,6 +92,11 @@ class WebglController {
 
   signGrid: HTMLImageElement = new Image();
 
+  // filter params
+  chroma: number[] = [1.0, 1.0, 1.0];
+
+  blurRatio: number = 0;
+
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
@@ -171,16 +176,20 @@ class WebglController {
     return pixels;
   };
 
-  updateTexture = (texture: WebGLTexture) => {
-    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      level,
-      this.internalFormat,
-      this.srcFormat,
-      this.srcType,
-      video.getVideo()
-    );
+  setChromaRed = chroma => {
+    this.chroma[0] = chroma;
+  };
+
+  setChromaGreen = chroma => {
+    this.chroma[1] = chroma;
+  };
+
+  setChromaBlue = chroma => {
+    this.chroma[2] = chroma;
+  };
+
+  setBlur = blurRatio => {
+    this.blurRatio = blurRatio;
   };
 
   moveSign = (diffX: number, diffY: number) => {
@@ -198,6 +207,18 @@ class WebglController {
 
   setSign = sign => {
     this.sign = sign;
+  };
+
+  updateTexture = (texture: WebGLTexture) => {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      level,
+      this.internalFormat,
+      this.srcFormat,
+      this.srcType,
+      video.getVideo()
+    );
   };
 
   drawGrid = (modelViewMatrix, projectionMatrix, programInfo) => {
@@ -337,6 +358,42 @@ class WebglController {
       this.gl.LINEAR
     );
 
+    const chromaRedLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[0]'
+    );
+    const chromaBlueLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[1]'
+    );
+
+    const chromaGreenLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[2]'
+    );
+
+    this.gl.uniform1f(chromaRedLocation, 1.0);
+
+    this.gl.uniform1f(chromaBlueLocation, 1.0);
+
+    this.gl.uniform1f(chromaGreenLocation, 1.0);
+
+    const edgeDetectKernel = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+
+    const kernelLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'u_kernel[0]'
+    );
+
+    this.gl.uniform1fv(kernelLocation, edgeDetectKernel);
+
+    const kernelWeightLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'u_kernelWeight'
+    );
+
+    this.gl.uniform1f(kernelWeightLocation, 1);
+
     this.gl.drawElements(
       this.gl.TRIANGLES,
       vertexCount,
@@ -422,6 +479,71 @@ class WebglController {
     this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
 
     this.gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
+    const textureSizeLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'u_textureSize'
+    );
+
+    const canvas = this.gl.canvas as HTMLCanvasElement;
+
+    this.gl.uniform2f(
+      textureSizeLocation,
+      canvas.clientWidth,
+      canvas.clientHeight
+    );
+
+    const chromaRedLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[0]'
+    );
+    const chromaBlueLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[1]'
+    );
+
+    const chromaGreenLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'chroma[2]'
+    );
+
+    this.gl.uniform1f(chromaRedLocation, this.chroma[0]);
+
+    this.gl.uniform1f(chromaBlueLocation, this.chroma[1]);
+
+    this.gl.uniform1f(chromaGreenLocation, this.chroma[2]);
+
+    const edgeDetectKernel = [
+      this.blurRatio,
+      this.blurRatio,
+      this.blurRatio,
+      this.blurRatio,
+      1,
+      this.blurRatio,
+      this.blurRatio,
+      this.blurRatio,
+      this.blurRatio,
+    ];
+
+    const kernelLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'u_kernel[0]'
+    );
+
+    this.gl.uniform1fv(kernelLocation, edgeDetectKernel);
+
+    const kernelWeightLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'u_kernelWeight'
+    );
+
+    const tempWeight = edgeDetectKernel.reduce((prev, curr) => {
+      return prev + curr;
+    });
+
+    const weight = tempWeight <= 0 ? 1 : tempWeight;
+
+    this.gl.uniform1f(kernelWeightLocation, weight);
 
     this.gl.drawElements(
       this.gl.TRIANGLES,
