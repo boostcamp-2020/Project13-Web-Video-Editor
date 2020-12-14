@@ -25,6 +25,9 @@ export const getStartEnd = (state: RootState) => {
 };
 export const getThumbnails = (state: RootState) =>
   state.currentVideo.thumbnails;
+export const getIsCancel = (state: RootState) => {
+  return state.currentVideo.isCancel;
+};
 
 // crop
 export const getIsCrop = (state: RootState) => state.crop.isCrop;
