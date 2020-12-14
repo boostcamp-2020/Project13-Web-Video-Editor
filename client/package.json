@@ -50,6 +50,8 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.8.5",
+    "@ffmpeg/ffmpeg": "^0.9.6",
     "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@types/react-redux": "^7.1.11",
     "axios": "^0.21.0",

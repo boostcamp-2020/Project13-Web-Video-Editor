@@ -1,6 +1,5 @@
 import loadEncoder from 'mp4-h264';
-import webglController from '@/webgl/webglController';
-import video from '.';
+import video from './video';
 
 interface TrackReader {
   new (track: MediaStreamTrack): {
@@ -14,6 +13,7 @@ interface WebCodecs {
 }
 
 const framerate = 30;
+const interval = 1e6 / framerate;
 
 interface VideoElement extends HTMLVideoElement {
   captureStream(): MediaStream;
@@ -32,7 +32,7 @@ const init = () => {
   return videoTrackReader;
 };
 
-export default async (start, end) => {
+export default async (start, end, webglController) => {
   const videoTrackReader = init();
 
   const Encoder = await loadEncoder();
@@ -48,26 +48,31 @@ export default async (start, end) => {
     fps: 30,
   });
 
-  const applyEffect = async frame => {
+  let processedTimestamp = 0;
+
+  const applyEffect = async (frame, timestamp) => {
     const image = await frame.createImageBitmap();
     const pixels = webglController.getPixelsFromImage(image);
-    encoder.encodeRGB(pixels);
     frame.destroy();
+    do {
+      encoder.encodeRGB(pixels);
+      processedTimestamp += interval;
+    } while (timestamp >= processedTimestamp + interval); // maintain fps
   };
 
   const duration = (end - start) * 1e6; // seconds -> microseconds
-  const finished = frame => frame.timestamp > duration;
+  const finished = frame => frame.timestamp >= duration;
 
   return new Promise(resolve => {
     const handleFrame = frame => {
       if (finished(frame)) {
         videoTrackReader.stop();
         video.pause();
-        const mp4 = encoder.end();
-        resolve(new Blob([mp4], { type: 'video/mp4' }));
-      } else {
-        applyEffect(frame);
-      }
+        applyEffect(frame, duration).then(() => {
+          const mp4 = encoder.end();
+          resolve(new Blob([mp4], { type: 'video/mp4' }));
+        });
+      } else applyEffect(frame, frame.timestamp);
     };
 
     video.setCurrentTime(start);
