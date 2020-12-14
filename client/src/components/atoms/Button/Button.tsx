@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import color from '@/theme/colors';
-import style from './style';
-import { ButtonType } from '.';
+import style, { ButtonType } from './style';
 
 interface StyledProps {
   buttonType: ButtonType;
