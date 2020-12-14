@@ -1,6 +1,5 @@
 import loadEncoder from 'mp4-h264';
-import webglController from '@/webgl/webglController';
-import video from '.';
+import video from './video';
 
 interface TrackReader {
   new (track: MediaStreamTrack): {
@@ -33,7 +32,7 @@ const init = () => {
   return videoTrackReader;
 };
 
-export default async (start, end) => {
+export default async (start, end, webglController) => {
   const videoTrackReader = init();
 
   const Encoder = await loadEncoder();

@@ -1,10 +1,8 @@
 import { put, call, takeLatest, select } from 'redux-saga/effects';
 
-import video from '@/video/video';
-import encodeVideo from '@/video/encoding';
+import video, { encodeVideo, muxVideoAndAudio } from '@/video';
 import webglController from '@/webgl/webglController';
 import videoAPI from '@/api/video';
-import muxVideoAndAudio from '@/video/mux';
 import {
   setVideo,
   loadMetadata,
@@ -107,7 +105,12 @@ function* encode(action: EncodeStartAction) {
   try {
     const { start, end } = yield select(getStartEnd);
 
-    const encodeVideoBlob: Blob = yield call(encodeVideo, start, end);
+    const encodeVideoBlob: Blob = yield call(
+      encodeVideo,
+      start,
+      end,
+      webglController
+    );
 
     const originalVideoFile: File = yield select(getFile);
 
