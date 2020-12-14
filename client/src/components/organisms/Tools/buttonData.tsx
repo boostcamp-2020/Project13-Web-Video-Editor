@@ -9,6 +9,7 @@ import {
 } from 'react-icons/bs';
 import { RiScissorsLine, RiCopyrightLine } from 'react-icons/ri';
 import { MdScreenRotation } from 'react-icons/md';
+import { VscSymbolColor } from 'react-icons/vsc';
 
 import size from '@/theme/sizes';
 
@@ -62,6 +63,7 @@ export const getEditToolData = (
   ratio: () => void,
   crop: () => void,
   sign: () => void,
+  filter: () => void,
   hasEmptyVideo: boolean,
   toolType: ButtonTypes
 ): button[] => [
@@ -111,6 +113,18 @@ export const getEditToolData = (
       <RiCopyrightLine
         size={size.ICON_SIZE}
         color={toolType === ButtonTypes.sign ? color.PALE_PURPLE : undefined}
+      />
+    ),
+    disabled: hasEmptyVideo,
+  },
+  {
+    onClick: filter,
+    message: '필터',
+    type: toolType === ButtonTypes.sign ? 'selected' : 'transparent',
+    children: (
+      <VscSymbolColor
+        size={size.ICON_SIZE}
+        color={toolType === ButtonTypes.filter ? color.PALE_PURPLE : undefined}
       />
     ),
     disabled: hasEmptyVideo,

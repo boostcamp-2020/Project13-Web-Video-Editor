@@ -12,6 +12,7 @@ import { Effect, applyEffect } from '@/store/history/actions';
 import Range from '@/components/atoms/Range';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
+import EffectSlider from '@/components/molecules/EffectSliders';
 import video from '@/video';
 import { play, pause, moveTo } from '@/store/currentVideo/actions';
 import {
@@ -23,6 +24,7 @@ import {
 } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
+
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
@@ -85,6 +87,17 @@ const SubEditTool = styled(ButtonGroup)`
 const VideoTool = styled(ButtonGroup)`
   display: flex;
 `;
+const modalLayout = `
+  top: 0vh;
+  left: 0vw;
+  width: 30vw;
+  height: 20vh;
+`;
+const layoutStyle = `
+  width: 30vw;
+  height: 20vh;
+  backgound-color: red;
+`;
 
 interface props {
   setEdit: Function;
@@ -103,6 +116,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const isCancel = useSelector(getIsCancel);
   const glCanvas = document.getElementById('glcanvas');
   const input = document.createElement('input');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const backwardVideo = () => {
     let dstTime = video.get('currentTime') - 10;
@@ -260,6 +274,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       ],
       crop: [/* handleCropManually , */ handleCropConfirm, handleCropCancel],
       sign: [handleSignUpload, handleSignConfirm, handleSignCancel],
+      filter: [],
     }),
     []
   );
@@ -294,11 +309,19 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       if (webglController.sign) webglController.setSignEdit(true);
     } else closeSubtool();
   };
+  const handleFilter = () => {
+    if (toolType !== ButtonTypes.filter) {
+      if (isEdit === UP) setEdit(DOWN);
+      openSubtool(ButtonTypes.filter, methods.filter);
+    } else closeSubtool();
+  };
+
   useEffect(() => {
     if (toolType !== null) {
       closeSubtool();
     }
   }, [isCancel]);
+  const handleModalCancel = () => setModalVisible(false);
 
   return (
     <StyledDiv>
@@ -316,6 +339,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
           <WrapperDiv isEdit={isEdit}>
             <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
             {toolType === ButtonTypes.sign && isSign && <Range />}
+            {toolType === ButtonTypes.filter && <EffectSlider />}
           </WrapperDiv>
         )}
         <EditTool
@@ -324,6 +348,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
             handleRatio,
             handleCrop,
             handleSign,
+            handleFilter,
             hasEmptyVideo,
             toolType
           )}

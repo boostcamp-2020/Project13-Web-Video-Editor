@@ -6,6 +6,8 @@ import {
   MdRotateRight,
   MdZoomIn,
   MdZoomOut,
+  MdBlurOn,
+  MdInvertColors,
 } from 'react-icons/md';
 import { CgMergeHorizontal, CgMergeVertical } from 'react-icons/cg';
 
@@ -16,6 +18,7 @@ export enum ButtonTypes {
   videoEffect = 'videoEffect',
   ratio = 'ratio',
   sign = 'sign',
+  filter = 'filter',
 }
 
 export interface ButtonData {
