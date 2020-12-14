@@ -1,6 +1,6 @@
 import color from '@/theme/colors';
 
-import { ButtonType } from '.';
+export type ButtonType = 'default' | 'transparent' | 'selected';
 
 export default (type: ButtonType) => {
   switch (type) {
