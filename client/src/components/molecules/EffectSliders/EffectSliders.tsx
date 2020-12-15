@@ -34,13 +34,13 @@ const EffectSlider: React.FC = () => {
       </StyledColorNestedDiv>
       <StyledColorNestedDiv>
         <StyledP>Blur</StyledP>
-        <StyledP>Effect2</StyledP>
-        <StyledP>Effect3</StyledP>
+        <StyledP>Luminance</StyledP>
+        <StyledP>GrayScale</StyledP>
       </StyledColorNestedDiv>
       <StyledColorNestedDiv>
         <Range id="blur" />
-        <Range id="test2" />
-        <Range id="test3" />
+        <Range id="luminance" />
+        <Range id="grayScale" />
       </StyledColorNestedDiv>
     </StyledColorOuterDiv>
   );

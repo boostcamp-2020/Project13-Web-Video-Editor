@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-
+import Color from '@/theme/colors';
 import webglController from '@/webgl/webglController';
 
 interface Props {
@@ -9,13 +9,43 @@ interface Props {
 
 const StyledInput = styled.input`
   width: 4rem;
-  background-color: ${({ color }) => color} !important;
+  background: ${({ color, value }) => {
+    switch (color) {
+      case 'red':
+      case 'green':
+      case 'blue':
+        return `linear-gradient(0.25turn, ${Color.BLACK}, ${color})`;
+      case 'luminance':
+        return `linear-gradient(0.25turn, ${Color.BLACK}, ${Color.WHITE})`;
+      case 'blur':
+        return 'transparent';
+      case 'grayScale':
+        return value === '1'
+          ? `linear-gradient(0.25turn, ${Color.ORIGINAL_RED}, ${Color.ORIGINAL_ORANGE}, ${Color.ORIGINAL_YELLOW},
+            ${Color.ORIGINAL_GREEN}, ${Color.ORIGINAL_BLUE}, ${Color.ORIGINAL_DARK_BLUE},${Color.ORIGINAL_VIOLET})`
+          : Color.GRAY;
+      default:
+        return null;
+    }
+  }} !important;
   box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.3);
   margin: 10% 0%;
 `;
 
 const Range: React.FC<Props> = ({ id }) => {
-  const [value, setValue] = useState(100);
+  let res = 100;
+  let max = 100;
+
+  if (id === 'blur') {
+    res = 0;
+  } else if (id === 'luminance') {
+    res = 50;
+  } else if (id === 'grayScale') {
+    res = 0;
+    max = 1;
+  }
+
+  const [value, setValue] = useState(res);
 
   const handleChange = useCallback(e => {
     const currentValue = e.target.value;
@@ -32,6 +62,12 @@ const Range: React.FC<Props> = ({ id }) => {
       case 'blur':
         webglController.setBlur(currentValue / 100);
         break;
+      case 'luminance':
+        webglController.setLuminance((currentValue - 50) / 100);
+        break;
+      case 'grayScale':
+        webglController.setGrayScale(currentValue);
+        break;
       default:
         break;
     }
@@ -43,7 +79,7 @@ const Range: React.FC<Props> = ({ id }) => {
       id={id}
       type="range"
       min="0"
-      max="100"
+      max={max}
       value={value}
       onChange={handleChange}
       color={id}
