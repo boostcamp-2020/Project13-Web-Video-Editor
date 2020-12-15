@@ -151,24 +151,13 @@ class WebglController {
     };
   };
 
-  getPixelsFromImage = image => {
+  getPixelsFromVideo = () => {
     this.encode = true;
-
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-    this.gl.texImage2D(
-      this.gl.TEXTURE_2D,
-      level,
-      this.internalFormat,
-      this.srcFormat,
-      this.srcType,
-      image
-    );
-
+    this.updateTexture(this.texture);
     this.drawScene(this.programInfo, this.texture);
     const pixels = new Uint8Array(
       this.gl.drawingBufferWidth * this.gl.drawingBufferHeight * 4
     );
-
     this.gl.readPixels(
       0,
       0,
@@ -178,7 +167,6 @@ class WebglController {
       this.gl.UNSIGNED_BYTE,
       pixels
     );
-
     return pixels;
   };
 
