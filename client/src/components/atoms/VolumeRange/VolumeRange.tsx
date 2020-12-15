@@ -1,14 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import color from '@/theme/colors';
 import { setAudio } from '@/store/currentVideo/actions';
 import video from '@/video';
+import { getVolume } from '@/store/selectors';
 
 interface Props {
-  volume: number;
-  setVolumeVisible;
+  setVolumeVisible: Function;
 }
 
 const StyledOuterDiv = styled.div`
@@ -53,20 +53,15 @@ const StyledInput = styled.input`
   }
 `;
 
-const VolumeRange: React.FC<Props> = ({ volume, setVolumeVisible }) => {
+const VolumeRange: React.FC<Props> = ({ setVolumeVisible }) => {
   const dispatch = useDispatch();
-  const [value, setValue] = useState(volume * 100);
+  const volume = useSelector(getVolume);
 
-  const handleChange = useCallback(e => {
-    const currentValue = e.target.value; // todo
-    setValue(currentValue);
-    dispatch(setAudio(Number(currentValue / 100)));
+  const handleChange = useCallback(({ target }) => {
+    const newVolume = target.value / 100;
+    video.setVolume(newVolume);
+    dispatch(setAudio(newVolume));
   }, []);
-
-  useEffect(() => {
-    setValue(volume * 100);
-    video.setVolume(volume);
-  }, [volume]);
 
   const handleMouseLeave = () => {
     setVolumeVisible(false);
@@ -77,7 +72,7 @@ const VolumeRange: React.FC<Props> = ({ volume, setVolumeVisible }) => {
       <StyledInnerDiv>
         <StyledInput
           type="range"
-          value={value}
+          value={volume * 100}
           onChange={handleChange}
           onMouseLeave={handleMouseLeave}
         />

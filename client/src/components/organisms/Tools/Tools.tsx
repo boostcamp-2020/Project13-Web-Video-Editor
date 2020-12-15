@@ -22,7 +22,7 @@ import {
   getVisible,
   getMessage,
   getIsCancel,
-  getVolume,
+  getVolumeLevel,
 } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
@@ -111,16 +111,18 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
+
   const hasEmptyVideo = !useSelector(getVisible);
   const [isSign, setIsSign] = useState(false);
   const message = useSelector(getMessage);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
   const isCancel = useSelector(getIsCancel);
+
   const glCanvas = document.getElementById('glcanvas');
   const input = document.createElement('input');
   const [modalVisible, setModalVisible] = useState(false);
   const [volumeVisible, setVolumeVisible] = useState(false);
-  const volume = useSelector(getVolume);
+  const volumeLevel = useSelector(getVolumeLevel);
 
   const backwardVideo = () => {
     let dstTime = video.get('currentTime') - 10;
@@ -147,13 +149,9 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   };
 
   const handleVolumeControllerClick = () => {
-    if (volume !== 0) {
-      video.setVolume(0);
-      dispatch(setAudio(0));
-    } else {
-      video.setVolume(1);
-      dispatch(setAudio(1));
-    }
+    const volume = volumeLevel ? 0 : 1;
+    video.setVolume(volume);
+    dispatch(setAudio(volume));
   };
 
   const handleVolumeControllerMouseEnter = () => {
@@ -358,14 +356,12 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
           handleVolumeControllerClick,
           handleVolumeControllerMouseEnter,
           handleVolumeControllerMouseLeave as () => void,
-          volume,
+          volumeLevel,
           playing,
           hasEmptyVideo
         )}
       />
-      {volumeVisible && (
-        <VolumeRange volume={volume} setVolumeVisible={setVolumeVisible} />
-      )}
+      {volumeVisible && <VolumeRange setVolumeVisible={setVolumeVisible} />}
       <StyledEditToolDiv>
         {toolType && (
           <WrapperDiv isEdit={isEdit}>

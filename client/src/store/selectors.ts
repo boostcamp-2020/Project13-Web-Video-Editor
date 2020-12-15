@@ -29,6 +29,8 @@ export const getIsCancel = (state: RootState) => {
   return state.currentVideo.isCancel;
 };
 export const getVolume = (state: RootState) => state.currentVideo.volume;
+export const getVolumeLevel = (state: RootState) =>
+  Math.ceil(state.currentVideo.volume * 2);
 
 // crop
 export const getIsCrop = (state: RootState) => state.crop.isCrop;

@@ -29,15 +29,11 @@ interface button {
   disabled?: boolean;
 }
 
-const selectVolumeIcon = volume => {
-  if (volume > 0.5) {
-    return <BsFillVolumeUpFill size={size.BIG_ICON_SIZE} />;
-  }
-  if (volume > 0) {
-    return <BsFillVolumeDownFill size={size.BIG_ICON_SIZE} />;
-  }
-  return <BsFillVolumeMuteFill size={size.BIG_ICON_SIZE} />;
-};
+const volumeIcons = [
+  <BsFillVolumeMuteFill size={size.BIG_ICON_SIZE} />,
+  <BsFillVolumeDownFill size={size.BIG_ICON_SIZE} />,
+  <BsFillVolumeUpFill size={size.BIG_ICON_SIZE} />,
+];
 
 export const getVideoToolsData = (
   backwardVideo: () => void,
@@ -46,7 +42,7 @@ export const getVideoToolsData = (
   handleVolumeControllerClick: () => void,
   handleVolumeControllerMouseEnter: () => void,
   handleVolumeControllerMouseLeave: () => void,
-  volume: number,
+  volumeLevel: number,
   play: boolean,
   hasEmptyVideo: boolean
 ): button[] => [
@@ -81,7 +77,7 @@ export const getVideoToolsData = (
     onMouseLeave: handleVolumeControllerMouseLeave,
     message: '',
     type: 'transparent',
-    children: selectVolumeIcon(volume),
+    children: volumeIcons[volumeLevel],
     disabled: hasEmptyVideo,
   },
 ];
