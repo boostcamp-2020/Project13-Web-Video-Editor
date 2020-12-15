@@ -31,6 +31,8 @@ const offset = 0;
 const numComponents = 2;
 const vertexCount = 6;
 const normalize = false;
+const TURE = 1;
+const FALSE = 0;
 
 class WebglController {
   // gl config params
@@ -96,6 +98,10 @@ class WebglController {
   chroma: number[] = [1.0, 1.0, 1.0];
 
   blurRatio: number = 0;
+
+  graySacle: number = FALSE;
+
+  luminance: number = 0.0;
 
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
@@ -207,6 +213,14 @@ class WebglController {
 
   setSign = sign => {
     this.sign = sign;
+  };
+
+  setGrayScale = grayScale => {
+    this.graySacle = grayScale;
+  };
+
+  setLuminance = luminance => {
+    this.luminance = luminance;
   };
 
   updateTexture = (texture: WebGLTexture) => {
@@ -358,6 +372,13 @@ class WebglController {
       this.gl.LINEAR
     );
 
+    const grayScaleFlag = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'grayScaleFlag'
+    );
+
+    this.gl.uniform1i(grayScaleFlag, FALSE);
+
     const chromaRedLocation = this.gl.getUniformLocation(
       this.programInfo.program,
       'chroma[0]'
@@ -377,6 +398,13 @@ class WebglController {
     this.gl.uniform1f(chromaBlueLocation, 1.0);
 
     this.gl.uniform1f(chromaGreenLocation, 1.0);
+
+    const luminanceLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'luminance'
+    );
+
+    this.gl.uniform1f(luminanceLocation, 0.0);
 
     const edgeDetectKernel = [0, 0, 0, 0, 1, 0, 0, 0, 0];
 
@@ -493,6 +521,13 @@ class WebglController {
       canvas.clientHeight
     );
 
+    const grayScaleFlag = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'grayScaleFlag'
+    );
+
+    this.gl.uniform1i(grayScaleFlag, this.graySacle);
+
     const chromaRedLocation = this.gl.getUniformLocation(
       this.programInfo.program,
       'chroma[0]'
@@ -513,17 +548,16 @@ class WebglController {
 
     this.gl.uniform1f(chromaGreenLocation, this.chroma[2]);
 
-    const edgeDetectKernel = [
-      this.blurRatio,
-      this.blurRatio,
-      this.blurRatio,
-      this.blurRatio,
-      1,
-      this.blurRatio,
-      this.blurRatio,
-      this.blurRatio,
-      this.blurRatio,
-    ];
+    const luminanceLocation = this.gl.getUniformLocation(
+      this.programInfo.program,
+      'luminance'
+    );
+
+    this.gl.uniform1f(luminanceLocation, this.luminance);
+
+    const edgeDetectKernel = Array.from({ length: 8 }, () => this.blurRatio);
+
+    edgeDetectKernel.splice(4, 0, 1);
 
     const kernelLocation = this.gl.getUniformLocation(
       this.programInfo.program,
