@@ -28,6 +28,7 @@ export const getThumbnails = (state: RootState) =>
 export const getIsCancel = (state: RootState) => {
   return state.currentVideo.isCancel;
 };
+export const getVolume = (state: RootState) => state.currentVideo.volume;
 
 // crop
 export const getIsCrop = (state: RootState) => state.crop.isCrop;

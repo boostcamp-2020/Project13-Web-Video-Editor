@@ -13,6 +13,7 @@ export const MOVE_TO = 'current/MOVE_TO';
 export const SET_THUMBNAILS = 'current/SET_THUMBNAILS';
 export const CROP = 'current/CROP';
 export const UPDATE_START_END = 'current/UPDATE_START_END';
+export const AUDIO = ' current/AUDIO';
 
 // crop
 export const CROP_START = 'crop/CROP_START';
