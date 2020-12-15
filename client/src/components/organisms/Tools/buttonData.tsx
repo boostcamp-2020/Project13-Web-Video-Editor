@@ -6,6 +6,9 @@ import {
   BsFillPlayFill,
   BsFillPauseFill,
   BsAspectRatio,
+  BsFillVolumeMuteFill,
+  BsFillVolumeDownFill,
+  BsFillVolumeUpFill,
 } from 'react-icons/bs';
 import { RiScissorsLine, RiCopyrightLine } from 'react-icons/ri';
 import { MdScreenRotation } from 'react-icons/md';
@@ -18,16 +21,32 @@ import { ButtonData, ButtonTypes } from './reducer';
 
 interface button {
   onClick: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   message: string;
   type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
   disabled?: boolean;
 }
 
+const selectVolumeIcon = volume => {
+  if (volume > 0.5) {
+    return <BsFillVolumeUpFill size={size.BIG_ICON_SIZE} />;
+  }
+  if (volume > 0) {
+    return <BsFillVolumeDownFill size={size.BIG_ICON_SIZE} />;
+  }
+  return <BsFillVolumeMuteFill size={size.BIG_ICON_SIZE} />;
+};
+
 export const getVideoToolsData = (
   backwardVideo: () => void,
   playPauseVideo: () => void,
   forwardVideo: () => void,
+  handleVolumeControllerClick: () => void,
+  handleVolumeControllerMouseEnter: () => void,
+  handleVolumeControllerMouseLeave: () => void,
+  volume: number,
   play: boolean,
   hasEmptyVideo: boolean
 ): button[] => [
@@ -54,6 +73,15 @@ export const getVideoToolsData = (
     message: '',
     type: 'transparent',
     children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
+    disabled: hasEmptyVideo,
+  },
+  {
+    onClick: handleVolumeControllerClick,
+    onMouseEnter: handleVolumeControllerMouseEnter,
+    onMouseLeave: handleVolumeControllerMouseLeave,
+    message: '',
+    type: 'transparent',
+    children: selectVolumeIcon(volume),
     disabled: hasEmptyVideo,
   },
 ];

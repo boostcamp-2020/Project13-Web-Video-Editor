@@ -10,17 +10,19 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { Effect, applyEffect } from '@/store/history/actions';
 import Range from '@/components/atoms/Range';
+import VolumeRange from '@/components/atoms/VolumeRange';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
 import EffectSlider from '@/components/molecules/EffectSliders';
 import video from '@/video';
-import { play, pause, moveTo } from '@/store/currentVideo/actions';
+import { play, pause, moveTo, setAudio } from '@/store/currentVideo/actions';
 import {
   getStartEnd,
   getPlaying,
   getVisible,
   getMessage,
   getIsCancel,
+  getVolume,
 } from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
@@ -117,6 +119,8 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const glCanvas = document.getElementById('glcanvas');
   const input = document.createElement('input');
   const [modalVisible, setModalVisible] = useState(false);
+  const [volumeVisible, setVolumeVisible] = useState(false);
+  const volume = useSelector(getVolume);
 
   const backwardVideo = () => {
     let dstTime = video.get('currentTime') - 10;
@@ -140,6 +144,26 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     }
     video.setCurrentTime(dstTime);
     dispatch(moveTo(dstTime));
+  };
+
+  const handleVolumeControllerClick = () => {
+    if (volume !== 0) {
+      video.setVolume(0);
+      dispatch(setAudio(0));
+    } else {
+      video.setVolume(1);
+      dispatch(setAudio(1));
+    }
+  };
+
+  const handleVolumeControllerMouseEnter = () => {
+    setVolumeVisible(true);
+  };
+
+  const handleVolumeControllerMouseLeave = ({ target }) => {
+    if (target.tagName !== 'svg') {
+      setVolumeVisible(false);
+    }
   };
 
   const playPauseVideo = () => {
@@ -309,6 +333,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       if (webglController.sign) webglController.setSignEdit(true);
     } else closeSubtool();
   };
+
   const handleFilter = () => {
     if (toolType !== ButtonTypes.filter) {
       if (isEdit === UP) setEdit(DOWN);
@@ -330,10 +355,17 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
           backwardVideo,
           playPauseVideo,
           forwardVideo,
+          handleVolumeControllerClick,
+          handleVolumeControllerMouseEnter,
+          handleVolumeControllerMouseLeave as () => void,
+          volume,
           playing,
           hasEmptyVideo
         )}
       />
+      {volumeVisible && (
+        <VolumeRange volume={volume} setVolumeVisible={setVolumeVisible} />
+      )}
       <StyledEditToolDiv>
         {toolType && (
           <WrapperDiv isEdit={isEdit}>

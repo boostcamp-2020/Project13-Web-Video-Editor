@@ -13,6 +13,8 @@ const StyledDiv = styled.div<string>`
 
 interface button {
   onClick: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   message: string;
   type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
@@ -30,6 +32,8 @@ const ButtonGroup: React.FC<Props> = ({ buttonData, StyledProps }) => (
       <Button
         key={data.message || uuidv4()}
         onClick={data.onClick}
+        onMouseEnter={data.onMouseEnter}
+        onMouseLeave={data.onMouseLeave}
         message={data.message}
         type={data.type}
         disabled={data.disabled}
