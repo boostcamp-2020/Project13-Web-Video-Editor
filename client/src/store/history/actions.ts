@@ -6,6 +6,7 @@ import {
   CLEAR,
   APPLY_EFFECT,
   APPLY_CROP,
+  APPLY_FILTER,
   ResetAction,
 } from '../actionTypes';
 import { CropAction } from '../currentVideo/actions';
@@ -35,6 +36,12 @@ export interface Status {
   scale: number;
   rotation: number;
   flipped: boolean;
+}
+
+export interface FilterStatus {
+  blur?: number;
+  grayScale?: number;
+  brightness?: number;
 }
 
 export interface Thumbnails {
@@ -89,6 +96,13 @@ export const applyCrop = (thumbnails: Thumbnails, interval: Interval) => ({
   },
 });
 
+export const applyFilter = (filterStatus: FilterStatus) => ({
+  type: APPLY_FILTER,
+  payload: {
+    filterStatus,
+  },
+});
+
 export type HistoryUndoSuccessAction = {
   type: typeof UNDO_SUCCESS;
   payload: {
@@ -122,11 +136,19 @@ export type HistoryApplyCropAction = {
   };
 };
 
+export type HistoryApplyFilterAction = {
+  type: typeof APPLY_FILTER;
+  payload: {
+    filterStatus: FilterStatus;
+  };
+};
+
 export type HistoryAction =
   | HistoryUndoSuccessAction
   | HistoryRedoSuccessAction
   | HistoryClearAction
   | HistoryApplyEffectAction
   | HistoryApplyCropAction
+  | HistoryApplyFilterAction
   | CropAction
   | ResetAction;

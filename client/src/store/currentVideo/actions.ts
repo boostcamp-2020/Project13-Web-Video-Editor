@@ -5,6 +5,7 @@ import {
   SET_THUMBNAILS,
   LOAD_METADATA,
   CROP,
+  AUDIO,
   ResetAction,
   ErrorAction,
   UPDATE_START_END,
@@ -46,6 +47,13 @@ export const updateStartEnd = (start: number, end: number) => ({
   payload: {
     start,
     end,
+  },
+});
+
+export const setAudio = (volume: number) => ({
+  type: AUDIO,
+  payload: {
+    volume,
   },
 });
 
@@ -95,6 +103,13 @@ export type LoadMetadataAction = {
   };
 };
 
+export type SetAudioAction = {
+  type: typeof AUDIO;
+  payload: {
+    volume: number;
+  };
+};
+
 export type CurrentVideoAction =
   | PlayAction
   | PauseAction
@@ -102,6 +117,7 @@ export type CurrentVideoAction =
   | SetThumbnailsAction
   | CropAction
   | LoadMetadataAction
+  | SetAudioAction
   | ResetAction
   | ErrorAction
   | UpdateStartEndAction;

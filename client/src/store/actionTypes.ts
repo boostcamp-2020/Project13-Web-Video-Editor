@@ -13,6 +13,7 @@ export const MOVE_TO = 'current/MOVE_TO';
 export const SET_THUMBNAILS = 'current/SET_THUMBNAILS';
 export const CROP = 'current/CROP';
 export const UPDATE_START_END = 'current/UPDATE_START_END';
+export const AUDIO = ' current/AUDIO';
 
 // crop
 export const CROP_START = 'crop/CROP_START';
@@ -36,6 +37,7 @@ export const REDO_SUCCESS = 'history/REDO_SUCCESS';
 export const CLEAR = 'history/CLEAR';
 export const APPLY_EFFECT = 'history/APPLY_EFFECT';
 export const APPLY_CROP = 'history/APPLY_CROP';
+export const APPLY_FILTER = 'history/APPLY_FILTER';
 
 // global
 export const RESET = 'RESET';

@@ -14,6 +14,7 @@ class Video {
     'videoHeight',
     'src',
     'currentTime',
+    'volume',
   ]);
 
   constructor() {
@@ -40,6 +41,10 @@ class Video {
     return [...this.thumbnails];
   };
 
+  getVolume = () => {
+    return this.video.volume;
+  };
+
   // setter
   setSrc = (src: string) => {
     this.video.src = src;
@@ -47,6 +52,10 @@ class Video {
 
   setCurrentTime = (time: number) => {
     this.video.currentTime = time;
+  };
+
+  setVolume = (volume: number) => {
+    this.video.volume = volume;
   };
 
   makeThumbnails = (start: number, end: number) => {
