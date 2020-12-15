@@ -37,21 +37,21 @@ const StyledInput = styled.input`
 `;
 
 const Range: React.FC<Props> = ({ id }) => {
-  let res = 100;
+  let initialValue = 100;
   let max = 100;
 
   if (id === 'blur') {
-    res = 0;
+    initialValue = 0;
   } else if (id === 'luminance') {
-    res = 50;
+    initialValue = 50;
   } else if (id === 'grayScale') {
-    res = 0;
+    initialValue = 0;
     max = 1;
   }
 
   const dispatch = useDispatch();
 
-  const [value, setValue] = useState(res);
+  const [value, setValue] = useState(initialValue);
 
   const handleChange = useCallback(e => {
     const currentValue = e.target.value;
