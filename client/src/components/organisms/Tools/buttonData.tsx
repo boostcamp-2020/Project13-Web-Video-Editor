@@ -120,7 +120,7 @@ export const getEditToolData = (
   {
     onClick: filter,
     message: '필터',
-    type: toolType === ButtonTypes.sign ? 'selected' : 'transparent',
+    type: toolType === ButtonTypes.filter ? 'selected' : 'transparent',
     children: (
       <VscSymbolColor
         size={size.ICON_SIZE}

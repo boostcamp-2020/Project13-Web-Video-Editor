@@ -13,15 +13,11 @@ import {
   getIsCropAndDuration,
   getStartEnd,
   getStatus,
+  getFilterStatus,
 } from '@/store/selectors';
+import { Status, FilterStatus } from '@/store/history/actions';
 import CropLayer from '@/components/molecules/CropLayer';
 import color from '@/theme/colors';
-
-interface Status {
-  scale: number;
-  rotation: number;
-  flipped: boolean;
-}
 
 const StyledDiv = styled.div`
   position: relative;
@@ -37,6 +33,9 @@ const StyledImg = styled.img`
   transform: scale(${props => props.status.scale})
     scaleY(${props => (props.status.flipped ? -1 : 1)})
     rotate(${props => props.status.rotation}deg);
+  filter: grayScale(${props => props.filterStatus.grayScale}%)
+    brightness(${props => props.filterStatus.brightness})
+    blur(${props => props.filterStatus.blur}px);
 `;
 const ImageDiv = styled.div`
   overflow: hidden;
@@ -45,15 +44,25 @@ const ImageDiv = styled.div`
   justify-content: center;
   width: 3.3333%;
   height: 50px;
-  background-color: transparent;
   background-color: ${color.BLACK};
   min-width: 3.3333%;
   min-height: 50px;
 `;
-const renderThumbnails = (thumbnails: string[], status: Status) =>
+
+const renderThumbnails = (
+  thumbnails: string[],
+  status: Status,
+  filterStatus: FilterStatus
+) =>
   thumbnails.map(image => (
     <ImageDiv key={uuidv4()}>
-      <StyledImg key={uuidv4()} src={image} status={status} alt="" />
+      <StyledImg
+        key={uuidv4()}
+        src={image}
+        status={status}
+        filterStatus={filterStatus}
+        alt=""
+      />
     </ImageDiv>
   ));
 
@@ -63,6 +72,7 @@ const Thumbnail: React.FC = () => {
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
   const status = useSelector(getStatus);
+  const filterStatus = useSelector(getFilterStatus);
 
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
@@ -74,7 +84,6 @@ const Thumbnail: React.FC = () => {
     video.setCurrentTime(start + time);
     dispatch(moveTo(start + time));
   };
-
   const handleMouseMove = (event: MouseEvent) => {
     const slider = hoverSliderRef.current;
 
@@ -101,13 +110,13 @@ const Thumbnail: React.FC = () => {
   };
 
   const OriginalThumbnails = useMemo(
-    () => renderThumbnails(video.getThumbnails(), status),
+    () => renderThumbnails(video.getThumbnails(), status, filterStatus),
     [message] // URL is not enough to check whether thumbnail is ready
   );
-  const Thumbnails = useMemo(() => renderThumbnails(thumbnails, status), [
-    thumbnails,
-    status,
-  ]);
+  const Thumbnails = useMemo(
+    () => renderThumbnails(thumbnails, status, filterStatus),
+    [thumbnails, status, filterStatus]
+  );
 
   return (
     <StyledDiv

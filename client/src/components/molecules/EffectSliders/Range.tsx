@@ -1,7 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+
 import Color from '@/theme/colors';
 import webglController from '@/webgl/webglController';
+import { applyFilter } from '@/store/history/actions';
 
 interface Props {
   id: string;
@@ -21,9 +24,10 @@ const StyledInput = styled.input`
         return 'transparent';
       case 'grayScale':
         return value === '1'
-          ? `linear-gradient(0.25turn, ${Color.ORIGINAL_RED}, ${Color.ORIGINAL_ORANGE}, ${Color.ORIGINAL_YELLOW},
-            ${Color.ORIGINAL_GREEN}, ${Color.ORIGINAL_BLUE}, ${Color.ORIGINAL_DARK_BLUE},${Color.ORIGINAL_VIOLET})`
-          : Color.GRAY;
+          ? Color.GRAY
+          : `linear-gradient(0.25turn, ${Color.ORIGINAL_RED}, ${Color.ORIGINAL_RED}, ${Color.ORIGINAL_ORANGE},
+            ${Color.ORIGINAL_YELLOW}, ${Color.ORIGINAL_GREEN}, ${Color.ORIGINAL_BLUE},
+            ${Color.ORIGINAL_DARK_BLUE}, ${Color.ORIGINAL_VIOLET})`;
       default:
         return null;
     }
@@ -45,6 +49,8 @@ const Range: React.FC<Props> = ({ id }) => {
     max = 1;
   }
 
+  const dispatch = useDispatch();
+
   const [value, setValue] = useState(res);
 
   const handleChange = useCallback(e => {
@@ -60,12 +66,19 @@ const Range: React.FC<Props> = ({ id }) => {
         webglController.setChromaBlue(currentValue / 100);
         break;
       case 'blur':
+        dispatch(applyFilter({ blur: currentValue / 50 }));
         webglController.setBlur(currentValue / 100);
         break;
       case 'luminance':
+        dispatch(applyFilter({ brightness: currentValue / 50 }));
         webglController.setLuminance((currentValue - 50) / 100);
         break;
       case 'grayScale':
+        if (currentValue === '1') {
+          dispatch(applyFilter({ grayScale: 100 }));
+        } else {
+          dispatch(applyFilter({ grayScale: 0 }));
+        }
         webglController.setGrayScale(currentValue);
         break;
       default:

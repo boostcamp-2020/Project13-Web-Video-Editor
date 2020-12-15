@@ -76,3 +76,5 @@ export const getIsNextDisabled = (state: RootState) => {
 };
 
 export const getStatus = (state: RootState) => state.history.status;
+
+export const getFilterStatus = (state: RootState) => state.history.filterStatus;
