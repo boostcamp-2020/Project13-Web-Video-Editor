@@ -25,7 +25,12 @@ export default (
     case UPLOAD_SUCCESS:
       return {
         videos: state.videos
-          ? [...state.videos, action.payload.video]
+          ? [
+              action.payload.video,
+              ...state.videos.filter(
+                video => video.id !== action.payload.video.id
+              ),
+            ]
           : [action.payload.video],
       };
     case FETCH_LIST_START:
