@@ -627,10 +627,18 @@ class WebglController {
     this.ratio = 1;
   };
 
+  initEffectProps = () => {
+    this.luminance = 0.0;
+    this.chroma = [1.0, 1.0, 1.0];
+    this.blurRatio = 0;
+    this.graySacle = FALSE;
+  };
+
   clear = () => {
     this.positions = this.init.positions.map(pair => [...pair]);
     this.buffers = initBuffers(this.gl, this.positions);
     this.initProps();
+    this.initEffectProps();
   };
 
   reset = () => {

@@ -7,6 +7,7 @@ import {
   APPLY_EFFECT,
   APPLY_CROP,
   APPLY_FILTER,
+  RESET_FILTER,
   ResetAction,
 } from '../actionTypes';
 import { CropAction } from '../currentVideo/actions';
@@ -38,11 +39,28 @@ export interface Status {
   flipped: boolean;
 }
 
-export interface FilterStatus {
-  blur?: number;
-  grayScale?: number;
-  brightness?: number;
+export enum Filter {
+  RED = 'r',
+  GREEN = 'g',
+  BLUE = 'b',
+  LUMINANCE = 'brightness',
+  BLUR = 'blur',
+  GRAYSCALE = 'grayscale',
 }
+
+type RedFilter = { [Filter.RED]: number };
+type GreenFilter = { [Filter.GREEN]: number };
+type BlueFilter = { [Filter.BLUE]: number };
+type LuminanceFilter = { [Filter.LUMINANCE]: number };
+type BlurFilter = { [Filter.BLUR]: number };
+type GrayscaleFilter = { [Filter.GRAYSCALE]: number };
+
+export type FilterStatus = RedFilter &
+  GreenFilter &
+  BlueFilter &
+  LuminanceFilter &
+  BlurFilter &
+  GrayscaleFilter;
 
 export interface Thumbnails {
   prev: string[];
@@ -96,11 +114,23 @@ export const applyCrop = (thumbnails: Thumbnails, interval: Interval) => ({
   },
 });
 
-export const applyFilter = (filterStatus: FilterStatus) => ({
+export const applyFilter = (
+  filterStatus:
+    | RedFilter
+    | GreenFilter
+    | BlueFilter
+    | LuminanceFilter
+    | BlurFilter
+    | GrayscaleFilter
+) => ({
   type: APPLY_FILTER,
   payload: {
     filterStatus,
   },
+});
+
+export const resetFilter = () => ({
+  type: RESET_FILTER,
 });
 
 export type HistoryUndoSuccessAction = {
@@ -143,6 +173,10 @@ export type HistoryApplyFilterAction = {
   };
 };
 
+export type HistoryResetFilterAction = {
+  type: typeof RESET_FILTER;
+};
+
 export type HistoryAction =
   | HistoryUndoSuccessAction
   | HistoryRedoSuccessAction
@@ -150,5 +184,6 @@ export type HistoryAction =
   | HistoryApplyEffectAction
   | HistoryApplyCropAction
   | HistoryApplyFilterAction
+  | HistoryResetFilterAction
   | CropAction
   | ResetAction;

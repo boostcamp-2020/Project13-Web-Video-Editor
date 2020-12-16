@@ -80,4 +80,15 @@ export const getIsNextDisabled = (state: RootState) => {
 
 export const getStatus = (state: RootState) => state.history.status;
 
-export const getFilterStatus = (state: RootState) => state.history.filterStatus;
+export const getFilterStatus = (state: RootState) => {
+  const { brightness, blur, grayscale } = state.history.filterStatus;
+  return { brightness, blur, grayscale };
+};
+export const getRed = (state: RootState) => state.history.filterStatus.r;
+export const getGreen = (state: RootState) => state.history.filterStatus.g;
+export const getBlue = (state: RootState) => state.history.filterStatus.b;
+export const getBrightness = (state: RootState) =>
+  state.history.filterStatus.brightness;
+export const getBlur = (state: RootState) => state.history.filterStatus.blur;
+export const getGrayscale = (state: RootState) =>
+  state.history.filterStatus.grayscale;
