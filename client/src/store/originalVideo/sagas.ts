@@ -8,6 +8,7 @@ import {
   loadMetadata,
   uploadStart,
   EncodeStartAction,
+  encodeSuccess,
 } from './actions';
 import { setThumbnails } from '../currentVideo/actions';
 import { uploadSuccess } from '../video/actions';
@@ -112,8 +113,9 @@ function* encode(action: EncodeStartAction) {
       webglController
     );
 
-    const originalVideoFile: File = yield select(getFile);
+    yield put(encodeSuccess());
 
+    const originalVideoFile: File = yield select(getFile);
     const muxedVideoFile: File = yield call(
       muxVideoAndAudio,
       encodeVideoBlob,

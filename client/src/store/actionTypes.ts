@@ -4,6 +4,7 @@ export const SET_VIDEO = 'original/SET_VIDEO';
 export const LOAD_METADATA = 'original/LOAD_METADATA';
 export const LOAD_SUCCESS = 'original/LOAD_SUCCESS';
 export const ENCODE_START = 'original/ENCODE_START';
+export const ENCODE_SUCCESS = 'original/ENCODE_SUCCESS';
 export const UPLOAD_START = 'original/UPLOAD_START';
 
 // currentVideo
