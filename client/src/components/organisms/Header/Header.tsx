@@ -16,7 +16,6 @@ import {
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
-import { TextInput } from '@/components/atoms/ModalComponent';
 import { TextInput, Help } from '@/components/atoms/ModalComponent';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import Modal from '@/components/molecules/Modal';
@@ -121,10 +120,12 @@ const CancelConfirmStyle = `
 `;
 
 const modalLayout = `
-top: 35vh;
+top: 33vh;
 left: 40vw;
 width: 20vw;
-height: 12vh;
+height: 40vh;
+`;
+
 const modalHelpLayout = `
 top: 15vh;
 left: 22vw;
@@ -152,11 +153,10 @@ const Header: React.FC = () => {
   };
   const handleCancel = () => dispatch(reset());
 
-  const handleModalConfirm = fileName => {
-    dispatch(encodeStart(fileName));
+  const handleModalConfirm = state => {
+    dispatch(encodeStart(state.name));
     setModalVisible(false);
   };
-
   const handleHelpModalConfirm = () => {
     sethelpVisible(false);
   };
@@ -207,7 +207,7 @@ const Header: React.FC = () => {
           handleCancel={handleModalCancel}
           handleConfirm={handleModalConfirm}
           component={TextInput}
-          initialState={name}
+          initialState={{ name, radio: '240' }}
         />
       )}
     </StyledHeader>
