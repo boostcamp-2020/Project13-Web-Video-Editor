@@ -74,6 +74,13 @@ const initShaderProgram = (gl: WebGLRenderingContext) => {
   return shaderProgram;
 };
 
+const textureCoordinatesByRotation = {
+  0: [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+  90: [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+  180: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+  270: [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+};
+
 export const initBuffers = (
   gl: WebGLRenderingContext,
   positions: number[][],
@@ -87,20 +94,13 @@ export const initBuffers = (
     gl.STATIC_DRAW
   );
 
-  const textureCoordinates = {
-    0: [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
-    90: [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
-    180: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
-    270: [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-  };
-
   const textureCoordBuffer = gl.createBuffer();
 
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
 
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array(textureCoordinates[videoRotation]),
+    new Float32Array(textureCoordinatesByRotation[videoRotation]),
     gl.STATIC_DRAW
   );
 
