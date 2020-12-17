@@ -3,6 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 import color from '@/theme/colors';
 import { Message } from '@/store/originalVideo/reducer';
+import video from '@/video';
 
 const UP = 'up';
 const DOWN = 'down';
