@@ -74,9 +74,17 @@ const initShaderProgram = (gl: WebGLRenderingContext) => {
   return shaderProgram;
 };
 
+const textureCoordinatesByRotation = {
+  0: [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+  90: [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+  180: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+  270: [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+};
+
 export const initBuffers = (
   gl: WebGLRenderingContext,
-  positions: number[][]
+  positions: number[][],
+  videoRotation: number
 ) => {
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -86,12 +94,13 @@ export const initBuffers = (
     gl.STATIC_DRAW
   );
 
-  const textureCoordinates = [0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
   const textureCoordBuffer = gl.createBuffer();
+
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array(textureCoordinates),
+    new Float32Array(textureCoordinatesByRotation[videoRotation]),
     gl.STATIC_DRAW
   );
 
@@ -113,8 +122,11 @@ export const initBuffers = (
 
 const initCanvas = (videoWidth: string, videoHeight: string) => {
   const canvas = document.getElementById('glcanvas') as HTMLCanvasElement;
-  canvas.setAttribute('width', videoWidth);
-  canvas.setAttribute('height', videoHeight);
+  const factor = 1;
+
+  canvas.setAttribute('width', (Number(videoWidth) / factor).toString());
+  canvas.setAttribute('height', (Number(videoHeight) / factor).toString());
+
   const gl = (canvas.getContext('webgl', { alpha: false }) ||
     canvas.getContext('experimental-webgl', {
       alpha: false,
@@ -123,13 +135,13 @@ const initCanvas = (videoWidth: string, videoHeight: string) => {
   return gl;
 };
 
-export const initConfig = (positions: number[][]) => {
+export const initConfig = (positions: number[][], videoRotation: number) => {
   const gl = initCanvas(
     video.get('videoWidth').toString(),
     video.get('videoHeight').toString()
   );
 
-  const buffers = initBuffers(gl, positions);
+  const buffers = initBuffers(gl, positions, videoRotation);
 
   const shaderProgram = initShaderProgram(gl);
 

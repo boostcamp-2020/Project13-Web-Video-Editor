@@ -3,7 +3,14 @@ import webglController from '@/webgl/webglController';
 import video from '@/video';
 import { MAX_HISTORY } from '@/store/history/reducer';
 
-import { APPLY_EFFECT, UNDO, REDO, CLEAR, error } from '../actionTypes';
+import {
+  APPLY_EFFECT,
+  UNDO,
+  REDO,
+  CLEAR,
+  error,
+  RESET_FILTER,
+} from '../actionTypes';
 import { Effect, Log, undoSuccess, redoSuccess } from './actions';
 import { getIndexAndLogs } from '../selectors';
 import { updateStartEnd, setThumbnails, moveTo } from '../currentVideo/actions';
@@ -125,6 +132,10 @@ function* clearEffect(action) {
   });
 }
 
+function* resetFilter(action) {
+  yield call(webglController.initEffectProps);
+}
+
 export function* watchApplyEffect() {
   yield takeLeading(APPLY_EFFECT, controlWebgl);
   yield takeLeading(APPLY_EFFECT, checkApplyEffect);
@@ -134,4 +145,5 @@ export function* watchHistory() {
   yield takeLeading(UNDO, undoEffect);
   yield takeLeading(REDO, redoEffect);
   yield takeLeading(CLEAR, clearEffect);
+  yield takeLeading(RESET_FILTER, resetFilter);
 }

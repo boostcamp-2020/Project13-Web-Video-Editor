@@ -30,13 +30,21 @@ const StyledDiv = styled.div`
 const StyledImg = styled.img`
   width: 100%;
   height: 50px;
-  transform: scale(${props => props.status.scale})
-    scaleY(${props => (props.status.flipped ? -1 : 1)})
-    rotate(${props => props.status.rotation}deg);
-  filter: grayScale(${props => props.filterStatus.grayScale}%)
-    brightness(${props => props.filterStatus.brightness})
-    blur(${props => props.filterStatus.blur}px);
+  ${({
+    status: { scale, flipped, rotation },
+    filterStatus: { grayscale, brightness, blur },
+  }) => `
+    transform:
+      scale(${scale})
+      scaleY(${flipped ? -1 : 1})
+      rotate(${rotation}deg);
+    filter:
+      grayScale(${grayscale * 100}%)
+      brightness(${20 + brightness * 0.6 + brightness ** 2 * 0.02}%)
+      blur(${blur / 50}px);
+  `}
 `;
+
 const ImageDiv = styled.div`
   overflow: hidden;
   display: flex;
@@ -49,11 +57,7 @@ const ImageDiv = styled.div`
   min-height: 50px;
 `;
 
-const renderThumbnails = (
-  thumbnails: string[],
-  status: Status,
-  filterStatus: FilterStatus
-) =>
+const renderThumbnails = (thumbnails: string[], status: Status, filterStatus) =>
   thumbnails.map(image => (
     <ImageDiv key={uuidv4()}>
       <StyledImg
@@ -71,8 +75,8 @@ const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
-  const status = useSelector(getStatus);
-  const filterStatus = useSelector(getFilterStatus);
+  const status = useSelector(getStatus, shallowEqual);
+  const filterStatus = useSelector(getFilterStatus, shallowEqual);
 
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
@@ -84,6 +88,7 @@ const Thumbnail: React.FC = () => {
     video.setCurrentTime(start + time);
     dispatch(moveTo(start + time));
   };
+
   const handleMouseMove = (event: MouseEvent) => {
     const slider = hoverSliderRef.current;
 
@@ -111,7 +116,7 @@ const Thumbnail: React.FC = () => {
 
   const OriginalThumbnails = useMemo(
     () => renderThumbnails(video.getThumbnails(), status, filterStatus),
-    [message] // URL is not enough to check whether thumbnail is ready
+    [message, status, filterStatus] // URL is not enough to check whether thumbnail is ready
   );
   const Thumbnails = useMemo(
     () => renderThumbnails(thumbnails, status, filterStatus),

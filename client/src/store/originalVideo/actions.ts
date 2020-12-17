@@ -9,6 +9,7 @@ import {
   SET_VIDEO,
   LOAD_METADATA,
   ENCODE_START,
+  ENCODE_SUCCESS,
   UPLOAD_START,
   ResetAction,
   ErrorAction,
@@ -33,6 +34,10 @@ export const loadMetadata = length => ({
 export const encodeStart = name => ({
   type: ENCODE_START,
   payload: { name },
+});
+
+export const encodeSuccess = () => ({
+  type: ENCODE_SUCCESS,
 });
 
 export const uploadStart = file => ({
@@ -61,6 +66,10 @@ export type EncodeStartAction = {
   };
 };
 
+type EncodeSuccessAction = {
+  type: typeof ENCODE_SUCCESS;
+};
+
 type UploadStartAction = {
   type: typeof UPLOAD_START;
   payload: {
@@ -75,6 +84,7 @@ export type OriginalVideoAction =
   | SetThumbnailsAction
   | CropConfirmAction
   | EncodeStartAction
+  | EncodeSuccessAction
   | UploadStartAction
   | UploadSuccessAction
   | ErrorAction

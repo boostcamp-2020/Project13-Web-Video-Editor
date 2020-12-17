@@ -7,8 +7,10 @@ import Header from '@/components/organisms/Header';
 import Tools from '@/components/organisms/Tools';
 import VideoContainer from '@/components/organisms/VideoContainer';
 import Loading from '@/components/atoms/Loading';
+import Encoding from '@/components/atoms/Encoding';
 import { fetchListStart } from '@/store/video/actions';
 import { getMessage, getVideos } from '@/store/selectors';
+import { Message } from '@/store/originalVideo/reducer';
 
 const StyledDiv = styled.div`
   display: flex;
@@ -30,11 +32,22 @@ const EditPage: React.FC = () => {
     if (!videos) dispatch(fetchListStart());
   }, [videos]);
 
+  const animationMapper = (msg: string) => {
+    switch (msg) {
+      case Message.ENCODING:
+        return <Encoding message={msg} />;
+      case Message.OK:
+        return null;
+      default:
+        return <Loading message={msg} />;
+    }
+  };
+
   return (
     <StyledDiv>
-      {message && <Loading message={message} />}
+      {animationMapper(message)}
       <Header />
-      <VideoContainer isEdit={isEdit} />
+      <VideoContainer isEdit={isEdit} message={message} />
       <BottomDiv>
         <Tools setEdit={setEdit} isEdit={isEdit} />
         <TimeLine />

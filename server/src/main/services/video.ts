@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import AWS from 'aws-sdk';
 
-import { retrieveByUser, create } from '../model/video';
+import { retrieveByUser, upsert } from '../model/video';
 
 require('dotenv').config();
 
@@ -35,12 +35,8 @@ const upload = async (file: Express.Multer.File) => {
       status: httpResponse.statusCode,
     });
   const url = `${endpoint.href}${process.env.BUCKET_NAME}/${fileKey}`;
-  const id = await create(USER_ID, file.originalname, url);
+  const id = await upsert(USER_ID, file.originalname, url);
   return { url, id };
-};
-
-const download = () => {
-  return null;
 };
 
 const getByUser = async (id: number) => {
@@ -48,4 +44,4 @@ const getByUser = async (id: number) => {
   return videos;
 };
 
-export default { upload, download, getByUser };
+export default { upload, getByUser };
