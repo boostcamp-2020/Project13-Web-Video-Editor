@@ -5,10 +5,12 @@ const framerate = 30;
 const interval = 1 / framerate;
 
 export default async (start, end, webglController) => {
+  webglController.setCanvasResolution();
   const {
     drawingBufferWidth: width,
     drawingBufferHeight: height,
   } = webglController.getDrawingBufferWidthHeight();
+
   const Encoder = await loadEncoder();
   const encoder = Encoder.create({
     width,
