@@ -6,6 +6,10 @@ module.exports = {
   entry: {
     main: './src/index.tsx',
   },
+  node: {
+    fs: 'empty',
+    net: 'empty',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
