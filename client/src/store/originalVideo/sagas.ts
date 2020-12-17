@@ -3,6 +3,8 @@ import { put, call, takeLatest, select } from 'redux-saga/effects';
 import video, { encodeVideo, muxVideoAndAudio } from '@/video';
 import webglController from '@/webgl/webglController';
 import videoAPI from '@/api/video';
+import readMetaData from '@/video/metadata';
+
 import {
   setVideo,
   loadMetadata,
@@ -77,6 +79,15 @@ function* load(action) {
     yield put(loadMetadata(duration));
     const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
 
+    const file = yield select(getFile);
+
+    const {
+      media: { track },
+    } = yield call(readMetaData, file);
+
+    const rotation = Math.round(track[1].Rotation);
+
+    yield call(webglController.setVideoRotation, rotation);
     yield call(webglController.main);
     yield call(webglController.clear);
 
