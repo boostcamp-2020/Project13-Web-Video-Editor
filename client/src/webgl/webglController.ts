@@ -31,7 +31,6 @@ const offset = 0;
 const numComponents = 2;
 const vertexCount = 6;
 const normalize = false;
-const TURE = 1;
 const FALSE = 0;
 
 class WebglController {
@@ -69,8 +68,6 @@ class WebglController {
   typeShort: number;
 
   // edit params
-  rate: number = 1;
-
   rotate: boolean = false;
 
   phase: number = 0;
@@ -99,31 +96,37 @@ class WebglController {
 
   blurRatio: number = 0;
 
-  graySacle: number = FALSE;
+  grayScale: number = FALSE;
 
   luminance: number = 0.0;
+
+  // video params
+  videoRotation: number = 0;
+
+  originalRatio: number;
+
+  originalWidth: number;
+
+  originalHeight: number;
 
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
 
+  swapWidthHeight = () => {
+    const { width } = this.gl.canvas;
+    this.gl.canvas.width = this.gl.canvas.height;
+    this.gl.canvas.height = width;
+  };
+
   rotateLeft90Degree = () => {
     this.phase += this.flip ? -1 : 1;
-
-    this.rate *= this.rotate
-      ? this.gl.canvas.width / this.gl.canvas.height
-      : this.gl.canvas.height / this.gl.canvas.width;
-
-    this.rotate = !this.rotate;
+    this.swapWidthHeight();
   };
 
   rotateRight90Degree = () => {
     this.phase += this.flip ? 1 : -1;
-
-    this.rate *= this.rotate
-      ? this.gl.canvas.width / this.gl.canvas.height
-      : this.gl.canvas.height / this.gl.canvas.width;
-    this.rotate = !this.rotate;
+    this.swapWidthHeight();
   };
 
   reverseUpsideDown = () => {
@@ -132,7 +135,6 @@ class WebglController {
 
   reverseSideToSide = () => {
     this.flip = !this.flip;
-
     this.phase += 2;
   };
 
@@ -204,11 +206,15 @@ class WebglController {
   };
 
   setGrayScale = grayScale => {
-    this.graySacle = grayScale;
+    this.grayScale = grayScale;
   };
 
   setLuminance = luminance => {
     this.luminance = luminance;
+  };
+
+  setVideoRotation = videoRotation => {
+    this.videoRotation = videoRotation;
   };
 
   updateTexture = (texture: WebGLTexture) => {
@@ -284,37 +290,25 @@ class WebglController {
       [0.0, 0.0, 1.0]
     );
 
-    if (this.flip) {
-      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
-    }
+    let scaleX = 1 / this.ratio;
+    let scaleY = this.flip ? -scaleX : scaleX;
+    mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1]);
 
-    mat4.scale(modelViewMatrix, modelViewMatrix, [
-      1 / (this.rate * this.rate),
-      1.0,
-      1.0,
-    ]);
-
-    mat4.scale(modelViewMatrix, modelViewMatrix, [
-      1 / this.ratio,
-      1 / this.ratio,
-      1.0,
-    ]);
-
-    const canvas = this.gl.canvas as HTMLElement;
+    const { clientWidth, clientHeight } = this.gl.canvas as HTMLElement;
 
     mat4.translate(modelViewMatrix, modelViewMatrix, [
-      this.signX / (canvas.clientWidth / 2),
-      this.signY / (canvas.clientHeight / 2),
+      this.signX / (clientWidth / 2),
+      this.signY / (clientHeight / 2),
       0.0,
     ]);
 
-    mat4.scale(modelViewMatrix, modelViewMatrix, [
-      this.signRatio,
+    scaleX = this.signRatio;
+    scaleY =
       this.signRatio *
-        (this.gl.canvas.width / this.gl.canvas.height) *
-        (this.sign.height / this.sign.width),
-      1.0,
-    ]);
+      (this.gl.canvas.width / this.gl.canvas.height) *
+      (this.sign.height / this.sign.width);
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1.0]);
 
     this.gl.useProgram(programInfo.program);
 
@@ -430,17 +424,10 @@ class WebglController {
     const modelViewMatrix = mat4.create();
 
     mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -0.5]);
-    mat4.scale(modelViewMatrix, modelViewMatrix, [
-      this.rate * this.rate,
-      1.0,
-      1.0,
-    ]);
 
-    mat4.scale(modelViewMatrix, modelViewMatrix, [this.ratio, this.ratio, 1.0]);
-
-    if (this.flip) {
-      mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
-    }
+    const scaleX = this.ratio;
+    const scaleY = this.flip ? -this.ratio : this.ratio;
+    mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1]);
 
     mat4.rotate(
       modelViewMatrix,
@@ -514,7 +501,7 @@ class WebglController {
       'grayScaleFlag'
     );
 
-    this.gl.uniform1i(grayScaleFlag, this.graySacle);
+    this.gl.uniform1i(grayScaleFlag, this.grayScale);
 
     const chromaRedLocation = this.gl.getUniformLocation(
       this.programInfo.program,
@@ -584,7 +571,7 @@ class WebglController {
   };
 
   glInit = () => {
-    const config = initConfig(this.positions);
+    const config = initConfig(this.positions, this.videoRotation);
 
     this.gl = config.gl;
     this.buffers = config.buffers;
@@ -597,6 +584,9 @@ class WebglController {
     this.srcType = this.gl.UNSIGNED_BYTE;
     this.type = this.gl.FLOAT;
     this.typeShort = this.gl.UNSIGNED_SHORT;
+    this.originalRatio = video.get('videoWidth') / video.get('videoHeight');
+    this.originalWidth = video.get('videoWidth');
+    this.originalHeight = video.get('videoHeight');
 
     const render = () => {
       if (!video.get('src')) return;
@@ -618,25 +608,24 @@ class WebglController {
   };
 
   initProps = () => {
-    this.rotate = false;
     this.flip = false;
     this.encode = false;
     this.sign = null;
-    this.rate = 1;
     this.phase = 0;
     this.ratio = 1;
+    this.restoreRatio();
   };
 
   initEffectProps = () => {
     this.luminance = 0.0;
     this.chroma = [1.0, 1.0, 1.0];
     this.blurRatio = 0;
-    this.graySacle = FALSE;
+    this.grayScale = FALSE;
   };
 
   clear = () => {
     this.positions = this.init.positions.map(pair => [...pair]);
-    this.buffers = initBuffers(this.gl, this.positions);
+    this.buffers = initBuffers(this.gl, this.positions, this.videoRotation);
     this.initProps();
     this.initEffectProps();
   };
@@ -644,6 +633,20 @@ class WebglController {
   reset = () => {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.clear();
+  };
+
+  updateRatio = (ratio: number) => {
+    const currentResolution = this.gl.canvas.width * this.gl.canvas.height;
+    const y = Math.sqrt(ratio * currentResolution);
+    const x = currentResolution / y;
+
+    this.gl.canvas.width = Math.round(x >> 1) << 1;
+    this.gl.canvas.height = Math.round(y >> 1) << 1;
+  };
+
+  restoreRatio = () => {
+    this.gl.canvas.width = this.originalWidth;
+    this.gl.canvas.height = this.originalHeight;
   };
 }
 export default new WebglController();

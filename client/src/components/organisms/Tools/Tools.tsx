@@ -254,7 +254,6 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     dispatchButtonData({ type, payload });
   };
 
-  // const handleCropManually = useCallback(() => {}, []); // TODO: 정말정말진짜로 시간이 남는다면 해보자!!
   const handleCropConfirm = useCallback(() => {
     dispatch(cropConfirm());
     closeSubtool();
@@ -293,8 +292,11 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       ratio: [
         () => dispatch(applyEffect(Effect.Enlarge)),
         () => dispatch(applyEffect(Effect.Reduce)),
+        () => webglController.updateRatio(3 / 4), // FIXME: store 변경 필요
+        () => webglController.updateRatio(9 / 16),
+        () => webglController.restoreRatio(),
       ],
-      crop: [/* handleCropManually , */ handleCropConfirm, handleCropCancel],
+      crop: [handleCropConfirm, handleCropCancel],
       sign: [handleSignUpload, handleSignConfirm, handleSignCancel],
       filter: [],
     }),
@@ -344,7 +346,6 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       closeSubtool();
     }
   }, [isCancel]);
-  const handleModalCancel = () => setModalVisible(false);
 
   return (
     <StyledDiv>
