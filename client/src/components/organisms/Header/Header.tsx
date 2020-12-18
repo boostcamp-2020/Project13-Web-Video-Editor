@@ -136,7 +136,7 @@ height: 70vh;
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
-  const [helpVisible, sethelpVisible] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const name = useSelector(getName);
   const hasEmptyVideo = !useSelector(getVisible);
   const isPrevDisabled = useSelector(getIsPrevDisabled);
@@ -158,14 +158,14 @@ const Header: React.FC = () => {
     setModalVisible(false);
   };
   const handleHelpModalConfirm = () => {
-    sethelpVisible(false);
+    setHelpVisible(false);
   };
   const handleHelp = () => {
-    sethelpVisible(true);
+    setHelpVisible(true);
   };
   const handleModalCancel = () => setModalVisible(false);
   const handleComplete = () => setModalVisible(true);
-  const handleHelpModalCancel = () => sethelpVisible(false);
+  const handleHelpModalCancel = () => setHelpVisible(false);
   return (
     <StyledHeader>
       <Logo />
