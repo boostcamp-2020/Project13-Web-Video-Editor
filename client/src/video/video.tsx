@@ -59,6 +59,11 @@ class Video {
     this.video.volume = volume;
   };
 
+  makeInitialThumbnails = async () => {
+    this.thumbnails = await this.makeThumbnails(0, this.video.duration);
+    return this.getThumbnails();
+  };
+
   makeThumbnails = (start: number, end: number) => {
     return new Promise<string[]>((resolve, reject) => {
       try {
@@ -68,19 +73,16 @@ class Video {
 
           const images: string[] = new Array(this.THUMBNAIL_COUNT);
 
-          for (let count = this.THUMBNAIL_COUNT - 1; count >= 0; count -= 1) {
+          for (let count = this.THUMBNAIL_COUNT - 1; count > 0; count -= 1) {
             this.setCurrentTime(secs);
             const image: string = await this.getImageAt();
 
             secs -= gap;
             images[count] = image;
           }
-          if (
-            start === 0 &&
-            end === this.video.duration &&
-            !this.thumbnails.length
-          )
-            this.thumbnails = images;
+
+          this.setCurrentTime(start);
+          images[0] = await this.getImageAt();
           resolve(images);
         })();
       } catch (err) {

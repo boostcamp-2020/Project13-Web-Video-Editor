@@ -77,7 +77,7 @@ function* load(action) {
   try {
     const duration = yield call(waitMetadataLoading, action.payload.URL);
     yield put(loadMetadata(duration));
-    const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
+    const thumbnails: string[] = yield call(video.makeInitialThumbnails);
 
     const file = yield select(getFile);
 
