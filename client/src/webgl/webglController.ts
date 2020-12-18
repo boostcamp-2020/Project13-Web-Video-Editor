@@ -317,17 +317,50 @@ class WebglController {
       [0.0, 0.0, 1.0]
     );
 
+    mat4.rotate(
+      modelViewMatrix,
+      modelViewMatrix,
+      (this.videoRotation / 180) * Math.PI,
+      [0.0, 0.0, 1.0]
+    );
+
     let scaleX = 1 / this.ratio;
     let scaleY = this.flip ? -scaleX : scaleX;
     mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1]);
 
     const { clientWidth, clientHeight } = this.gl.canvas as HTMLElement;
-
-    mat4.translate(modelViewMatrix, modelViewMatrix, [
-      this.signX / (clientWidth / 2),
-      this.signY / (clientHeight / 2),
-      0.0,
-    ]);
+    switch (this.videoRotation) {
+      case 0:
+        mat4.translate(modelViewMatrix, modelViewMatrix, [
+          this.signX / (clientWidth / 2),
+          this.signY / (clientHeight / 2),
+          0.0,
+        ]);
+        break;
+      case 90:
+        mat4.translate(modelViewMatrix, modelViewMatrix, [
+          this.signY / (clientHeight / 2),
+          -(this.signX / (clientWidth / 2)),
+          0.0,
+        ]);
+        break;
+      case 180:
+        mat4.translate(modelViewMatrix, modelViewMatrix, [
+          -(this.signX / (clientWidth / 2)),
+          -(this.signY / (clientHeight / 2)),
+          0.0,
+        ]);
+        break;
+      case 270:
+        mat4.translate(modelViewMatrix, modelViewMatrix, [
+          -(this.signY / (clientHeight / 2)),
+          this.signX / (clientWidth / 2),
+          0.0,
+        ]);
+        break;
+      default:
+        break;
+    }
 
     scaleX = this.signRatio;
     scaleY =
