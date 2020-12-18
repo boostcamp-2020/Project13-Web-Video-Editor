@@ -12,7 +12,7 @@ import {
   EncodeStartAction,
   encodeSuccess,
 } from './actions';
-import { setThumbnails } from '../currentVideo/actions';
+import { setThumbnails, pause } from '../currentVideo/actions';
 import { uploadSuccess } from '../video/actions';
 import {
   FETCH_START,
@@ -77,7 +77,7 @@ function* load(action) {
   try {
     const duration = yield call(waitMetadataLoading, action.payload.URL);
     yield put(loadMetadata(duration));
-    const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
+    const thumbnails: string[] = yield call(video.makeInitialThumbnails);
 
     const file = yield select(getFile);
 
@@ -116,7 +116,7 @@ const downloadFile = (file: File): void => {
 function* encode(action: EncodeStartAction) {
   try {
     const { start, end } = yield select(getStartEnd);
-
+    yield put(pause());
     const encodeVideoBlob: Blob = yield call(
       encodeVideo,
       start,

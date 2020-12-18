@@ -20,7 +20,7 @@ const S3 = new AWS.S3({
 
 const upload = async (file: Express.Multer.File) => {
   const folderName = `USER${USER_ID}`;
-  const fileKey = `${folderName}/${file.originalname}`;
+  const fileKey = `${folderName}/${encodeURI(file.originalname)}`;
   const {
     $response: { httpResponse },
   } = await S3.putObject({
