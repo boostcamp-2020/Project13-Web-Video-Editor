@@ -3,6 +3,7 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 const CROPPED_AUDIO = 'croppedAudio.mp3';
 const ENCODED_VIDEO = 'encodedVideo.mp4';
 const MUXED_VIDEO = 'muxedVideo.mp4';
+const ORIGINAL_VIDEO = 'originalVideo';
 
 const initFFmpeg = async () => {
   const ffmpeg = createFFmpeg({
@@ -22,11 +23,11 @@ const getAudioFromOriginalVideo = async (
 ): Promise<void> => {
   const originalVideo: Uint8Array = await fetchFile(originalVideoFile);
 
-  ffmpeg.FS('writeFile', originalVideoFile.name, originalVideo);
+  ffmpeg.FS('writeFile', ORIGINAL_VIDEO, originalVideo);
 
   await ffmpeg.run(
     '-i',
-    originalVideoFile.name,
+    ORIGINAL_VIDEO,
     '-vn',
     '-ss',
     interval.start.toString(),
