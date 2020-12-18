@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import color from '@/theme/colors';
-import style from './style';
-import { ButtonType } from '.';
+import style, { ButtonType } from './style';
 
 interface StyledProps {
   buttonType: ButtonType;
@@ -35,13 +34,29 @@ interface Props {
   children?: React.ReactChild;
   message: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   type: ButtonType;
   disabled: boolean;
 }
 
 const Button: React.FC<Props> = React.memo(
-  ({ children, message, onClick, type, disabled }) => (
-    <StyledButton buttonType={type} onClick={onClick} disabled={disabled}>
+  ({
+    children,
+    message,
+    onClick,
+    onMouseEnter,
+    onMouseLeave,
+    type,
+    disabled,
+  }) => (
+    <StyledButton
+      buttonType={type}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      disabled={disabled}
+    >
       {children}
       {children && <br />}
       {message}

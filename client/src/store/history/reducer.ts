@@ -6,8 +6,18 @@ import {
   RESET,
   CLEAR,
   APPLY_CROP,
+  APPLY_FILTER,
+  RESET_FILTER,
 } from '../actionTypes';
-import { HistoryAction, Log, Effect, Status } from './actions';
+
+import {
+  HistoryAction,
+  Log,
+  Effect,
+  Status,
+  Filter,
+  FilterStatus,
+} from './actions';
 
 export const MAX_HISTORY = 20;
 
@@ -15,6 +25,7 @@ export interface HistoryState {
   logs: Log[];
   index: number;
   status: Status;
+  filterStatus: FilterStatus;
 }
 
 const initialState: HistoryState = {
@@ -24,6 +35,14 @@ const initialState: HistoryState = {
     scale: 1,
     rotation: 0,
     flipped: false,
+  },
+  filterStatus: {
+    [Filter.RED]: 100,
+    [Filter.GREEN]: 100,
+    [Filter.BLUE]: 100,
+    [Filter.LUMINANCE]: 50,
+    [Filter.BLUR]: 0,
+    [Filter.GRAYSCALE]: 0,
   },
 };
 
@@ -105,6 +124,19 @@ export default (
           },
         ],
         index: state.index === MAX_HISTORY ? state.index : state.index + 1,
+      };
+    case APPLY_FILTER:
+      return {
+        ...state,
+        filterStatus: {
+          ...state.filterStatus,
+          ...action.payload.filterStatus,
+        },
+      };
+    case RESET_FILTER:
+      return {
+        ...state,
+        filterStatus: initialState.filterStatus,
       };
     case CLEAR:
     case RESET:

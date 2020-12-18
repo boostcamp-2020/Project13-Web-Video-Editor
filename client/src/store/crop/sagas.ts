@@ -1,6 +1,6 @@
 import { put, call, takeLatest, select } from 'redux-saga/effects';
 
-import video from '@/video/video';
+import video from '@/video';
 import webglController from '@/webgl/webglController';
 import { setThumbnails, moveTo, pause } from '../currentVideo/actions';
 import { CROP, error } from '../actionTypes';
@@ -16,7 +16,6 @@ function* updateThumbnails(action) {
     yield call(video.pause);
     yield put(pause());
     const thumbnails: string[] = yield call(video.makeThumbnails, start, end);
-    yield call(webglController.main);
     yield put(moveTo(start));
     yield put(setThumbnails(thumbnails));
 

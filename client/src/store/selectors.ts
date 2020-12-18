@@ -25,6 +25,12 @@ export const getStartEnd = (state: RootState) => {
 };
 export const getThumbnails = (state: RootState) =>
   state.currentVideo.thumbnails;
+export const getIsCancel = (state: RootState) => {
+  return state.currentVideo.isCancel;
+};
+export const getVolume = (state: RootState) => state.currentVideo.volume;
+export const getVolumeLevel = (state: RootState) =>
+  Math.ceil(state.currentVideo.volume * 2);
 
 // crop
 export const getIsCrop = (state: RootState) => state.crop.isCrop;
@@ -73,3 +79,16 @@ export const getIsNextDisabled = (state: RootState) => {
 };
 
 export const getStatus = (state: RootState) => state.history.status;
+
+export const getFilterStatus = (state: RootState) => {
+  const { brightness, blur, grayscale } = state.history.filterStatus;
+  return { brightness, blur, grayscale };
+};
+export const getRed = (state: RootState) => state.history.filterStatus.r;
+export const getGreen = (state: RootState) => state.history.filterStatus.g;
+export const getBlue = (state: RootState) => state.history.filterStatus.b;
+export const getBrightness = (state: RootState) =>
+  state.history.filterStatus.brightness;
+export const getBlur = (state: RootState) => state.history.filterStatus.blur;
+export const getGrayscale = (state: RootState) =>
+  state.history.filterStatus.grayscale;

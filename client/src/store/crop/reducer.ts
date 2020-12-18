@@ -1,4 +1,10 @@
-import { CROP_START, CROP_CANCEL, CROP_CONFIRM, CROP } from '../actionTypes';
+import {
+  CROP_START,
+  CROP_CANCEL,
+  CROP_CONFIRM,
+  CROP,
+  RESET,
+} from '../actionTypes';
 import { CropStoreAction } from './actions';
 
 export interface CropState {
@@ -36,6 +42,8 @@ export default (
         isCrop: false,
         isCropConfirm: false,
       };
+    case RESET:
+      return initialState;
     default:
       return state;
   }

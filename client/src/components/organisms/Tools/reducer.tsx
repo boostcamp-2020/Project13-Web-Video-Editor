@@ -1,12 +1,14 @@
 import React from 'react';
-import { BsTerminal, BsCheck, BsX, BsUpload } from 'react-icons/bs';
+import { BsCheck, BsX, BsUpload } from 'react-icons/bs';
 import { GoTrashcan } from 'react-icons/go';
 import {
   MdRotateLeft,
   MdRotateRight,
   MdZoomIn,
   MdZoomOut,
+  MdCropOriginal,
 } from 'react-icons/md';
+import { RiRuler2Line, RiRuler2Fill } from 'react-icons/ri';
 import { CgMergeHorizontal, CgMergeVertical } from 'react-icons/cg';
 
 import size from '@/theme/sizes';
@@ -16,6 +18,7 @@ export enum ButtonTypes {
   videoEffect = 'videoEffect',
   ratio = 'ratio',
   sign = 'sign',
+  filter = 'filter',
 }
 
 export interface ButtonData {
@@ -31,9 +34,8 @@ interface ButtonDataAction {
 }
 
 // crop
-const cropMessages = [/* '직접입력',  */ '확인', '취소'];
+const cropMessages = ['확인', '취소'];
 const cropChildrens = [
-  // <BsTerminal size={size.ICON_SIZE} />,
   <BsCheck size={size.ICON_SIZE} />,
   <BsX size={size.ICON_SIZE} />,
 ];
@@ -48,10 +50,13 @@ const rotateReverseChildrens = [
 ];
 
 // ratio
-const ratioMessages = ['확대', '축소'];
+const ratioMessages = ['확대', '축소', '4:3', '16:9', '원본 비율'];
 const ratioChildrens = [
   <MdZoomIn size={size.ICON_SIZE} />,
   <MdZoomOut size={size.ICON_SIZE} />,
+  <RiRuler2Line size={size.ICON_SIZE} />,
+  <RiRuler2Fill size={size.ICON_SIZE} />,
+  <MdCropOriginal size={size.ICON_SIZE} />,
 ];
 
 // sign

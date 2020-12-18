@@ -2,6 +2,8 @@ import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
 import color from '@/theme/colors';
+import { Message } from '@/store/originalVideo/reducer';
+import video from '@/video';
 
 const UP = 'up';
 const DOWN = 'down';
@@ -48,17 +50,27 @@ const StyledCanvas = styled.canvas`
   ${({ isEdit }) => (isEdit === UP ? videoUp : '')};
   ${({ isEdit }) => (isEdit === DOWN ? videoDown : '')};
   ${({ isEdit }) =>
-    `transform: ${isEdit === UP ? `translate(0, -2rem)` : `translate(0, 0)`}`};
+    `transform: ${isEdit === UP ? `translate(0, -2rem)` : `translate(0, 0)`}`}
+  ${({ isEncoding }) => (isEncoding ? `scaleY(-1)` : '')};
 `;
 
 interface props {
   isEdit: string;
+  message: string;
 }
 
-const VideoContainer: React.FC<props> = ({ isEdit }) => {
+const VideoContainer: React.FC<props> = ({ isEdit, message }) => {
   return (
     <StyledDiv>
-      <StyledCanvas id="glcanvas" isEdit={isEdit} />
+      <StyledCanvas
+        id="glcanvas"
+        isEdit={isEdit}
+        isEncoding={
+          message === Message.ENCODING ||
+          message === Message.MUXING ||
+          message === Message.UPLOADING
+        }
+      />
     </StyledDiv>
   );
 };

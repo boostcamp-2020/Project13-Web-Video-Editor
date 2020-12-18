@@ -18,12 +18,6 @@ export const uploadVideo = async (
   }
 };
 
-export const downloadVideo = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) => {};
-
 export const getVideoList = async (
   req: express.Request,
   res: express.Response

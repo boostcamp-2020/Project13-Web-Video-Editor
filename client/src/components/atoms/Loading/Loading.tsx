@@ -23,15 +23,26 @@ const StyledDiv = styled.div`
   position: fixed;
   width: 100vw;
   height: 100vh;
+  background-color: transparent;
+  z-index: 9;
+  opacity: 1;
+  flex-direction: column;
+  font-family: Sans-Serif;
+  font-weight: bold;
+  text-shadow: 0px 0px 20px ${color.WHITE};
+`;
+
+const Overlay = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
   background-color: ${color.BLACK};
   z-index: 10;
   opacity: 0.5;
   flex-direction: column;
-  font-size: 2rem;
-  font-family: Sans-Serif;
-  font-weight: bold;
-  color: ${color.PALE_PURPLE};
-  text-shadow: 0px 0px 20px ${color.WHITE};
 `;
 
 const StyledSubDiv = styled.div`
@@ -125,9 +136,16 @@ const Wave5 = styled.div`
   animation: ${jump} 0.4s 0.4s ease-in Infinite Alternate;
 `;
 
+const StyledP = styled.p`
+  color: ${color.WHITE};
+  z-index: 15;
+  font-size: 2rem;
+`;
+
 const Loading: React.FC<Props> = ({ message }) => {
   return (
     <StyledDiv>
+      <Overlay />
       <StyledSubDiv>
         <Wave1 />
         <Wave2 />
@@ -135,7 +153,7 @@ const Loading: React.FC<Props> = ({ message }) => {
         <Wave4 />
         <Wave5 />
       </StyledSubDiv>
-      {message}
+      <StyledP>{message}</StyledP>
     </StyledDiv>
   );
 };

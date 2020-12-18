@@ -5,6 +5,7 @@ import {
   SET_THUMBNAILS,
   LOAD_METADATA,
   CROP,
+  AUDIO,
   RESET,
   ERROR,
   UPDATE_START_END,
@@ -17,6 +18,8 @@ export interface CurrentVideoState {
   end: number;
   playing: boolean;
   thumbnails: string[];
+  isCancel: boolean;
+  volume: number;
 }
 
 const initialState: CurrentVideoState = {
@@ -25,6 +28,8 @@ const initialState: CurrentVideoState = {
   end: 0,
   playing: false,
   thumbnails: [],
+  isCancel: false,
+  volume: 1,
 };
 
 export default (
@@ -57,6 +62,7 @@ export default (
       return {
         ...state,
         ...action.payload,
+        isCancel: false,
       };
     case CROP:
       return {
@@ -64,8 +70,16 @@ export default (
         start: action.payload.current.start,
         end: action.payload.current.end,
       };
+    case AUDIO:
+      return {
+        ...state,
+        volume: action.payload.volume,
+      };
     case RESET:
-      return initialState;
+      return {
+        ...initialState,
+        isCancel: true,
+      };
     case ERROR:
     default:
       return state;

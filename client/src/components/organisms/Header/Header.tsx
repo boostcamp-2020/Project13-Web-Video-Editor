@@ -4,6 +4,7 @@ import {
   BsArrowClockwise,
   BsArrowCounterclockwise,
   BsArrowRepeat,
+  BsQuestionCircle,
 } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -15,7 +16,7 @@ import {
 
 import size from '@/theme/sizes';
 import Logo from '@/components/atoms/Logo';
-import { TextInput } from '@/components/atoms/ModalComponent';
+import { TextInput, Help } from '@/components/atoms/ModalComponent';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import Modal from '@/components/molecules/Modal';
 import color from '@/theme/colors';
@@ -73,10 +74,18 @@ const getHistoryToolData = (
 ];
 
 const getCancelConfirmData = (
+  handleHelp: () => void,
   handleCancel: () => void,
   handleConfirm: () => void,
   hasEmptyVideo: boolean
 ): button[] => [
+  {
+    onClick: handleHelp,
+    message: '',
+    type: 'transparent',
+    children: <BsQuestionCircle size={size.ICON_SIZE} />,
+    disabled: false,
+  },
   {
     onClick: handleCancel,
     message: '취소',
@@ -111,15 +120,23 @@ const CancelConfirmStyle = `
 `;
 
 const modalLayout = `
-top: 35vh;
+top: 33vh;
 left: 40vw;
 width: 20vw;
-height: 12vh;
+height: 40vh;
+`;
+
+const modalHelpLayout = `
+top: 15vh;
+left: 22vw;
+width: 56vw;
+height: 70vh;
 `;
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
+  const [helpVisible, setHelpVisible] = useState(false);
   const name = useSelector(getName);
   const hasEmptyVideo = !useSelector(getVisible);
   const isPrevDisabled = useSelector(getIsPrevDisabled);
@@ -136,14 +153,19 @@ const Header: React.FC = () => {
   };
   const handleCancel = () => dispatch(reset());
 
-  const handleModalConfirm = fileName => {
-    dispatch(encodeStart(fileName));
+  const handleModalConfirm = state => {
+    dispatch(encodeStart(state.name));
     setModalVisible(false);
   };
-
+  const handleHelpModalConfirm = () => {
+    setHelpVisible(false);
+  };
+  const handleHelp = () => {
+    setHelpVisible(true);
+  };
   const handleModalCancel = () => setModalVisible(false);
   const handleComplete = () => setModalVisible(true);
-
+  const handleHelpModalCancel = () => setHelpVisible(false);
   return (
     <StyledHeader>
       <Logo />
@@ -162,11 +184,22 @@ const Header: React.FC = () => {
       <CancelConfirm
         StyledProps={CancelConfirmStyle}
         buttonData={getCancelConfirmData(
+          handleHelp,
           handleCancel,
           handleComplete,
           hasEmptyVideo
         )}
       />
+      {helpVisible && (
+        <Modal
+          styleProps={modalHelpLayout}
+          handleOverlay={handleHelpModalCancel}
+          handleCancel={handleHelpModalCancel}
+          handleConfirm={handleHelpModalConfirm}
+          component={Help}
+          initialState
+        />
+      )}
       {modalVisible && (
         <Modal
           styleProps={modalLayout}
@@ -174,7 +207,7 @@ const Header: React.FC = () => {
           handleCancel={handleModalCancel}
           handleConfirm={handleModalConfirm}
           component={TextInput}
-          initialState={name}
+          initialState={{ name, radio: '240' }}
         />
       )}
     </StyledHeader>

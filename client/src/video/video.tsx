@@ -14,6 +14,7 @@ class Video {
     'videoHeight',
     'src',
     'currentTime',
+    'volume',
   ]);
 
   constructor() {
@@ -40,13 +41,22 @@ class Video {
     return [...this.thumbnails];
   };
 
+  getVolume = () => {
+    return this.video.volume;
+  };
+
   // setter
   setSrc = (src: string) => {
     this.video.src = src;
+    this.thumbnails = [];
   };
 
   setCurrentTime = (time: number) => {
     this.video.currentTime = time;
+  };
+
+  setVolume = (volume: number) => {
+    this.video.volume = volume;
   };
 
   makeThumbnails = (start: number, end: number) => {
@@ -65,7 +75,11 @@ class Video {
             secs -= gap;
             images[count] = image;
           }
-          if (start === 0 && end === this.video.duration)
+          if (
+            start === 0 &&
+            end === this.video.duration &&
+            !this.thumbnails.length
+          )
             this.thumbnails = images;
           resolve(images);
         })();

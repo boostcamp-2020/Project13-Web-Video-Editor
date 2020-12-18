@@ -1,79 +1,38 @@
 import loadEncoder from 'mp4-h264';
-import webglController from '@/webgl/webglController';
-import video from '.';
-
-interface TrackReader {
-  new (track: MediaStreamTrack): {
-    start: Function;
-    stop: Function;
-  };
-}
-
-interface WebCodecs {
-  VideoTrackReader: TrackReader;
-}
+import video from './video';
 
 const framerate = 30;
+const interval = 1 / framerate;
 
-interface VideoElement extends HTMLVideoElement {
-  captureStream(): MediaStream;
-}
-
-const init = () => {
-  const track: MediaStreamTrack = (video.getVideo() as VideoElement)
-    .captureStream()
-    .getVideoTracks()[0];
-  track.applyConstraints({ advanced: [{ frameRate: framerate }] });
-
-  const videoTrackReader = new ((window as unknown) as WebCodecs).VideoTrackReader(
-    track
-  );
-
-  return videoTrackReader;
-};
-
-export default async (start, end) => {
-  const videoTrackReader = init();
-
-  const Encoder = await loadEncoder();
-
+export default async (start, end, webglController) => {
+  webglController.setCanvasResolution();
   const {
     drawingBufferWidth: width,
     drawingBufferHeight: height,
   } = webglController.getDrawingBufferWidthHeight();
 
+  const Encoder = await loadEncoder();
   const encoder = Encoder.create({
     width,
     height,
     fps: 30,
   });
 
-  const applyEffect = async frame => {
-    const image = await frame.createImageBitmap();
-    const pixels = webglController.getPixelsFromImage(image);
-    encoder.encodeRGB(pixels);
-    frame.destroy();
-  };
-
-  const duration = (end - start) * 1e6; // seconds -> microseconds
-  const finished = frame => frame.timestamp > duration;
+  let currentTime = start;
+  video.pause();
+  video.setCurrentTime(currentTime);
 
   return new Promise(resolve => {
-    const handleFrame = frame => {
-      if (finished(frame)) {
-        videoTrackReader.stop();
-        video.pause();
+    video.getVideo().onseeked = () => {
+      if (currentTime > end) {
+        video.getVideo().onseeked = null;
         const mp4 = encoder.end();
         resolve(new Blob([mp4], { type: 'video/mp4' }));
-      } else {
-        applyEffect(frame);
+        return;
       }
+      const pixels = webglController.getPixelsFromVideo();
+      encoder.encodeRGB(pixels);
+      video.setCurrentTime((currentTime += interval));
     };
-
-    video.setCurrentTime(start);
-    video.play();
-    video.addEventListener('play', () => videoTrackReader.start(handleFrame), {
-      once: true,
-    });
   });
 };

@@ -6,9 +6,13 @@ import {
   BsFillPlayFill,
   BsFillPauseFill,
   BsAspectRatio,
+  BsFillVolumeMuteFill,
+  BsFillVolumeDownFill,
+  BsFillVolumeUpFill,
 } from 'react-icons/bs';
 import { RiScissorsLine, RiCopyrightLine } from 'react-icons/ri';
 import { MdScreenRotation } from 'react-icons/md';
+import { VscSymbolColor } from 'react-icons/vsc';
 
 import size from '@/theme/sizes';
 
@@ -17,16 +21,28 @@ import { ButtonData, ButtonTypes } from './reducer';
 
 interface button {
   onClick: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   message: string;
   type: 'default' | 'transparent' | 'selected';
   children: React.ReactChild;
   disabled?: boolean;
 }
 
+const volumeIcons = [
+  <BsFillVolumeMuteFill size={size.BIG_ICON_SIZE} />,
+  <BsFillVolumeDownFill size={size.BIG_ICON_SIZE} />,
+  <BsFillVolumeUpFill size={size.BIG_ICON_SIZE} />,
+];
+
 export const getVideoToolsData = (
   backwardVideo: () => void,
   playPauseVideo: () => void,
   forwardVideo: () => void,
+  handleVolumeControllerClick: () => void,
+  handleVolumeControllerMouseEnter: () => void,
+  handleVolumeControllerMouseLeave: () => void,
+  volumeLevel: number,
   play: boolean,
   hasEmptyVideo: boolean
 ): button[] => [
@@ -55,6 +71,15 @@ export const getVideoToolsData = (
     children: <BsFillSkipEndFill size={size.BIG_ICON_SIZE} />,
     disabled: hasEmptyVideo,
   },
+  {
+    onClick: handleVolumeControllerClick,
+    onMouseEnter: handleVolumeControllerMouseEnter,
+    onMouseLeave: handleVolumeControllerMouseLeave,
+    message: '',
+    type: 'transparent',
+    children: volumeIcons[volumeLevel],
+    disabled: hasEmptyVideo,
+  },
 ];
 
 export const getEditToolData = (
@@ -62,6 +87,7 @@ export const getEditToolData = (
   ratio: () => void,
   crop: () => void,
   sign: () => void,
+  filter: () => void,
   hasEmptyVideo: boolean,
   toolType: ButtonTypes
 ): button[] => [
@@ -111,6 +137,18 @@ export const getEditToolData = (
       <RiCopyrightLine
         size={size.ICON_SIZE}
         color={toolType === ButtonTypes.sign ? color.PALE_PURPLE : undefined}
+      />
+    ),
+    disabled: hasEmptyVideo,
+  },
+  {
+    onClick: filter,
+    message: '필터',
+    type: toolType === ButtonTypes.filter ? 'selected' : 'transparent',
+    children: (
+      <VscSymbolColor
+        size={size.ICON_SIZE}
+        color={toolType === ButtonTypes.filter ? color.PALE_PURPLE : undefined}
       />
     ),
     disabled: hasEmptyVideo,

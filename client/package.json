@@ -50,12 +50,15 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.8.5",
+    "@ffmpeg/ffmpeg": "^0.9.6",
     "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@types/react-redux": "^7.1.11",
     "axios": "^0.21.0",
     "clean-webpack-plugin": "^3.0.0",
     "gl-matrix": "^3.3.0",
     "html-webpack-plugin": "^4.5.0",
+    "mediainfo.js": "^0.1.4",
     "mp4-h264": "^1.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

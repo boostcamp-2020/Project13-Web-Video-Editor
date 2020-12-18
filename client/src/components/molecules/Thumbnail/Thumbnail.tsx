@@ -13,15 +13,11 @@ import {
   getIsCropAndDuration,
   getStartEnd,
   getStatus,
+  getFilterStatus,
 } from '@/store/selectors';
+import { Status, FilterStatus } from '@/store/history/actions';
 import CropLayer from '@/components/molecules/CropLayer';
 import color from '@/theme/colors';
-
-interface Status {
-  scale: number;
-  rotation: number;
-  flipped: boolean;
-}
 
 const StyledDiv = styled.div`
   position: relative;
@@ -34,10 +30,21 @@ const StyledDiv = styled.div`
 const StyledImg = styled.img`
   width: 100%;
   height: 50px;
-  transform: scale(${props => props.status.scale})
-    scaleY(${props => (props.status.flipped ? -1 : 1)})
-    rotate(${props => props.status.rotation}deg);
+  ${({
+    status: { scale, flipped, rotation },
+    filterStatus: { grayscale, brightness, blur },
+  }) => `
+    transform:
+      scale(${scale})
+      scaleY(${flipped ? -1 : 1})
+      rotate(${rotation}deg);
+    filter:
+      grayScale(${grayscale * 100}%)
+      brightness(${20 + brightness * 0.6 + brightness ** 2 * 0.02}%)
+      blur(${blur / 50}px);
+  `}
 `;
+
 const ImageDiv = styled.div`
   overflow: hidden;
   display: flex;
@@ -45,15 +52,21 @@ const ImageDiv = styled.div`
   justify-content: center;
   width: 3.3333%;
   height: 50px;
-  background-color: transparent;
   background-color: ${color.BLACK};
   min-width: 3.3333%;
   min-height: 50px;
 `;
-const renderThumbnails = (thumbnails: string[], status: Status) =>
+
+const renderThumbnails = (thumbnails: string[], status: Status, filterStatus) =>
   thumbnails.map(image => (
     <ImageDiv key={uuidv4()}>
-      <StyledImg key={uuidv4()} src={image} status={status} alt="" />
+      <StyledImg
+        key={uuidv4()}
+        src={image}
+        status={status}
+        filterStatus={filterStatus}
+        alt=""
+      />
     </ImageDiv>
   ));
 
@@ -62,7 +75,8 @@ const Thumbnail: React.FC = () => {
   const thumbnails = useSelector(getThumbnails);
   const { isCrop, duration } = useSelector(getIsCropAndDuration, shallowEqual);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
-  const status = useSelector(getStatus);
+  const status = useSelector(getStatus, shallowEqual);
+  const filterStatus = useSelector(getFilterStatus, shallowEqual);
 
   const [time, setTime] = useState(0);
   const dispatch = useDispatch();
@@ -101,13 +115,13 @@ const Thumbnail: React.FC = () => {
   };
 
   const OriginalThumbnails = useMemo(
-    () => renderThumbnails(video.getThumbnails(), status),
-    [message] // URL is not enough to check whether thumbnail is ready
+    () => renderThumbnails(video.getThumbnails(), status, filterStatus),
+    [message, status, filterStatus] // URL is not enough to check whether thumbnail is ready
   );
-  const Thumbnails = useMemo(() => renderThumbnails(thumbnails, status), [
-    thumbnails,
-    status,
-  ]);
+  const Thumbnails = useMemo(
+    () => renderThumbnails(thumbnails, status, filterStatus),
+    [thumbnails, status, filterStatus]
+  );
 
   return (
     <StyledDiv

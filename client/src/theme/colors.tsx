@@ -16,6 +16,15 @@ const colors = {
   DARK_GREEN: '#2CA25F',
   MODAL: '#0A0A0A',
   VIDEO: '#181818',
+
+  // Rainbow
+  ORIGINAL_RED: '#FF0000',
+  ORIGINAL_ORANGE: '#FFA500',
+  ORIGINAL_YELLOW: '#FFFF00',
+  ORIGINAL_GREEN: '#00FF00',
+  ORIGINAL_BLUE: '#0000FF',
+  ORIGINAL_DARK_BLUE: '#00008B',
+  ORIGINAL_VIOLET: '#EE82EE',
 };
 
 export default colors;

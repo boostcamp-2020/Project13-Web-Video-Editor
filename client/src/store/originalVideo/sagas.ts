@@ -1,15 +1,16 @@
 import { put, call, takeLatest, select } from 'redux-saga/effects';
 
-import video from '@/video/video';
-import encodeVideo from '@/video/encoding';
+import video, { encodeVideo, muxVideoAndAudio } from '@/video';
 import webglController from '@/webgl/webglController';
 import videoAPI from '@/api/video';
+import readMetaData from '@/video/metadata';
 
 import {
   setVideo,
   loadMetadata,
   uploadStart,
   EncodeStartAction,
+  encodeSuccess,
 } from './actions';
 import { setThumbnails } from '../currentVideo/actions';
 import { uploadSuccess } from '../video/actions';
@@ -21,7 +22,7 @@ import {
   error,
   reset,
 } from '../actionTypes';
-import { getStartEnd } from '../selectors';
+import { getFile, getStartEnd } from '../selectors';
 import { clear } from '../history/actions';
 
 const TIMEOUT = 5_000;
@@ -78,6 +79,15 @@ function* load(action) {
     yield put(loadMetadata(duration));
     const thumbnails: string[] = yield call(video.makeThumbnails, 0, duration);
 
+    const file = yield select(getFile);
+
+    const {
+      media: { track },
+    } = yield call(readMetaData, file);
+
+    const rotation = Math.round(track[1].Rotation);
+
+    yield call(webglController.setVideoRotation, rotation);
     yield call(webglController.main);
     yield call(webglController.clear);
 
@@ -93,10 +103,11 @@ export function* watchSetVideo() {
   yield takeLatest(SET_VIDEO, load);
 }
 
-const downloadFile = (url, filename) => {
+const downloadFile = (file: File): void => {
   const a = document.createElement('a');
+  const url = URL.createObjectURL(file);
   a.href = url;
-  a.download = filename;
+  a.download = file.name;
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
@@ -105,17 +116,35 @@ const downloadFile = (url, filename) => {
 function* encode(action: EncodeStartAction) {
   try {
     const { start, end } = yield select(getStartEnd);
-    const blob: Blob = yield call(encodeVideo, start, end);
 
-    const url: string = yield call(URL.createObjectURL, blob);
+    const encodeVideoBlob: Blob = yield call(
+      encodeVideo,
+      start,
+      end,
+      webglController
+    );
+
+    yield put(encodeSuccess());
+
+    const originalVideoFile: File = yield select(getFile);
+    const muxedVideoFile: File = yield call(
+      muxVideoAndAudio,
+      encodeVideoBlob,
+      originalVideoFile,
+      action.payload.name,
+      {
+        start,
+        end,
+      }
+    );
+
     const isAgree = yield call(
       window.confirm,
       '인코딩된 영상을 다운받으시겠습니까?'
     );
-    if (isAgree) downloadFile(url, action.payload.name);
-    const file = new File([blob], action.payload.name, { type: 'video/mp4' });
+    if (isAgree) downloadFile(muxedVideoFile);
 
-    yield put(uploadStart(file));
+    yield put(uploadStart(muxedVideoFile));
   } catch (err) {
     console.log(err);
     yield put(error());

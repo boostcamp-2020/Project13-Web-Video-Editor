@@ -1,16 +1,32 @@
-import React, { useState, useReducer, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useReducer,
+  useCallback,
+  useMemo,
+  useEffect,
+} from 'react';
 import styled, { keyframes } from 'styled-components';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { Effect, applyEffect } from '@/store/history/actions';
 import Range from '@/components/atoms/Range';
+import VolumeRange from '@/components/atoms/VolumeRange';
 import ButtonGroup from '@/components/molecules/ButtonGroup';
 import UploadArea from '@/components/molecules/UploadArea';
+import EffectSlider from '@/components/molecules/EffectSliders';
 import video from '@/video';
-import { play, pause, moveTo } from '@/store/currentVideo/actions';
-import { getStartEnd, getPlaying, getVisible } from '@/store/selectors';
+import { play, pause, moveTo, setAudio } from '@/store/currentVideo/actions';
+import {
+  getStartEnd,
+  getPlaying,
+  getVisible,
+  getMessage,
+  getIsCancel,
+  getVolumeLevel,
+} from '@/store/selectors';
 import { cropStart, cropCancel, cropConfirm } from '@/store/crop/actions';
 import webglController from '@/webgl/webglController';
+
 import reducer, { initialData, ButtonTypes } from './reducer';
 import {
   getEditToolData,
@@ -73,6 +89,17 @@ const SubEditTool = styled(ButtonGroup)`
 const VideoTool = styled(ButtonGroup)`
   display: flex;
 `;
+const modalLayout = `
+  top: 0vh;
+  left: 0vw;
+  width: 30vw;
+  height: 20vh;
+`;
+const layoutStyle = `
+  width: 30vw;
+  height: 20vh;
+  backgound-color: red;
+`;
 
 interface props {
   setEdit: Function;
@@ -84,13 +111,18 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const dispatch = useDispatch();
   const [toolType, setToolType] = useState(null);
   const [buttonData, dispatchButtonData] = useReducer(reducer, initialData);
+
   const hasEmptyVideo = !useSelector(getVisible);
   const [isSign, setIsSign] = useState(false);
-
+  const message = useSelector(getMessage);
   const { start, end } = useSelector(getStartEnd, shallowEqual);
+  const isCancel = useSelector(getIsCancel);
 
   const glCanvas = document.getElementById('glcanvas');
   const input = document.createElement('input');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [volumeVisible, setVolumeVisible] = useState(false);
+  const volumeLevel = useSelector(getVolumeLevel);
 
   const backwardVideo = () => {
     let dstTime = video.get('currentTime') - 10;
@@ -116,6 +148,22 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     dispatch(moveTo(dstTime));
   };
 
+  const handleVolumeControllerClick = () => {
+    const volume = volumeLevel ? 0 : 1;
+    video.setVolume(volume);
+    dispatch(setAudio(volume));
+  };
+
+  const handleVolumeControllerMouseEnter = () => {
+    setVolumeVisible(true);
+  };
+
+  const handleVolumeControllerMouseLeave = ({ target }) => {
+    if (target.tagName !== 'svg') {
+      setVolumeVisible(false);
+    }
+  };
+
   const playPauseVideo = () => {
     if (!playing) {
       // NOTE: playing을 바꿔서 slider의 useEffect를 통해 다시 렌더링하기 위함
@@ -130,20 +178,22 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
 
   document.onkeydown = (event: KeyboardEvent) => {
     const element = document.activeElement as HTMLButtonElement;
-    if (element.tagName !== 'INPUT') element.blur();
 
-    switch (event.code) {
-      case 'ArrowLeft':
-        backwardVideo();
-        break;
-      case 'Space':
-        playPauseVideo();
-        break;
-      case 'ArrowRight':
-        forwardVideo();
-        break;
-      default:
-        break;
+    if (element.tagName !== 'INPUT' && message === '') {
+      element.blur();
+      switch (event.code) {
+        case 'ArrowLeft':
+          backwardVideo();
+          break;
+        case 'Space':
+          playPauseVideo();
+          break;
+        case 'ArrowRight':
+          forwardVideo();
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -173,28 +223,27 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
   const handleInputChange = useCallback(({ target }) => {
     const file = (target as HTMLInputElement).files[0];
     const img = document.createElement('img');
-
     setIsSign(!!file);
     img.src = URL.createObjectURL(file);
-    webglController.setSign(img);
-    webglController.setSignEdit(true);
+    img.addEventListener('load', () => {
+      webglController.setSign(img);
+      webglController.setSignEdit(true);
+    });
   }, []);
-
   const removeSignEvent = () => {
     const canvas = document.getElementById('glcanvas');
     canvas.removeEventListener('mousedown', handleCanvasMouseDown);
     canvas.removeEventListener('mousedown', handleCanvasMouseUp);
     input.removeEventListener('change', handleInputChange);
+    input.value = null;
   };
 
   const closeSubtool = () => {
     removeSignEvent();
-
     setEdit(DOWN);
     setToolType(null);
     dispatchButtonData({ type: null });
   };
-
   const openSubtool = (type: ButtonTypes, payload: (() => void)[]) => {
     removeSignEvent();
     webglController.setSignEdit(false);
@@ -205,7 +254,6 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     dispatchButtonData({ type, payload });
   };
 
-  // const handleCropManually = useCallback(() => {}, []); // TODO: 정말정말진짜로 시간이 남는다면 해보자!!
   const handleCropConfirm = useCallback(() => {
     dispatch(cropConfirm());
     closeSubtool();
@@ -244,9 +292,13 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
       ratio: [
         () => dispatch(applyEffect(Effect.Enlarge)),
         () => dispatch(applyEffect(Effect.Reduce)),
+        () => webglController.updateRatio(3 / 4), // FIXME: store 변경 필요
+        () => webglController.updateRatio(9 / 16),
+        () => webglController.restoreRatio(),
       ],
-      crop: [/* handleCropManually , */ handleCropConfirm, handleCropCancel],
+      crop: [handleCropConfirm, handleCropCancel],
       sign: [handleSignUpload, handleSignConfirm, handleSignCancel],
+      filter: [],
     }),
     []
   );
@@ -282,6 +334,19 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
     } else closeSubtool();
   };
 
+  const handleFilter = () => {
+    if (toolType !== ButtonTypes.filter) {
+      if (isEdit === UP) setEdit(DOWN);
+      openSubtool(ButtonTypes.filter, methods.filter);
+    } else closeSubtool();
+  };
+
+  useEffect(() => {
+    if (toolType !== null) {
+      closeSubtool();
+    }
+  }, [isCancel]);
+
   return (
     <StyledDiv>
       <VideoTool
@@ -289,15 +354,21 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
           backwardVideo,
           playPauseVideo,
           forwardVideo,
+          handleVolumeControllerClick,
+          handleVolumeControllerMouseEnter,
+          handleVolumeControllerMouseLeave as () => void,
+          volumeLevel,
           playing,
           hasEmptyVideo
         )}
       />
+      {volumeVisible && <VolumeRange setVolumeVisible={setVolumeVisible} />}
       <StyledEditToolDiv>
         {toolType && (
           <WrapperDiv isEdit={isEdit}>
             <SubEditTool buttonData={getSubEditToolsData(buttonData)} />
             {toolType === ButtonTypes.sign && isSign && <Range />}
+            {toolType === ButtonTypes.filter && <EffectSlider />}
           </WrapperDiv>
         )}
         <EditTool
@@ -306,6 +377,7 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
             handleRatio,
             handleCrop,
             handleSign,
+            handleFilter,
             hasEmptyVideo,
             toolType
           )}
