@@ -22,6 +22,11 @@ interface ProgramInfo {
   };
 }
 
+interface Resolution {
+  other: number;
+  level: number;
+}
+
 export const RATIO = 1.25;
 export const INVERSE = 1 / RATIO;
 
@@ -109,14 +114,22 @@ class WebglController {
 
   originalHeight: number;
 
+  resolution: Resolution;
+
   constructor() {
     this.positions = this.init.positions.map(pair => [...pair]);
   }
 
   swapWidthHeight = () => {
+    const relX = this.signX / (this.gl.canvas as HTMLElement).clientWidth;
+    const relY = this.signY / (this.gl.canvas as HTMLElement).clientHeight;
+
     const { width } = this.gl.canvas;
     this.gl.canvas.width = this.gl.canvas.height;
     this.gl.canvas.height = width;
+
+    this.signX = (this.gl.canvas as HTMLElement).clientWidth * relX;
+    this.signY = (this.gl.canvas as HTMLElement).clientHeight * relY;
   };
 
   rotateLeft90Degree = () => {
@@ -215,6 +228,20 @@ class WebglController {
 
   setVideoRotation = videoRotation => {
     this.videoRotation = videoRotation;
+  };
+
+  setResolution = resolution => {
+    this.resolution = resolution;
+  };
+
+  setCanvasResolution = () => {
+    if (this.gl.canvas.width > this.gl.canvas.height) {
+      this.gl.canvas.width = this.resolution.other;
+      this.gl.canvas.height = this.resolution.level;
+    } else {
+      this.gl.canvas.height = this.resolution.other;
+      this.gl.canvas.width = this.resolution.level;
+    }
   };
 
   updateTexture = (texture: WebGLTexture) => {
@@ -436,8 +463,10 @@ class WebglController {
       [0.0, 0.0, 1.0]
     );
 
-    if (this.encode) {
+    if (this.phase % 2 === 0 && this.encode) {
       mat4.scale(modelViewMatrix, modelViewMatrix, [1.0, -1.0, 1.0]);
+    } else if (this.encode) {
+      mat4.scale(modelViewMatrix, modelViewMatrix, [-1.0, 1.0, 1.0]);
     }
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
@@ -589,7 +618,7 @@ class WebglController {
     this.originalHeight = video.get('videoHeight');
 
     const render = () => {
-      if (!video.get('src')) return;
+      if (!video.get('src') || this.encode) return;
 
       this.updateTexture(this.texture);
       this.drawScene(this.programInfo, this.texture);

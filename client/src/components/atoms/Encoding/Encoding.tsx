@@ -96,7 +96,7 @@ const Encoding: React.FC<Props> = ({ message }) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const progressPercent = Math.round(
+      const progressPercent = Math.floor(
         (video.get('currentTime') - start) / divisor
       );
 

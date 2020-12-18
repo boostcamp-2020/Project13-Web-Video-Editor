@@ -48,6 +48,7 @@ class Video {
   // setter
   setSrc = (src: string) => {
     this.video.src = src;
+    this.thumbnails = [];
   };
 
   setCurrentTime = (time: number) => {
@@ -74,7 +75,11 @@ class Video {
             secs -= gap;
             images[count] = image;
           }
-          if (start === 0 && end === this.video.duration)
+          if (
+            start === 0 &&
+            end === this.video.duration &&
+            !this.thumbnails.length
+          )
             this.thumbnails = images;
           resolve(images);
         })();

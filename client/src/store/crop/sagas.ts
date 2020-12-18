@@ -16,7 +16,6 @@ function* updateThumbnails(action) {
     yield call(video.pause);
     yield put(pause());
     const thumbnails: string[] = yield call(video.makeThumbnails, start, end);
-    yield call(webglController.main);
     yield put(moveTo(start));
     yield put(setThumbnails(thumbnails));
 
