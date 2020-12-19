@@ -57,7 +57,7 @@ const Help: React.FC = () => {
       <StyledTitle>4. 비디오 편집하기</StyledTitle>
       <img src="https://i.ibb.co/Trs0MPQ/4.png" alt="4" />
       <StyledP>
-        ① 회전 / 반전 하기 ② 비율 조절하기 <br />③ 비디오 길이 자르기 <br /> ④
+        ① 회전 / 반전 하기 <br />② 비율 조절하기 <br />③ 비디오 길이 자르기 <br /> ④
         서명 추가하기 <br />⑤ 비디오 필터 입히기
       </StyledP>
 
