@@ -60,7 +60,8 @@ class Video {
   };
 
   makeInitialThumbnails = async () => {
-    this.thumbnails = await this.makeThumbnails(0, this.video.duration);
+    const delta = 1 / 30;
+    this.thumbnails = await this.makeThumbnails(0, this.video.duration - delta);
     return this.getThumbnails();
   };
 

@@ -96,13 +96,14 @@ const Encoding: React.FC<Props> = ({ message }) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const progressPercent = Math.floor(
+      let progressPercent = Math.floor(
         (video.get('currentTime') - start) / divisor
       );
+      progressPercent = progressPercent < 0 ? 0 : progressPercent > 100 ? 100 : progressPercent;
 
       if (progressPercent !== completedPercent)
         setCompletedPercent(progressPercent);
-    }, 50);
+    }, 100);
     return () => clearInterval(timer);
   }, [completedPercent]);
 
