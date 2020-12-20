@@ -8,30 +8,41 @@
 
 ### [배포 주소 🖥 ](https://boostwave.ga/)
 
+### [데모 영상 🎞](https://www.youtube.com/watch?v=7TCaBNmKwSU)
+> 배포 주소로 확인할 수 없을 때 데모 영상으로 확인해주세요.
+
 **WAVE**(Web Application for Video Editing)는 **클라이언트 기반 웹 동영상🎥 편집기**로, 별도 프로그램을 설치할 필요 없이 **브라우저🌍만으로 작업이 가능합니다.** 영상의 편집 처리를 서버가 아닌 클라이언트에서 진행하여 서버의 부하도 많이 발생하지 않습니다.
 
 사용자는 로컬 또는 서버에서 영상을 불러와서 **UI를 통해 다양한 효과를 추가**하고, 그 결과물을 **다운로드 및 서버로 업로드**할 수 있습니다. 이는 HTML5의 \<video> element에서 원본 영상을 재생하며 프레임을 추출하고, 추출한 프레임마다 편집 효과를 적용한 후, 이를 합쳐서 mp4 파일을 만드는 방식으로 이루어집니다.
 
 동영상이 핸드폰으로 찍어 90° 돌아간 상태이거나, 맨 앞과 맨 뒤에 필요 없는 부분을 잘라내고 싶을 때, 동영상 편집 프로그램을 다운받아 실행하는 번거로운 작업 없이 **Chrome 브라우저를 켜서 WAVE를 시작하세요!**
 
+### [위키 보러가기 ➡️](https://github.com/boostcamp-2020/Project13-Web-Video-Editor/wiki)
 
 ## 🌉 Features
 
-|  영상 편집 (회전/반전, 확대/축소)  | 서명 추가  | 
+| **회전 / 반전**  | **확대 / 축소**  | 
 |:---:|:---:|
-| ![edit_small](https://user-images.githubusercontent.com/49153756/101976579-e2e86800-3c89-11eb-8da6-d3356f4b5e09.gif)  | ![sign_small](https://user-images.githubusercontent.com/49153756/101976581-e4199500-3c89-11eb-9b20-9e90c8617a49.gif)   |
-| `90°/-90° 회전`, `상하/좌우 반전`, `확대/축소`가 가능합니다. | 로컬에서 이미지를 불러와서 영상에 서명을 추가할 수 있습니다. (워터마크 기능)  |  
-| **영상 자르기** | **히스토리 관리**   |
-|   ![crop_small](https://user-images.githubusercontent.com/49153756/101976582-e54ac200-3c89-11eb-99f6-6b8a45b4f720.gif)  |  ![history_small](https://user-images.githubusercontent.com/49153756/101976578-dfed7780-3c89-11eb-9f61-e3c4107d4c27.gif)  | 
-|  원하는 길이만큼 영상을 자를 수 있습니다.  |  원하는 길이만큼 영상을 자를 수 있습니다.  |
-| **인코딩 및 다운로드**  | **서버에서 불러오기**  |
-|  ![encoding_small](https://user-images.githubusercontent.com/49153756/101976760-c0efe500-3c8b-11eb-9619-1a8db920b083.gif) | ![from_server_small](https://user-images.githubusercontent.com/49153756/101976759-bdf4f480-3c8b-11eb-9c55-098aa8feb811.gif)  |
-| 편집된 영상을 인코딩하고 완료된 영상을 즉시 로컬로 다운로드 할 수 있습니다.  | 편집했던 영상을 서버에서 불러와 추가적인 편집 작업도 가능합니다!  |
+| ![회전반전](https://user-images.githubusercontent.com/49153756/102684958-683ac200-4220-11eb-87c8-9a56e1cb5500.gif) | ![확대축소](https://user-images.githubusercontent.com/49153756/102684962-6b35b280-4220-11eb-9c59-5aa1497dd3f5.gif) | 
+| `90°/-90° 회전`, `상하/좌우 반전`이 가능합니다. | `확대/축소`, `4:3`, `16:9` 비율 조정이 가능합니다.  |  
+| **영상 자르기** | **서명 추가**   |
+| ![자르기](https://user-images.githubusercontent.com/49153756/102684963-6bce4900-4220-11eb-8766-2e0be16973ce.gif)  |  ![서명](https://user-images.githubusercontent.com/49153756/102684965-6cff7600-4220-11eb-8dc5-3238055f5273.gif)  |
+|  원하는 길이만큼 영상을 자를 수 있습니다.  |  로컬에서 이미지를 불러와서 영상에 서명을 추가할 수 있습니다. (워터마크 기능)  |
+| **각종 필터 적용**  | **편집 내역 관리**  |
+| ![필터](https://user-images.githubusercontent.com/49153756/102684966-6d980c80-4220-11eb-913a-b5004ee9d219.gif) | ![히스토리](https://user-images.githubusercontent.com/49153756/102684974-71c42a00-4220-11eb-95d3-0891d30ed507.gif)  |
+| `R,G,B` 값을 변경할 수 있고, `blur`효과 및 흑백 효과, 밝기 조절도 가능합니다!  | 편집 내역을 최대 20개까지 히스토리로 관리합니다. (서명, 필터 제외) |
+| **해상도 설정**  | **로컬 다운로드**  |
+| ![해상도설정](https://user-images.githubusercontent.com/49153756/102684967-6ec93980-4220-11eb-80df-a0137f414c87.gif)  | ![로컬다운](https://user-images.githubusercontent.com/49153756/102684968-6f61d000-4220-11eb-90cd-c5c7d31312ed.gif) |
+| 원하는 해상도를 설정하여 영상을 인코딩할 수 있습니다.  | 인코딩이 완료된 영상을 즉시 로컬로 다운로드 할 수 있습니다. |
+| **서버에서 불러오기**  | **도움말**  |
+| ![서버에서다운로드](https://user-images.githubusercontent.com/49153756/102684970-6ffa6680-4220-11eb-95b1-f6696b8fa712.gif) |![도움말](https://user-images.githubusercontent.com/49153756/102684971-7092fd00-4220-11eb-90dc-7ff0508fa19b.gif)  |
+| 편집했던 영상을 서버에서 불러와 추가적인 편집 작업도 가능합니다!  | WAVE의 사용법을 상세히 확인할 수 있습니다. |
+
 
 ## 🏛 Web Architecture 
 ![](https://i.imgur.com/X1Q9S7H.png)
 
-## 🚩기술 스택
+## 🚩 기술 스택
 ![](https://i.imgur.com/zmyi5gG.png)
 
 > 자세한 설명은 [Wiki](https://github.com/boostcamp-2020/Project13-Web-Video-Editor/wiki/%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D) 를 참고해주세요.
