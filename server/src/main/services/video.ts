@@ -1,6 +1,5 @@
 import { Express } from 'express';
 import AWS from 'aws-sdk';
-import { v5 as uuidv5 } from 'uuid';
 
 import { retrieveByUser, upsert } from '../model/video';
 
@@ -21,8 +20,7 @@ const S3 = new AWS.S3({
 
 const upload = async (file: Express.Multer.File) => {
   const folderName = `USER${USER_ID}`;
-  const fileId = uuidv5(file.originalname, uuidv5.URL);
-  const fileKey = encodeURI(`${folderName}/${fileId}`);
+  const fileKey = `${folderName}/${file.originalname}`;
   const {
     $response: { httpResponse },
   } = await S3.putObject({
