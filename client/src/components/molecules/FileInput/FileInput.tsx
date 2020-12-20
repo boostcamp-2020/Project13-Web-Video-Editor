@@ -57,8 +57,8 @@ interface Props {
 }
 const modalLayout = `
   top: 20vh;
-  left: 35vw;
-  width: 30vw;
+  left: 30vw;
+  width: 40vw;
   height: 60vh;
 `;
 const FileInput = React.forwardRef<HTMLInputElement, Props>(
