@@ -20,15 +20,15 @@ export const parseDateString = (now, created) => {
   if (diff < HOUR) {
     if (diff < MINUTE) {
       amount = Math.floor(diff / SECOND);
-      return `${amount} ${amount > 1 ? 'seconds' : 'second'} ago`;
+      return `${amount} 초 전`;
     }
     amount = Math.floor(diff / MINUTE);
-    return `${amount} ${amount > 1 ? 'minutes' : 'minute'} ago`;
+    return `${amount} 분 전`;
   }
   if (diff < DAY) {
     amount = Math.floor(diff / HOUR);
-    return `${amount} ${amount > 1 ? 'hours' : 'hour'} ago`;
+    return `${amount} 시간 전`;
   }
   amount = Math.floor(diff / DAY);
-  return `${amount} ${amount > 1 ? 'days' : 'day'} ago`;
+  return `${amount} 일 전`;
 };

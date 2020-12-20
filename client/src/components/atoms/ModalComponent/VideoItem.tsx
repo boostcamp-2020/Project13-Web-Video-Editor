@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Video } from '@/store/video/actions';
 import color from '@/theme/colors';
 import { parseDateString } from '@/utils/time';
+import Button from '@/components/atoms/Button';
 
 const StyledModalRow = styled.div`
   display: flex;
@@ -42,9 +43,15 @@ const Name = styled.p`
   white-space: nowrap;
 `;
 
+const Download = styled(Button)`
+  width: 10px;
+  height: 10px;
+`;
+
 const Timestamp = styled.p`
   font-size: 12px;
   white-space: nowrap;
+  margin-right: 1rem;
 `;
 
 interface Props {
@@ -54,6 +61,14 @@ interface Props {
 }
 
 const VideoItem: React.FC<Props> = ({ video, handleCheck, selected }) => {
+  const handleDownload = () => {
+    const a = document.createElement('a');
+    a.href = video.video;
+    a.download = video.name;
+    a.click();
+    a.remove();
+  };
+
   return (
     <StyledModalRow
       onClick={() => handleCheck(video)}
@@ -65,6 +80,12 @@ const VideoItem: React.FC<Props> = ({ video, handleCheck, selected }) => {
           <Name>{video.name}</Name>
         </NameDiv>
         <Timestamp>{parseDateString(new Date(), video.updatedAt)}</Timestamp>
+        <Download
+          message="다운로드"
+          onClick={handleDownload}
+          type="default"
+          disabled={false}
+        />
       </StyledDiv>
     </StyledModalRow>
   );
