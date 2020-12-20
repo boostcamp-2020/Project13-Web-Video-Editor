@@ -40,7 +40,7 @@ const VideoList: React.FC<Props<Video>> = ({
 
   return (
     <StyledDiv>
-      <Header>Video List</Header>
+      <Header>동영상 목록</Header>
       <List>
         {videos?.map(video => (
           <VideoItem
