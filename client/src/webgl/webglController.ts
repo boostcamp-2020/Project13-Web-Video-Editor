@@ -310,22 +310,8 @@ class WebglController {
   };
 
   drawSign = (modelViewMatrix, projectionMatrix, programInfo) => {
-    mat4.rotate(
-      modelViewMatrix,
-      modelViewMatrix,
-      ((-1 * this.phase * 90) / 180) * Math.PI,
-      [0.0, 0.0, 1.0]
-    );
-
-    mat4.rotate(
-      modelViewMatrix,
-      modelViewMatrix,
-      (this.videoRotation / 180) * Math.PI,
-      [0.0, 0.0, 1.0]
-    );
-
     let scaleX = 1 / this.ratio;
-    let scaleY = this.flip ? -scaleX : scaleX;
+    let scaleY = 1 / this.ratio;
     mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1]);
 
     const { clientWidth, clientHeight } = this.gl.canvas as HTMLElement;
@@ -485,6 +471,8 @@ class WebglController {
 
     mat4.translate(modelViewMatrix, modelViewMatrix, [0.0, 0.0, -0.5]);
 
+    const storedModelViewMatrix = mat4.clone(modelViewMatrix);
+
     const scaleX = this.ratio;
     const scaleY = this.flip ? -this.ratio : this.ratio;
     mat4.scale(modelViewMatrix, modelViewMatrix, [scaleX, scaleY, 1]);
@@ -624,11 +612,11 @@ class WebglController {
     );
 
     if (this.sign) {
-      this.drawSign(modelViewMatrix, projectionMatrix, programInfo);
+      this.drawSign(storedModelViewMatrix, projectionMatrix, programInfo);
     }
 
     if (this.signEdit) {
-      this.drawGrid(modelViewMatrix, projectionMatrix, programInfo);
+      this.drawGrid(storedModelViewMatrix, projectionMatrix, programInfo);
     }
   };
 
