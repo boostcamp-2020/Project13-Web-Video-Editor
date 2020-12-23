@@ -191,6 +191,30 @@ const Tools: React.FC<props> = ({ setEdit, isEdit }) => {
         case 'ArrowRight':
           forwardVideo();
           break;
+        case 'ArrowUp': {
+          const volume = video.getVolume();
+
+          if (volume <= 0.9 && volume !== 1.0) {
+            video.setVolume(volume + 0.1);
+            dispatch(setAudio(volume + 0.1));
+          } else {
+            video.setVolume(1.0);
+            dispatch(setAudio(1.0));
+          }
+          break;
+        }
+        case 'ArrowDown': {
+          const volume = video.getVolume();
+
+          if (volume >= 0.1 && volume !== 0.0) {
+            video.setVolume(volume - 0.1);
+            dispatch(setAudio(volume - 0.1));
+          } else {
+            video.setVolume(0.0);
+            dispatch(setAudio(0.0));
+          }
+          break;
+        }
         default:
           break;
       }
